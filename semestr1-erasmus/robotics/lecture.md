@@ -55,4 +55,19 @@
 - flexible objects → mechanics of deformation
 - uncertainty
 	- sources: sensors, actuators
-	- model error
+	- model error, action error
+- human-robot motion
+	- main issues
+		- safety – we don't want the robot to collide with people
+		- acceptability (politeness) – the robot should not interrupt people engaging in a conversation
+	- attention-based HRM
+		- we don't want to distract people in the museum
+- configuration space
+- how to address motion planning
+	- mobile robot
+		- reactive strategy
+		- graph search, A\*
+		- reinforcement learning
+		- robot position … coordinates
+	- arm robot
+		- pose … vector of joint angles
