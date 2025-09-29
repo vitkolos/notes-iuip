@@ -21,3 +21,38 @@
 - motion planning vs. navigation (obstacle avoidance etc.)
 	- motion planning – global map, strategic level
 	- obstacle avoidance – local map, tactical level
+- workspace
+	- physical space where the robot lives, usually $\mathbb R^2$ or $\mathbb R^3$
+	- obstacles, free space
+	- types of models
+		- continuous metric model
+			- polygons – their vertices
+			- memory complexity proportional to the number of obstacles
+		- discrete metric model
+			- pixels: free, fully occupied, partially occupied
+			- memory complexity proportional to the size of workspace and the resolution
+		- topological model
+			- nodes and edges
+			- we don't care about the geometry – we only capture places and ways to move from one to another
+			- the robot needs to be able to localize itself (what is the current “place”) and to get from one place to another according to the edges in the graph
+		- hybrid
+	- selection criteria: sensors available, precision required, complexity (memory requirements)
+- Piano Mover's Problem
+	- free flying robot (rigid object) = piano
+	- stationary obstacles (fixed rigid objects)
+	- the focus is on the geometry, path planning
+- with moving obstacles, time becomes very important
+	- we need to know (model) the future motions of the obstacles in order to plan the path
+- what is the robot is no longer free flying?
+	- two classes of kinematic constraints
+		- holonomic – restrict the set of possible position (like obstacles)
+			- example: limitations of the robotic arm due to its joints etc.
+			- to account for the constraints, we only add some virtual obstacles
+		- nonholonomic – restrict the set of possible differential motions
+			- example: a wheel rolling without slipping on the plane (you should move in a direction perpendicular to the axis of the wheel)
+- prehensile manipulation – we grasp an object and manipulate with it
+- non-prehensile manipulation – we push or throw an object
+- flexible objects → mechanics of deformation
+- uncertainty
+	- sources: sensors, actuators
+	- model error

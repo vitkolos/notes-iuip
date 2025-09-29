@@ -23,3 +23,49 @@
 - retina performs parallel processing of different attributes
 - brain performs sequential processing (object segmentation, identification)
 - readings: [Graphs in Statistical Analysis](http://iihm.imag.fr/blanch/teaching/infovis/readings/1973-Anscombe-Graphs_in_Stats.pdf) & [The Eyes Have It](http://iihm.imag.fr/blanch/teaching/infovis/readings/1996-Shneiderman-Mantra.pdf); viewing: [Hans Rosling’s TED talks](https://www.ted.com/speakers/hans_rosling)
+- density of receptors decreases with the distance from the center of vision (so the peripheral vision is not that sharp)
+- peripheral vision is mostly colorblind
+- http://xkcd.com/1080/
+- Gestalt psychology
+	- one stimulus, two perceptions
+	- there is a difference between stimulus and perception
+	- emergence – we need to see the whole picture, not just parts
+	- reification – perception contains more spatial information than the stimulus
+	- multistability – ambiguous stimuli can generate different perceptions but they cannot coexist simultaneously
+	- invariance – objects are recognized independently of various variations (transformations, lightning, …)
+	- laws of grouping – law level perceptions are grouped into higher-level objects
+		- good Gestalt
+- information visualization pipeline
+	- source data → data tables
+		- data transformations
+	- data tables → visual abstraction
+		- visual mappings
+		- transition from data form to visual form
+		- we use data attributes to create (visual) marks
+	- visual abstraction → views
+		- view transformations
+		- result … actual pixels
+- example: gapminder (data attributes → visual channels)
+	- income → x
+	- life expectancy → y
+	- country → details on demand
+	- population → size
+	- region → color
+- interactions
+	- the user can manipulate 1) data transformations, 2) visual mappings, 3) view transformations
+	- zoom … view transformation
+	- filtering … data transformation
+	- in gapminder, we can also edit visual mappings
+- taxonomies of data types
+	- “what comparisons can I make?”
+	- “how can I aggregate the data?”
+	- nominal … only equality (=)
+		- aggregation … mode (we show the most frequent one) or top-k
+			- if we have a taxonomy (hierarchy), we can group the data
+	- ordered … ordering and equality (<, =)
+		- aggregation … median, quantiles, histogram (count per bucket)
+	- quantitative … “how much smaller is it?”
+		- → intervals … $v-v'$
+		- → ratios … $v/v'$
+			- only if there is a meaningful zero on the scale
+		- aggregation … mean, std dev, skew
