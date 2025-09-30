@@ -1,0 +1,38 @@
+# Information Retrieval
+
+- information retrieval
+	- deals with the representation, storage, organization of and access to information items
+	- is finding material of an unstructured nature that satisfies an information need from within large collections
+- differences between databases and information retrieval
+	- data are strongly structured × documents are not
+	- documents are meant for human interaction, data are meant for the computer
+- central elements of IR: documents, information need, satisfaction of the user
+- information definition … what a user gets from documents using his own knowledge
+- document definition … a trace that a human is sending to another human
+- we have a very large set of documents, very imprecise information need and we need to satisfy it very fast
+- the system needs to know the format of the document to make sense of it
+- main dimensions of documents
+	- physical (form) – to read a digital document, you need suitable tools
+	- meaning (content) – context is part of the meaning construction
+	- social (medium) – there's an intention behind every document
+- document forms
+	- media
+		- text (types: book, article, letter)
+		- image (types: x-ray, photograph, graphic)
+		- video
+		- structured documents
+	- documents can consist of different documents
+- user query
+	- user's information need expressed using a predefined language
+- satisfaction
+	- system should be simple to use
+	- must give the best possible answers, they must be relevant
+	- must return reasonable quantities of answers
+	- must be fast
+- other factors to take into account
+	- user's expertise
+	- temporal and geographical need
+- relevance
+	- at document side: document, surrogate, information
+	- at user side: information need, request, query
+- IR context
