@@ -22,3 +22,79 @@
 		- speed
 		- precision
 		- generality – the algorithm should be generic; the pool of situations that it can handle should be large enough
+- main vision problems
+- image
+	- 2D signal, depicts a 3D scene
+	- matrix of values that represent a signal
+	- has semantic information
+- light
+	- plays a fundamental role in 3D perception
+	- no light → no image
+	- diffuse reflection, shadow, specular reflection
+	- wavelength, spectrums
+		- solar spectrum: almost continuous spectrum, some wavelengths are stronger
+		- white light: continuous spectrum (energy evenly distributed)
+		- sodium vapor lamp: only yellow → red car appears dark
+	- what happens when a light ray hits the surface
+		- absorption (black surface)
+		- reflection, refraction (mirror, reflector)
+		- diffusion (milk)
+		- fluorescence
+		- transmission and emission (human skin)
+	- most surfaces can be approximated by simple models
+	- first simplified hypothesis
+	- standard model: BRDF
+		- bi-directional reflectance distribution function
+		- models the ratio of energy for each wavelength $\lambda$
+			- incoming from direction $\hat v_i$
+			- emitted towards direction $\hat v_r$
+			- $\hat n$ … normal vector
+		- reciprocity
+		- isotropy
+		- energy corresponds to an integral (we can use a discrete sum)
+		- Lambert assumption
+			- diffuse surface: uniform in all directions (paper, milk, matt paint)
+			- the BRDF is a constant function $f_d(\hat v_i,\hat v_r,\hat n,\lambda)=f_d(\lambda)$
+		- specular material, central lobe on $\hat s_i$
+			- Phong … $f_s(\theta_s,\lambda)=k_s(\lambda)\cos ^{k_e}\theta_s$
+			- Torrence-Sparrow
+		- di-chromatic
+			- diffuse + specular
+- pipeline in a digital camera
+	- to get RAW
+		- optics → aperture → shutter → sensor → gain → A/D
+	- to get JPEG from RAW
+		- demosaic → sharpen → white balance → gamma/curve → compress
+	- optical role: isolate the light rays (from one particular part of the scene)
+	- we can model a complicated system of lenses using just one lens
+	- perfect lens: hypothesis
+		- a point in the scene corresponds to a point in an image
+		- this is not true, there are artifacts
+	- chromatic artifacts (fringing)
+		- diffraction – wavelength dependent
+	- vignetting … border of the image is darker
+	- geometric distortion (for wide-angle cameras)
+	- CCD sensor, CMOS sensor
+	- rolling shutter
+	- color spaces
+		- RGB … additive
+		- CMY … subtractive
+	- color perception
+		- retina
+		- fovea
+		- rods – achromatic perception of lights, pigmentation (rhodopsin) is sensitive to all visible spectrum (peak on green)
+		- cones – color perception
+		- mantis shrimp has the most complex visual system ever discovered
+	- color perception in a camera
+		- deviation/dispersion prism
+			- 3 CCD sensors
+			- precise alignment, high quality filter
+			- expensive
+		- Bayer filter
+			- individual (plastic) filter for each pixel (RGGB, RGCB)
+			- to get colors in each pixel, we interpolate (integrate over spectrums)
+	- sensor artifacts
+		- noise: salt and pepper, thermic noise (as the camera heats up)
+		- aliasing
+	- gamma correction
+	- JPEG compression artifacts
