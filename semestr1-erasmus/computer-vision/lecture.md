@@ -1,0 +1,24 @@
+# Lecture
+
+- computer vision
+	- mimic human vision
+	- extract measurable information
+	- identify objects
+	- fix/improve images to improve their interpretation
+- image processing vs. computer vision
+	- processing: reasoning focused on the image, pixels, pixel groups
+	- vision: focuses on the knowledge the image brings from a real scene
+- difficult problem
+	- the goal of computer vision is not to mimic human vision but to build systems that extract information
+	- computer vision is an inverse of the synthesis problem
+		- projection is fundamentally ambiguous – we are losing information (depth, size, occlusions)
+		- in general it's an ill-posed problem: no unique solution for a given observation, ambiguous solutions, incomplete data (example: scale of the observed scene, toy car instead of normal car)
+		- need of injecting a priori knowledge and regularization (example: penalize non-smooth solutions)
+	- from noisy observations, we estimate the parameters of a model
+	- a priori knowledge: physics, geometry, semantics
+	- example: by counting visible wheels of the car, we can tell the position of the camera
+	- desirable characteristics
+		- robustness – be able to identify observation noise/errors (have plan B in case of error)
+		- speed
+		- precision
+		- generality – the algorithm should be generic; the pool of situations that it can handle should be large enough
