@@ -48,3 +48,80 @@
 	- distributed problem solving
 	- agent-based modelling and simulation
 - Gama, Netlogo
+- reactive agent vs. cognitive agent
+	- cognitive agent can reason about the environment
+	- reactive agent can only move randomly and perform some reactive actions
+- practical reasoning
+	- action-oriented reasoning = process of deciding what to do (not what to believe or what is true)
+	- human practical reasoning
+		- deliberation – what state of affairs I want to achieve?
+		- means-end reasoning – how do I get there?
+	- intentions in practical reasoning
+		- effort and resources put into achieving intention
+		- no conflict: intentions serve as a filter for adopting new intentions
+		- success tracking + persistance after failure
+		- possible – intentions are believed to be possible
+		- feasibility – not believed to never be reached
+		- …
+	- Bratman's theory
+- BDI architecture
+	- beliefs
+		- representation of the world
+		- possible incorrect and incomplete
+	- desires
+		- our goal
+	- intentions
+		- how to achieve the goal
+		- intentions lead to actions
+		- in a dynamic environment, we need to reconsider the intentions
+			- we need to find a balance, we cannot be to indecisive
+			- intention reconsideration – 3 commitment strategies
+	- BDI goal-plan diagram (tree)
+		- list of all plans we can use to achieve the goal
+		- each plan consists of several atomic actions
+		- example: gold miners
+			- goal: earn money
+			- plans: sell gold | other job
+			- how to sell gold: have gold & go to market & sell
+			- how to have gold: steal gold | pick gold
+		- on every level of the tree, we switch between AND and OR
+	- BDI pros & cons
+		- grounded in philosophy, formal logic
+		- high level of abstraction, captures folk psychology
+		- explains why an agent does something
+		- extensible, flexible, robust, failure recovery
+		- dedicated programming frameworks (example: GAMA)
+		- but complex, may be computationally slow
+- reflex architecture
+	- stimulus-action rules
+	- directly triggered by stimuli in the environment
+	- less complex than symbolic AI
+	- example: ants
+		- go back to nest = follow pheromones the other way
+	- finite-state machines
+	- subsumption architecture
+		- hierarchy of competence modules (CM)
+		- each module is responsible for a concrete, clearly defined, simple task
+		- all modules operate in parallel
+		- rather simple rule-like structure
+		- lower layers can inhibit higher layers
+			- by suppressing input signals or inhibiting output signals
+	- example: Mars explorer
+		- highest priority: obstacle avoidance
+		- drop carried samples at base
+		- return to base when carrying sample
+		- collect found samples
+		- lowest priority: exploration
+	- how can reactive agent locate the base?
+		- gradient field – the base emits radio signal
+	- how can robots communicate together?
+		- we want to tell the other robots where the clusters are
+		- we use “feromones” – stigmergy (indirect communication through environment)
+			- robots drop radioactive crumbs
+			- other robots need to pick them to make the trace “fade away”
+		- https://nausikaa.net/wp-content/uploads/2022/09/steels-mars-explorer-02.html
+	- for reactive agents, the environment has to be accessible
+- hybrid architectures
+	- reactive and deliberative layers
+		- obstacle avoidance can be reactive
+	- how to handle interaction between layers?
