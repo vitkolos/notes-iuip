@@ -1,4 +1,4 @@
-# Generative, Multimodal AI
+# Lecture
 
 - supervised ML
 	- training data $(x^i,y^i)$
