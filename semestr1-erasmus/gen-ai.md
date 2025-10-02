@@ -1,0 +1,41 @@
+# Generative, Multimodal AI
+
+- supervised ML
+	- training data $(x^i,y^i)$
+	- given a new $x^0$, provide a prediction $\tilde y^0$
+	- consider a class $\varphi$ of functions
+	- find a function $f_\theta\in\varphi$ (find parameters $\theta$) that minimizes some loss function
+		- $\mathrm{argmin}_\theta E(\theta)$
+		- where $E(\theta):=\sum_i^n\ell(f_\theta(x^i),y^i)$
+- gradient descent
+	- $\theta_{t+1}\leftarrow\theta_t-\eta_t\cdot\nabla E(\theta_t)$
+	- works well for convex functions $E$
+	- doesn't work well for non-convex $E$
+	- in practice, works well for neural networks
+- multi-layer neural networks
+	- $x_{\ell+1}=\sigma(W_\ell x_\ell+b_\ell)$
+	- $\sigma$ … activation function (sigmoid, ReLU, …)
+	- $W$ … weight matrix
+	- $b$ … bias vector
+- for two layers
+	- $f_\theta(x)=\frac1n\sum_{k=1}^n u_k\cdot\sigma(\braket{v_k,x}+b_k)$
+		- $n$ … number of neurons in the hidden layer
+	- weights $\theta=(u_k,v_k,b_k)_{k=1}^n$
+- Universal approximation theorem (Cybenko '89, Hornik '89)
+	- any continuous function $f:\mathbb R^d\to\mathbb R$ can be approximated by a 2-layer neural network
+	- (Baron '93): $\|g-f_\theta\|\leq \frac{O(R\|g\|)}{\sqrt n}$
+	- conclusion: a large 2-layer neural network is good enough
+	- Bach and Chizat '18: gradient descent (flow) converges to the global minimum for 2-layer neural networks
+		- we don't know how long it could take
+- very deep networks (CNN, Transformer, …)
+	- residual networks (ResNet '16)
+		- $x_{\ell+1}=x_\ell+\frac 1L U_\ell^T\cdot\sigma(V_\ell x_\ell+b_\ell)$
+		- $U_\ell,V_\ell\in\mathbb R^{n\times d}$ … weight matrices
+			- $n$ … number of neurons
+		- $x_0\xrightarrow{f_\theta} x_L$
+		- $L$ layers
+	- neural differential equation
+		- for $L\to\infty$
+			- $\frac{dx_s}{dt}=U_s^T\cdot\sigma(V_sx_s+b_s)$
+			- where $s\in(0,1)$
+		- theorem (2024): if the starting point is close enough to a local minimum, then the flow induced by $\frac{dx_s}{dt}$ converges to the local minimum
