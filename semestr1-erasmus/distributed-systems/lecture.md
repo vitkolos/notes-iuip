@@ -62,15 +62,15 @@
 	- what can we say about LC?
 		- $e\to e'\implies LC(e)\lt LC(e')$
 			- we don't have $\impliedby$
-		- $LC_i(e)$ corresponds to the length of the longest chain of events leading to $e$
+		- $LC_i(e)$ corresponds to the length of the longest chain of events (longest causal chain) leading to $e$
 - vector clocks
 	- definition
 		- for $i=j:VC(e_i)[j]=$ number of events on $p_i$ up to and including $e_i$
 		- for $i\neq j:VC(e_i)[j]=$ number of events on $p_j$ that happened_before $e_i$
 	- algorithm
 		- if $e_i$ is internal or $\mathrm{send}(m)$
+			- $VC(e_i)\leftarrow VC_i$
 			- $VC(e_i)[i]\leftarrow VC_i[i]+1$
-			- $VC(e_i)[j]\leftarrow VC_i[j]$
 		- if $e_i$ is $\mathrm{recv}(m)$
 			- $VC(e_i)\leftarrow\max(VC_i,ts(m))$
 			- $VC(e_i)[i]\leftarrow VC(e_i)[i]+1$
