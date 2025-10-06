@@ -39,3 +39,15 @@
 			- $\frac{dx_s}{dt}=U_s^T\cdot\sigma(V_sx_s+b_s)$
 			- where $s\in(0,1)$
 		- theorem (2024): if the starting point is close enough to a local minimum, then the flow induced by $\frac{dx_s}{dt}$ converges to the local minimum
+- attention, transformers, BERT
+	- modeling sequences with RNN
+	- attention in neural networks – originally in computer vision
+	- problems of RNNs: long range dependencies, gradient vanishing (and exploding), large number of training steps, no parallel computation
+		- transformers solve all four of these
+	- complexity per layer
+		- for self-attention … $O(n^2d)$
+	- BERT – just the encoder
+	- how to process long sequence
+		- divide into smaller chunks
+		- optimize (attention)
+	- recommended watch: Transformers, the tech behind LLMs (3Blue1Brown)
