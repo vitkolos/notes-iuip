@@ -70,4 +70,67 @@
 		- reinforcement learning
 		- robot position … coordinates
 	- arm robot
-		- pose … vector of joint angles
+		- vector of joint angles
+- **configuration**
+	- fundamental tool to address motion planning
+	- *set of independent parameters uniquely specifying the position and orientation of every component of a robotic system relative to a fixed coordinate system*
+	- usually expressed as a vector of positions/orientations
+	- configuration space = space of all the configuration
+	- example: polygonal robot which can only translate (no rotation)
+		- we pick a reference point $R$
+		- $q=(q_x,q_y)$ … configuration (coordinates of $R$)
+		- $C=\mathbb R^2$ … configuration space
+		- $W=\mathbb R^2$ … workspace
+	- example: robot which can also rotate
+		- $q=(q_x,q_y,\theta)$
+		- $C=\mathbb R^2\times S^1$
+			- $S^1$ … $[0,2\pi[$ (to some extent)
+				- we could also use $[-\pi,\pi[$ or something similar
+	- example: free-flying robot in 3D
+		- $q=(q_x,q_y,q_z,\theta_\alpha,\theta_\beta,\theta_\gamma)$
+		- Euler angles (roll, pitch, yaw)
+	- example: robotic arm with two joints
+		- $q=(\theta_1,\theta_2)$
+		- $C=S^2$
+	- example: mobile robot (car) with an arm with two joints
+		- $q=(x,y,\theta,\theta_1,\theta_2)$
+- configuration space vs. workspace
+	- example: robotic arm with two joints
+		- base of the robot can be put anywhere → workspace … $\mathbb R^2$
+		- $C=S^2$ is bounded
+		- $S^2$ topology = sphere
+		- but we cannot uniquely convert the top of the sphere to two angles → we need to use a torus
+		- $C=S^1\times S^1$
+	- what is the shortest path between two configurations in $S^1\times S^1$?
+		- in Cartesian space, it would be easy
+		- we need a metric
+- configuration space path
+	- path $\pi:[0,1]\to C$ … continuous sequence of configurations
+	- trajectory … time-parametrized path
+- configuration types
+	- free, collision, contact
+	- contact configurations are interesting if you want to pick up something with a robotic arm
+	- image of an obstacle in a $C$ space becomes much more complicated
+		- we need to capture the structure of the workspace, compute forbidden regions
+	- in the workspace, the robot is a body × in the configuration space, the robot is a point
+- example: extensible arm with a joint
+	- $q=(x,\theta)$
+	- $x\in[1,3]$
+	- $\theta\in[0,2\pi[$
+	- $C=\mathbb R\times S^1$ … cylinder topology
+
+## Path Planning
+
+- completeness issue
+	- complete algorithm: finds a solution if one exists, reports failure if not
+	- complexity of complete path planning: strong evidence that it takes time exponential in $d$, the dimension of the configuration space $C$
+	- specific complete path planning algorithms have been implemented for $d=$ 2, 3, or 4
+	- two complete general purpose path planning algorithms have been proposed, none has been implemented
+- algorithms
+	- complete … finds a solution
+	- heuristic … finds a solution in most cases
+	- probabilistic completeness … probability of finding a solution approaches 1 if given enough time
+	- resolution completeness … complete for a given resolution level
+- usual methods
+	- exploring a search graph
+	- incrementally building a search tree
