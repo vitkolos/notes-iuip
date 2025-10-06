@@ -69,3 +69,65 @@
 		- → ratios … $v/v'$
 			- only if there is a meaningful zero on the scale
 		- aggregation … mean, std dev, skew
+
+## Visual Mapping
+
+- how to map between attributes and visual channels
+- properties of visual channels
+	- association $(\equiv)$
+		- does the visual channel play well with the other visual channels?
+		- size does not provide association – the other visual variables are more difficult to see for smaller sizes
+	- selection $(\neq)$
+		- can you focus on a specific subset in this visual channel?
+		- color provides selection
+	- order $(O)$
+		- items can be ordered according to this variable, without relying on a lookup to a legend
+	- quantity $(Q)$
+		- the difference between two items can be quantified
+- channels
+	- position $(\equiv,\neq,O,Q)$
+	- size $(\neq,O,Q)$
+		- beware: for quantity judgement, our perception is biased
+			- Stevens' Law: $\frac{p(x_1)}{p(x_0)}=\left(\frac{x_1}{x_0}\right)^\beta$
+			- $p$ … perception
+			- $\beta$ is different for length, area, and volume
+			- in 2D, we underestimate large sizes (in 3D it's even worse)
+		- note on depth
+			- depth is perceived mainly because it impacts size
+			- using the third dimension introduces ambiguity: is it small or is it far away?
+			- but we can keep all the objects the same size and only apply motion parallax & skew instead of perspective
+	- value $(\neq,O)$
+		- lightness of color
+		- light marks are harder to see
+	- texture $(\equiv,\neq,O)$
+		- usually black and white (dark and light color) – we can mix it with color channel
+		- probably underused
+	- color $(\equiv,\neq)$
+		- we don't perceive the axis of wavelengths
+		- colors are usually used as labels
+	- orientation $(\equiv,\neq)$
+		- only for some shapes (not circles)
+	- shape $(\equiv)$
+		- does not provide selection → it's better to use color for grouping
+- Mackinlay: suitability of variables, possible combinations
+	- distinguishes more visual channels
+	- ordered lists – the best channels on top
+	- systematic approach to choosing visual channels
+- position is the best visual channel
+- example: gaminder
+	- attribute, data type (N/O/Q), X Y Z T R, CP
+	- life expectancy Q, Y→P (0D)
+	- income per capita Q, X→P
+	- country N, CP (label)
+	- population Q, R→S (size)
+	- region N, R→C (color)
+- time (T) … animation
+- dimensions
+	- P … 0D
+	- L … 1D
+	- A … 2D
+- filtering (F)
+	- slider … select one level
+	- br … bounded range
+- animated gapminder
+	- extra attribute: year Q,  F→sl\>, T
