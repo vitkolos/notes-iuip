@@ -125,3 +125,50 @@
 	- reactive and deliberative layers
 		- obstacle avoidance can be reactive
 	- how to handle interaction between layers?
+
+## Game Theory
+
+- applications
+	- biology – survival of the fittest (winners)
+	- political sciences – military strategy, Cold War
+- typology of games
+	- zero-sum games
+	- cooperative vs. competitive
+	- simultaneous vs. sequential
+	- information available – complete information, incomplete information (Bayesian games), imperfect information
+- examples
+	- shifumi (rock-paper-scissors)
+	- chicken game
+- notation
+	- players $i,j$
+	- results $W=\set{w_1,\dots,w_n}$
+- agents maximize utility
+	- absolute values of utility does not convey much meaning, we are more interested in relative comparison (which action has more utility for the agent)
+- simplified environment model
+	- possible actions $Ac=\set{C,D}$
+		- cooperate $(C)$, defect $(D)$
+	- the environment is…
+		- sensitive – if each combination of actions leads to a different result
+		- insensitive
+		- controlled – if one player can influence the result
+- representation
+	- extensive form – decision tree
+	- strategic form – matrix
+- pure or mixed strategy
+- equilibria
+	- Nash equilibrium
+	- Bayesian equilibrium
+- dominant strategy
+- Pareto optimality
+- social vs. individual benefit
+- prisoners' dilemma
+	- happens in every situation where $T\gt R\gt P\gt S$
+	- $T$ … temptation (successful betrayal)
+	- $R$ … reward (we both cooperated)
+	- $P$ … punishment
+	- $S$ … sucker (I was betrayed)
+- how can we establish cooperation in multi-agent systems?
+	- iterated prisoners' dilemma
+	- Axelrod's tournament
+- tragedy of the commons, free riders
+- humans are not always economically rational
