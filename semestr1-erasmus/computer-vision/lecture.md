@@ -141,3 +141,65 @@
 	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
 	- contour extraction (Canny)
 		- we only take one pixel with the highest value in the direction of the gradient
+- line detection – Hough transform
+	- how to express a line
+		- $ax+by+c=0$
+		- or we can use polar coordinates: $(r,\theta)$
+			- $r$ … distance from the origin
+			- $\theta$ … slope (kind of)
+	- let's vote!
+		- each observation adds one point to each line going through it – to the pair $(r,\theta)$
+		- we have a restricted set of parameters → it works
+- segmentation
+	- Gestalt theory
+	- region – group of pixels with similar properties
+	- we need a similarity measure
+		- distance to the mean of the region
+		- Mahalanobis distance
+	- similarity in color space
+		- k-means
+		- Gaussian mixture models
+			- probability of a point belonging to a cluster
+			- probability to observe a point is a mixture of Gaussians
+			- expectation maximization is used to solve it
+				- E: knowing the current estimates of blobs, we compute the probabilities of the points belonging to them
+				- M: we recompute the blob parameters to maximize likelihood
+			- some advantages
+			- still problems: we still need to choose $k$; it is sensitive to initialization; the generative model (shape of the blobs) need to be chosen
+	- superpixels
+		- we need to group based on both color and spatial proximity
+		- segmentation using a graph partitioning strategy
+			- one pixel → one vertex
+			- edges to other pixels
+			- remove the edges of low similarity
+				- based on distance, intensity, color, …
+	- Grabcut – interactive method
+	- Meta AI: Segment Anything
+		- trained using superpixels
+	- deep clustering
+		- they trained encoder and decoder
+		- k-means in the latent (embedding) space
+
+## Interest Points
+
+- motivation
+	- 2D tracking (motion)
+	- find correspondances
+	- recognition
+- segmentation is usually avoided – it is a source of errors
+	- finding interest points is more robust
+- desired properties
+- Moravec's detector
+	- small window
+- Harris detector
+	- Taylor expansion
+	- bilinear form
+	- eigenvalues
+		- hard to compute → we use $R$ instead
+- we don't want too many interest points, different strategies
+- Harris detector properties
+	- rotation invariance
+	- invariance to intensity shift, partial invariance to intensity scaling
+	- no invariance to scale changes
+		- we consider circular regions of different sizes on a point
+		- but how to choose them?
