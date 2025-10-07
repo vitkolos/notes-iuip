@@ -76,6 +76,7 @@
 	- geometric distortion (for wide-angle cameras)
 	- CCD sensor, CMOS sensor
 	- rolling shutter
+		- lines of the sensor are discharged sequentially → moving objects can be distorted
 	- color spaces
 		- RGB … additive
 		- CMY … subtractive
@@ -98,3 +99,45 @@
 		- aliasing
 	- gamma correction
 	- JPEG compression artifacts
+	- color models
+		- RGB – additive model, mixing wavelengths
+		- CMY – subtractive model, mixing pigments (“subtracting” wavelengths)
+		- HSV or HSB – hue (“intrinsic color”), saturation, value
+			- useful for artists
+		- YUV, YIQ – 1 luma component + 2 chroma components
+			- for TV broadcasting, luminance can be used for black & white TV
+	- application: robotic detection
+		- we can detect an object based on its color (ignoring luminance or value)
+
+## Filters, Contours, Segmentation
+
+- characterization of an image
+- contours, regions (between the contours) – duality
+- how to distinguish between information and noise
+- noise filtering
+	- most simple and adopted model: Gaussian noise
+	- convolution with a low-band Gaussian filter
+		- theorem: derivative of convolution = convolution of derivative
+	- edge notion is binary – we need a threshold
+	- average over neighboring pixels … mean filter
+		- but Gaussian filter works better – the neighboring pixels have less effect
+- edges … fundamental for human perception
+	- how to detect them?
+		- smoothing → maximum (using first derivative) or zero-crossing (second derivative)
+	- edges' properties
+		- contrast
+		- orientation
+	- edge descriptors
+		- normal – unit vector, direction of maximal (intensity) change
+			- direction – perp. to normal
+		- position
+		- intensity
+	- image is not a continuous function – we approximate it using Taylor expansion (just using a plane)
+	- finite differences
+	- gradient operator: Sobel
+		- modern neural networks tend to learn this filter to process data :)
+	- scaling of the filtering kernel influences the detected contours
+	- another operator: Laplace
+	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
+	- contour extraction (Canny)
+		- we only take one pixel with the highest value in the direction of the gradient
