@@ -74,3 +74,43 @@
 		- if $e_i$ is $\mathrm{recv}(m)$
 			- $VC(e_i)\leftarrow\max(VC_i,ts(m))$
 			- $VC(e_i)[i]\leftarrow VC(e_i)[i]+1$
+	- how we compare vectors
+		- $u\lt v\iff(\forall i)(u_i\leq v_i)\land(\exists j)(u_j\lt v_j)$
+	- it holds that $e\to e'\iff VC(e)\lt VC(e')$
+
+## Abstractions, Failure Detectors
+
+- abstractions – we want something simple but useful
+- fault models for processes
+	- crash-stop
+		- process crashes and never comes back
+		- the most typical model
+	- crash-recovery
+		- process crashes and later resumes from the point where it crashed
+		- but this rarely happens
+		- it is more usual to restart the process – reinitialize it (so it's a new process)
+		- use case: if a process loses its connection frequently
+	- byzantine
+		- process doesn't behave according to its specification
+		- might happen for various reasons – corrupted memory, attack, …
+		- possible strategies
+			- we need to guarantee that the process can be trusted
+			- we assume that there is a limited number of byzantine process and use majority vote
+- fault models for channels
+	- integrity
+		- “channels don't create messages & channels don't corrupt messages”
+		- a link from $p$ to $q$ satisfies integrity if $q$ receives a message $m$ at most once, and only if it was previously sent by $p$
+		- note: $m$ can be lost
+	- fair link – satisfies integrity & if $p$ sends $m$ infinitely often, then $q$ receives $m$ infinitely often (the channel can lose an infinity of messages)
+	- reliable link – satisfies integrity & if $p$ sends $m$ and $q$ is correct (does not crash), then $q$ receives $m$
+		- → the channel does not lose messages
+		- problem: $p$ could crash right after sending $m$
+	- quasi-reliable link – satisfies integrity & if $p$ sends $m$ and $p,q$ are corect, then $q$ receives $m$
+		- if $m$ gets lost, $p$ can “send it again”
+- why do we define reliable link?
+	- it can help us to determine if a problem is solvable or not
+	- if we cannot solve the problem using reliable link, there is no way to solve it using weaker fault models
+- in reality we only have fair links
+	- we can implement stubborn links and then quasi-reliable links
+	- then, we want to add a FIFO property on top of that
+- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it infinitely often
