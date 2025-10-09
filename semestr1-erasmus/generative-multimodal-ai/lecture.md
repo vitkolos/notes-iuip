@@ -51,3 +51,29 @@
 		- divide into smaller chunks
 		- optimize (attention)
 	- recommended watch: Transformers, the tech behind LLMs (3Blue1Brown)
+	- what happens in the first layer
+		- $E^{(1)}=\mathrm{Norm}(E^{(1)}_1+\mathrm{FFN}(E^{(1)}_1))$
+		- $E^{(1)}_1=\mathrm{Norm}(E^{(0)}+\mathrm{MATL}(E^{(0)}))$
+		- FFN … feed forward network (multi-layer perceptron)
+		- MATL … multi-head attention layer
+		- $E^{(0)}$ … embeddings with positional encoding
+	- similarly for $E^{(\ell)}=\mathrm{Norm}(\mathrm{Norm}(E^{(\ell-1)}+\mathrm{MATL}^{(\ell)}(E^{(\ell-1)}))$ $+\ \mathrm{FFN}(\mathrm{Norm}(E^{(\ell-1)})+\mathrm{MATL}^{(\ell)}(E^{(\ell-1)})))$
+- example
+	- input text: Machine learning is learning from
+	- tokenization: machine learn ing is learn ing from
+	- embeddings: $E^{(0)}_1,E^{(0)}_2,E^{(0)}_3,E^{(0)}_4,E^{(0)}_5,E^{(0)}_6,E^{(0)}_7$
+		- where $E^{(0)}_2=E^{(0)}_5$ and $E^{(0)}_3=E^{(0)}_6$
+		- $|V|$ … vocabulary size (number of possible tokens)
+			- 50 257 tokens in ChatGPT 2
+		- $d_{\mathrm{model}}$ … dimension of the context independent vector representing a token
+			- 12 288
+		- $W_E$ (embedding matrix) has $|V|$ columns and $d_\mathrm{model}$ rows, is initialized randomly
+	- adding positional information
+	- MATL … multi-head attention layer
+		- $\mathrm{softmax}(\frac{K^TQ}{\sqrt{d_k}})\cdot V$
+			- $K=W_kE$
+			- $Q = W_qE$
+			- $V=W_vE$
+		- attention helps to distinguish the meaning based on the context
+		- sometimes we need to use masking (in a decoder – otherwise, it could just read the next token from the target output)
+		- $\Delta E_i^{(\ell-1)}=W_o(\sum_{j=1}^i\sigma (K_j\cdot Q_i)V_j)$
