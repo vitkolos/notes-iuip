@@ -81,6 +81,7 @@
 ## Abstractions, Failure Detectors
 
 - abstractions – we want something simple but useful
+	- we use a stack of components, every component has an interface
 - fault models for processes
 	- crash-stop
 		- process crashes and never comes back
@@ -105,7 +106,7 @@
 	- reliable link – satisfies integrity & if $p$ sends $m$ and $q$ is correct (does not crash), then $q$ receives $m$
 		- → the channel does not lose messages
 		- problem: $p$ could crash right after sending $m$
-	- quasi-reliable link – satisfies integrity & if $p$ sends $m$ and $p,q$ are corect, then $q$ receives $m$
+	- quasi-reliable link – satisfies integrity & if $p$ sends $m$ and $p,q$ are correct, then $q$ receives $m$
 		- if $m$ gets lost, $p$ can “send it again”
 - why do we define reliable link?
 	- it can help us to determine if a problem is solvable or not
@@ -113,4 +114,25 @@
 - in reality we only have fair links
 	- we can implement stubborn links and then quasi-reliable links
 	- then, we want to add a FIFO property on top of that
-- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it infinitely often
+- implementation
+	- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it infinitely often
+		- does not satisfy integrity
+		- we just send all the previously sent messages repeatedly every $\Delta$ time units
+	- quasi-reliable link
+		- we keep a set of delivered messages
+		- but the set is always growing
+		- we could use ACK and then remove the message from the set after $p$ stops sending it
+			- but how to correctly detect that $p$ stopped sending?
+		- problematic scenario
+			- $p$ is sending $m$ repeatedly
+			- $q$ sends ACK
+			- after some time, $q$ removes $m$ from the delivered set
+			- another instance of $m$ arrives to $q$
+			- $q$ recognizes $m$ as a new message
+	- FIFO quasi-reliable link
+		- properties
+			- satisfies integrity
+			- if $p$ sends $m$ and $p,q$ are correct, then $q$ receives $m$
+			- if $p$ sends $m'$ after $m$ and $p,q$ are correct, then $q$ receives $m'$ after $m$
+		- implementation proposal
+			- sender $p$ assigns a timestamp to every message, the messages are then ordered by the timestamp
