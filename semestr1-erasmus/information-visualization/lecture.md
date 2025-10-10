@@ -131,3 +131,24 @@
 	- br … bounded range
 - animated gapminder
 	- extra attribute: year Q,  F→sl\>, T
+
+*table for the Napoleon's chart*
+
+| Variable  | D     | F   | D'    | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
+| --------- | ----- | --- | ----- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Number    | Q     |     | Q     | L   | L   |     |     | S   |     |     |     |
+| Direction | N     |     | N     |     |     |     |     | C   |     |     |     |
+| Town      | N     |     | N     |     |     |     |     |     |     |     | tx  |
+| Lon.      | QXlon |     | QXlon |     |     |     |     |     |     |     |     |
+| Lat.      | QYlat |     | QYlat |     |     |     |     |     |     |     |     |
+| Date      | Q     | f   | Q     |     |     |     |     |     |     |     | tx  |
+| Temp.     | Q     | f   | Q     |     | P   |     |     |     | L   |     | tx  |
+
+*table for 2024 exam*
+
+| Variable  | D   | F   | D'  | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
+| --------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Country   | N   |     | N   |     |     |     |     |     |     |     | tx  |
+| Year      | Q   |     | Q   | P   |     |     |     |     | L   |     |     |
+| Rank      | O   |     | O   |     | P   |     |     |     |     |     |     |
+| 2021 Rank | O   |     | O   |     |     |     |     | C   |     |     |     |
