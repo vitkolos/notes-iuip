@@ -134,21 +134,64 @@
 
 *table for the Napoleon's chart*
 
-| Variable  | D     | F   | D'    | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
-| --------- | ----- | --- | ----- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Number    | Q     |     | Q     | L   | L   |     |     | S   |     |     |     |
-| Direction | N     |     | N     |     |     |     |     | C   |     |     |     |
-| Town      | N     |     | N     |     |     |     |     |     |     |     | tx  |
-| Lon.      | QXlon |     | QXlon |     |     |     |     |     |     |     |     |
-| Lat.      | QYlat |     | QYlat |     |     |     |     |     |     |     |     |
-| Date      | Q     | f   | Q     |     |     |     |     |     |     |     | tx  |
-| Temp.     | Q     | f   | Q     |     | P   |     |     |     | L   |     | tx  |
+| Variable  | D     | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
+| --------- | ----- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Number    | Q     |     |     |     |     | S   |     |     |     |
+| Direction | N     |     |     |     |     | C   |     |     |     |
+| Town      | N     |     |     |     |     |     |     |     | tx  |
+| Lon.      | QXlon | L   |     |     |     |     |     |     |     |
+| Lat.      | QYlat |     | L   |     |     |     |     |     |     |
+| Date      | Q     |     |     |     |     |     |     |     | tx  |
+| Temp.     | Q     |     | P   |     |     |     | L   |     | tx  |
+
+*in-class solution*
+
+| Attributes | D   | X   | Y   | Z   | T   | R   | —   | \[] | CP   |
+| ---------- | --- | --- | --- | --- | --- | --- | --- | --- | ---- |
+| # men      | Q   |     |     |     |     | S   |     |     | text |
+| location   |     |     |     |     |     |     |     |     |      |
+| → long.    | Q   | L   |     |     |     |     |     |     |      |
+| → lat.     | Q   |     | L   |     |     |     |     |     |      |
+| cities     | N   |     |     |     |     |     |     |     | text |
+| direction  | N   |     |     |     |     | C   |     |     |      |
+| ---        |     |     |     |     |     |     |     |     |      |
+| temp.      | Q   |     | L   |     |     |     |     |     | text |
+| date       | Q   |     |     |     |     |     |     |     | text |
+| longitude  | Q   | L   |     |     |     |     |     |     |      |
 
 *table for 2024 exam*
 
-| Variable  | D   | F   | D'  | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
-| --------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Country   | N   |     | N   |     |     |     |     |     |     |     | tx  |
-| Year      | Q   |     | Q   | P   |     |     |     |     | L   |     |     |
-| Rank      | O   |     | O   |     | P   |     |     |     |     |     |     |
-| 2021 Rank | O   |     | O   |     |     |     |     | C   |     |     |     |
+| Variable  | D   | X   | Y   | Z   | T   | R   | —   | \[] | CP  |
+| --------- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Country   | N   |     |     |     |     |     |     |     | tx  |
+| Year      | Q   | P   |     |     |     |     | L   |     |     |
+| Rank      | O   |     | P   |     |     |     |     |     |     |
+| 2021 Rank | O   |     |     |     |     | C   |     |     |     |
+
+- F column
+	- we can transform the quantitative data to ordered by grouping the values
+	- \> is used to denote no transformation
+- we don't need to have the F, D' columns in the table
+- multi-dimensional data
+	- if we have more than 3 quantitative attributes, we need to use special approaches
+		- only x, y, and size can properly capture Q
+	- idea: reuse axes
+	- solutions
+		- scatter plot matrix
+			- waste of space
+				- symmetrical
+				- the diagonal would contain diagonal – it is better to use a different graph (like a histogram)
+			- difficult to see items
+		- parallel coordinates
+			- we use vertical axes to represent data
+			- the horizontal axis is only used for visual separation
+			- correlation
+				- positive correlation – few crossing lines (mostly parallel)
+				- negative correlation – most of the lines are crossing (in the middle)
+			- to write it in the table, we would write Y→L for every variable
+		- time series
+			- horizon graph
+				- $t\to X$
+				- $\mathop{\mathrm{sign}} q\to$ color
+				- $|q|\mathop{\mathrm{div}}V\to$ value (of the color)
+				- $|q|\mathop{\mathrm{mod}}V\to Y$
