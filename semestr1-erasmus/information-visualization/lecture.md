@@ -196,3 +196,5 @@
 				- $|q|\mathop{\mathrm{div}}H\to$ value (of the color)
 				- $|q|\mathop{\mathrm{mod}}H\to Y$
 				- $H$ … height of the slice we use
+				- = composite visual mapping
+					- we split one data attribute into multiple graphic variables
