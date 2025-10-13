@@ -172,3 +172,51 @@
 			- RRT is naturally biased towards large unexplored regions
 		- probabilistic completeness
 		- we need a metric
+- other methods
+	- navigation function
+		- “feedback motion planning”
+		- navigation function should be smooth, should have global minimum at the goal and no other local minima
+		- gradient descent
+	- potential field
+		- obstacle … repulsive field
+		- goal … attractive field
+		- robot … particle, subject to forces
+		- there can be multiple local minima :(
+			- how to avoid getting stuck in a local minimum
+			- we can use “basin of attraction”
+			- or we can try to move randomly out of the basin
+	- path deformation
+		- start from the original path and deform it until it becomes collision-free
+		- ill-suited for dynamic environments
+		- space deformation × time deformation
+- so far we talked about geometric constraints
+- kinematic constraints
+	- $F(q,\dot q)=0$
+	- holonomic constraint
+		- example
+			- $\dot x=\dot y$
+			- $x=y+c$
+			- robot can only move on line $y=x$
+		- we just introduce new obstacles in the C space
+		- example: robotic hand with glass of water has to be upright – we limit the hand to some angles
+	- nonholonomic
+		- non integrable
+		- example in $R^2\times S^1$
+			- $\dot x\sin\theta-\dot y\cos\theta=\theta$
+			- “the wheel has to always move in this direction”
+		- nonholonomic system: the dimension of the control space is less than the dimension of the configuration space
+		- controllability
+			- locally controllable system
+			- small-time locally controllable system
+		- steering
+			- no general method
+			- we can use circles for a car
+		- untractable problem, we need to decouple geometric and kinematic constraints
+		- topological property
+			- the space we need to maneuver
+			- we want to get from the middle of the blue circle to every point in the blue circle
+			- to get there, we may need to exist the blue circle but we always stay in the pink circle
+		- using topological property
+			- we have a geometrically feasible path
+			- we find the largest pink circle that does not collide with any obstacles on the path
+			- from the size of the pink circle, we compute the blue circle and “tile” the path using blue circles
