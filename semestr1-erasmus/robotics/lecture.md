@@ -134,3 +134,41 @@
 - usual methods
 	- exploring a search graph
 	- incrementally building a search tree
+- visibility graph
+- Voronoï diagram
+- cellular decomposition
+	- trapezoidal decomposition
+		- how to move from one cell to another? we could use the centroids of the shared sides
+		- cannot be used if we don't have polygonal obstacles
+			- typical problem if the C space is torus
+	- approximate cellular decomposition
+		- discretize the C space
+		- remove the occupied and partially occupied cells
+		- problems: narrow passage
+	- hierarchical cellular decomposition
+		- highly depends on the dimensionality of the C space – the memory requirements grow exponentially
+- probabilistic roadmap
+	- it's difficult to compute C space obstacles
+	- it's easy to check if a configuration collides or not
+		- also, we can easily check if a line segment collides or not
+	- we randomly sample points, check if they collide and if the lines connecting them collide
+	- this way, we form a network
+	- the algorithm is probabilistically complete
+	- very useful for C space of high dimensionality (like 97 dimensions)
+- tree-based methods
+	- grid-based methods
+		- A*
+		- bi-directional search
+			- is somehow better
+	- configuration-space lattices
+	- rapidly-exploring random tree
+		- algorithm
+			- we have a tree
+			- sample a configuration in the whole space
+			- find the closest node of the tree
+			- extend the tree by $\varepsilon$ distance in the direction of the new configuration (if such path is collision-free)
+		- brownian motion explores circle/sphere
+			- RRT works better
+			- RRT is naturally biased towards large unexplored regions
+		- probabilistic completeness
+		- we need a metric
