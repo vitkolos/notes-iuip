@@ -193,5 +193,6 @@
 			- horizon graph
 				- $t\to X$
 				- $\mathop{\mathrm{sign}} q\to$ color
-				- $|q|\mathop{\mathrm{div}}V\to$ value (of the color)
-				- $|q|\mathop{\mathrm{mod}}V\to Y$
+				- $|q|\mathop{\mathrm{div}}H\to$ value (of the color)
+				- $|q|\mathop{\mathrm{mod}}H\to Y$
+				- $H$ … height of the slice we use
