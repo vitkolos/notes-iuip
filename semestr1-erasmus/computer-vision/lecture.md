@@ -136,9 +136,11 @@
 	- finite differences
 	- gradient operator: Sobel
 		- modern neural networks tend to learn this filter to process data :)
+		- approximates horizontal ($\frac{\partial I}{\partial x}$) and vertical ($\frac{\partial I}{\partial y}$) gradients
 	- scaling of the filtering kernel influences the detected contours
 	- another operator: Laplace
 	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
+		- reverse Mexican hat
 	- contour extraction (Canny)
 		- we only take one pixel with the highest value in the direction of the gradient
 - line detection – Hough transform
@@ -203,3 +205,36 @@
 	- no invariance to scale changes
 		- we consider circular regions of different sizes on a point
 		- but how to choose them?
+		- LoG, we can also use difference of Gaussians which is similar (but more efficient to compute)
+		- image pyramid
+- how to match detected points?
+	- we need descriptors – should be invariant and discriminant
+	- Harris: use eigen values? not so discriminant
+	- windowed approaches – not so invariant
+	- multi-scale oriented patches (MOPS)
+	- scale invariant feature transform (SIFT)
+	- matching repetitive patterns – possible approaches
+		- two-way matching (are we the best match for our best match?)
+		- for each match, we get a confidence score
+- matching – fast techniques
+
+## Deep Learning
+
+- non-linear trasformations
+- we compose simple functions and create complex functions
+- CNNs
+- https://chriswolfvision.medium.com/what-is-translation-equivariance-and-why-do-we-use-convolutions-to-get-it-6f18139d4c59
+- pooling
+- AlexNet
+- http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+- exercise in slides
+- methodology – in general
+	- state the problem you want to solve
+		- classification, regression, segmentation
+		- state input and output
+		- narrow down the application domain
+	- choose a “vanilla” architecture
+	- choose the losses
+	- evaluate properly (cross validation, train/validation sets)
+	- be aware of (and explore) the biases in the datasets
+	- push the boundaries
