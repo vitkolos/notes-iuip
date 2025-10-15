@@ -99,7 +99,7 @@
 			- we assume that there is a limited number of byzantine process and use majority vote
 - fault models for channels
 	- integrity
-		- “channels don't create messages & channels don't corrupt messages”
+		- “channels don't create messages & channels don't modify/corrupt messages”
 		- a link from $p$ to $q$ satisfies integrity if $q$ receives a message $m$ at most once, and only if it was previously sent by $p$
 		- note: $m$ can be lost
 	- fair link – satisfies integrity & if $p$ sends $m$ infinitely often, then $q$ receives $m$ infinitely often (the channel can lose an infinity of messages)
@@ -115,9 +115,13 @@
 	- we can implement stubborn links and then quasi-reliable links
 	- then, we want to add a FIFO property on top of that
 - implementation
-	- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it infinitely often
-		- does not satisfy integrity
+	- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it an infinite number of times
+		- does not satisfy integrity (creates messages)
 		- we just send all the previously sent messages repeatedly every $\Delta$ time units
+		- see [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-3-failure_detectors.pdf) for the implementation
+		- receive vs. deliver
+			- in our stack of abstractions, there are several layers: network, fair links, stubborn links, quasi-reliable links, process
+			- the layer receives a message and then decides to deliver it
 	- quasi-reliable link
 		- we keep a set of delivered messages
 		- but the set is always growing
@@ -129,6 +133,9 @@
 			- after some time, $q$ removes $m$ from the delivered set
 			- another instance of $m$ arrives to $q$
 			- $q$ recognizes $m$ as a new message
+		- in practice, we send a sequence number to let the other side know how many messages we already received
+			- it can be bundled with messages
+			- if there are no new messages in the channel, we may want to send the acknowledgement separately (with its own sequence number)
 	- FIFO quasi-reliable link
 		- properties
 			- satisfies integrity
@@ -136,3 +143,35 @@
 			- if $p$ sends $m'$ after $m$ and $p,q$ are correct, then $q$ receives $m'$ after $m$
 		- implementation proposal
 			- sender $p$ assigns a timestamp to every message, the messages are then ordered by the timestamp
+- synchronous system
+	- bound on message delay … $\Delta$
+		- the maximum time required to deliver a message
+	- bound on process speed … $x\beta$
+		- the fastest process needs $x$ time to do something $\implies$ the slowest process needs $x\beta$ time to do this
+	- $p_1$ asks $p_2$: “are you alive?”
+		- in an asynchronous system, there is no way to tell if the other process is alive
+		- in a synchronous system, $p_1$ can be sure that the response has to arrive at most after $2\Delta+x\beta$
+	- failure detector
+		- a magic box
+		- tells the process which other processes are alive
+		- two properties: completeness, accuracy
+		- by default
+			- can make mistakes
+			- can change its mind
+			- different FDs can have different opinions
+		- completeness
+			- strong – eventually every crashed process is suspected by every correct process
+			- weak – eventually every crashed process is suspected by some correct processes (at least one)
+		- accuracy
+			- strong – no process is suspected before it crashes
+			- weak – some correct processes are never suspected
+			- eventually strong – there is a time after which we get the strong accuracy
+			- eventually weak – there is a time after which we get the weak accuracy (some correct processes are not suspected)
+		- perfect failure detector – strong completeness, strong accuracy
+		- eventually perfect failure detector $(\Diamond P)$ – strong completeness + eventually strong accuracy
+		- strong failure detector $(S)$ – strong completeness + weak accuracy
+		- eventually strong failure detector $(\Diamond S)$ – strong completeness + eventually weak accuracy
+	- exam question: is this going to work if we have a strong failure detector?
+	- if we have a perfect failure detector, the system is almost synchronous
+	- the system can have short periods of instability´at some point
+		- then it is going to calm down – we want to be able to somehow reliably capture the result
