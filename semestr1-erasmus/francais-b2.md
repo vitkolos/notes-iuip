@@ -16,3 +16,5 @@
 	- l'humour
 	- la fidélité
 	- la générosité (être généreux)
+- prendre du poids
+- il faut que tu aies plus confiance en toi
