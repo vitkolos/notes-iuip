@@ -222,6 +222,7 @@
 - mentalist(ic) approach
 	- based on beliefs
 	- FIPA-ACL
+	- some strong assumptions/hypotheses
 - social approach
 	- based on commitment
 	- commitments are public
