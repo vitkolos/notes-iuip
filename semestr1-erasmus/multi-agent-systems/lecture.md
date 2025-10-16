@@ -172,3 +172,81 @@
 	- Axelrod's tournament
 - tragedy of the commons, free riders
 - humans are not always economically rational
+
+## Communication
+
+- Shannon
+- Berlo
+- types
+	- point to point × broadcast
+	- broker
+	- propagation in environment
+- meaning – intentional × incident
+- 7 steps
+	- speaker
+		- intention – what information is the speaker trying to communicate
+		- generation – generate the message
+		- synthesis – send the message (say it…)
+	- hearer
+		- perception – receive the signal
+		- analysis – infer possible meanings
+		- disambiguation – try to choose the most probable meaning
+		- incorporation – decide to believe the communicated information (or not)
+- communication problems
+	- technical – message does not arrive at all
+	- semantic – hearer does not understand the meaning
+	- efficiency – message does not have the intended effect (the hearer chooses not to believe it…)
+- misunderstading, potential meanings
+	- M1 … original intention (meaning)
+	- M2 … meaning that the hearer infers
+	- M3 … what the speaker believes that the hearer inferred
+- speech acts theory: Austin
+	- locutionary act – utterance
+	- illocutionary act – intent
+	- perlocutionary act – result
+- Searle – categories of illocutionary acts
+	- assertives
+	- commissives
+	- directives
+	- declaratives
+	- expressives
+- Vanderveken
+	- decomposition into illocutionary force and propositional content
+	- success and satisfaction conditions
+		- success if the hearer recognizes the intention
+		- satisfaction if the speaker's intention is achieved
+- we need to know the preconditions and the effects of each speech act
+	- we also need boolean conditions to see if a speech act is successful and/or satisfied
+- human languages are ambiguous
+	- agents use interaction languages
+- mentalist(ic) approach
+	- based on beliefs
+	- FIPA-ACL
+- social approach
+	- based on commitment
+	- commitments are public
+	- are there two contradictory commitments?
+- public approach – based on grounding
+- deontic approach – based on norms
+- interaction protocols
+	- shown on KQML
+		- direct (point to point)
+		- through a matchmaker
+		- through a broker
+		- through a feeder
+	- example: typical request protocol
+		- request → accept, refuse, or modify
+		- accept → inform-done or inform-failure
+		- modify → accept, refuse, or modfiy
+	- contract net
+		- “I need help for a task”
+		- 5 stages
+		- bidding, contracts
+	- dependence based coalition (DBC), social reasoning
+- programming communication
+	- keyword-based chatbots
+	- logical programming
+	- LLMs
+- planning speech acts in logical programming
+- simulating communication
+	- with neighbours vs. with acquiantances
