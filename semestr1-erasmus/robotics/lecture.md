@@ -220,3 +220,105 @@
 			- we have a geometrically feasible path
 			- we find the largest pink circle that does not collide with any obstacles on the path
 			- from the size of the pink circle, we compute the blue circle and “tile” the path using blue circles
+		- Reeds & Shepp optimal paths
+		- steering method – verifying the topological property
+		- holonomic path approximation
+		- we apply postprocessing to remove weird parts of the path
+		- graph-based nonholonomic planner
+			- we use PRM, but connect the points using the steering method
+		- can we change RRT to use it to plan paths for cars?
+			- yes, but the epsilon advancement has to be feasible – so we can use the steering method or choose from all the possible epsilon advancements the closest one to the sampled point
+
+## Obstacle Avoidance
+
+ - path planning
+	 - input
+		 - robot model (configuration space)
+		 - start, goal (configurations)
+		 - workspace model (obstacles, …)
+	- output – path
+- reactive navigation (curve in the C space connecting A and B)
+	- robot model
+	- local map (sensor data)
+	- nominal motion/goal
+- bug 1 (Lumelski 86)
+	- algorithm
+		- robot moves to goal until obstacle
+		- fully circumnavigate obstacle
+		- circumnavigate again to boundary closest to the goal
+		- repeat until goal is reached
+	- low memory requirements
+	- path can be very long
+	- converges to the goal
+- bug 2
+	- we use a line towards the goal
+	- convergency does not directly follow from the algorithm
+- VisBug
+- potential field
+	- handling local minima – random motion
+- vector field histogram
+	- occupancy probability (in a grid)
+- dynamic window
+	- translational and rotational velocities
+	- takes into account the acceleration capabilities of the robot
+- velocity obstacles
+	- takes into account moving obstacles
+- non linear velocity obstacles
+- end-to-end navigation
+	- we don't separate perception, localization, planning, and control
+	- instead, the robot learns a mapping between sensor data and actions
+	- supervised learning – ALVINN
+	- reinforcement learning
+		- policy learned through trial-and-error
+		- training in simulation
+		- dynamic programming, monte carlo, Q-learning, SARSA, DDPG, …
+	- LLM-based navigation
+		- GPT-driver
+	- how to combine end-to-end techniques with the more robust ones?
+		- safety filters?
+- wrap up
+	- motion planning
+		- global map, off-line, strategic resoning
+		- motion optimality
+		- convergence to the goal
+		- no reactivity
+	- reactive & end-to-end navigation
+		- local sensor map, on-line, tactical reasoning
+		- motion optimality?
+		- convergence to the goal?
+		- reactivity
+	- safety – concern
+
+## Safety
+
+- one of the main motivations for self-driving cars
+- “absolute” motion safety for self-driving cars
+	- we never collide with any obstacle
+- why collisions happen?
+	- hardware failures
+	- software bugs
+	- misunderstanding
+	- misreasoning
+- we'll focus on misreasoning in dynamic environments
+	- can motion safety be guaranteed?
+- in dynamic environments
+	- we reason about the future
+	- we are limited by the decision time
+	- appropriate time horizon – how far do we look in the future?
+- inevitable collision states (ICS)
+	- “I will be in collision in the future no matter what I do”
+	- we need to stay away from ICS
+	- obstacles are not independent!
+	- in general, we need an infinite time horizon
+- the time horizon and the decision time are determined by the environment
+	- if the time horizon is infinite, we cannot guarantee absolute motion safety
+- modeling the future (forbidden regions)
+	- deterministic – we know where the obstacles end up
+	- conservative – are not sure, so we let the forbidden regions grow
+		- problem: if they grow infinitely → no collision-free path in the future (with an infinite time horizon)
+	- probabilistic
+		- no obstacles in the far future
+- passive motion safety
+	- should a collision take place, the robot will be at rest
+	- now, we don't need an infinite time horizon
+	- everybody enforces it → no collision at all
