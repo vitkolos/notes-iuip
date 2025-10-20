@@ -198,3 +198,23 @@
 				- $H$ … height of the slice we use
 				- = composite visual mapping
 					- we split one data attribute into multiple graphic variables
+- composite visual mapping
+	- (at least) one data attribute is mapped onto (at least) two graphic variables
+- project
+	- during the holidays: https://mosig.imag.fr/ClassNotes/UIS-IV-D3
+		- after the holidays, we will get the dataset
+			- questions … what questions do we want to answer using the dataset?
+	- D3.js helps us manipulate the basic elements of the webpage
+	- goal of task 0 (Anscombe) – instead of the tables, we want charts
+		- see http://iihm.imag.fr/blanch/teaching/infovis/tps/0-anscombe/
+		- references here: http://iihm.imag.fr/blanch/teaching/infovis/tps/
+	- task 1 – penguins, Simpson's paradox
+	- we have to submit the two tasks before the next lecture (3 nov)
+- interaction
+	- ScatterDice – choosing axes for the graph
+	- Zoomable Treemaps
+		- treemap of the internet
+		- large collections are divided by initial numbers
+		- clicking zooms by one level
+		- but I can also draw a stroke → it zooms to the smallest node which contains the whole stroke
+		- sometimes, the animation is controlled by the interaction
