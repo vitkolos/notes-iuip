@@ -70,10 +70,31 @@
 		- $W_E$ (embedding matrix) has $|V|$ columns and $d_\mathrm{model}$ rows, is initialized randomly
 	- adding positional information
 	- MATL … multi-head attention layer
-		- $\mathrm{softmax}(\frac{K^TQ}{\sqrt{d_k}})\cdot V$
+		- attention … $\mathrm{softmax}(\frac{K^TQ}{\sqrt{d_k}})\cdot V$
 			- $K=W_kE$
 			- $Q = W_qE$
 			- $V=W_vE$
 		- attention helps to distinguish the meaning based on the context
 		- sometimes we need to use masking (in a decoder – otherwise, it could just read the next token from the target output)
 		- $\Delta E_i^{(\ell-1)}=W_o(\sum_{j=1}^i\sigma (K_j\cdot Q_i)V_j)$
+		- dimensions of the weight matrices ($W_k,W_q,W_v$) … 128 × 12 288
+			- 128 … size of the hidden space
+				- output vector of the attention mechanism has size 128
+			- we have 96 attention heads
+				- so just by concatenating the outputs, we get $128 \cdot 96 = 12\,288$
+		- to get the output of MATL, we just concatenate the outputs of individual heads and multiply it by $W_o$
+			- dimensions of $W_o$ are 12 288 × 12 288
+	- Norm … just normalize the matrices (subtract mean, divide by variance)
+	- parameter check
+		- embedding
+			- $W_E$ … 12 288 × 50 257
+			- $W_U$ … 12 288 × 50 257
+				- unembedding matrix, computes the distance to the individual words (then we select the closest one)
+		- attention
+			- $W_q$ … 128 × 12 288 × 96 heads × 96 layers
+				- same for $W_k,W_v$
+			- $W_o$ … 12 288 × 12 288 × 96 layers
+		- MLP
+			- 115 (?) bilion parameters
+	- MLP – projection to a vector space with 4 times more dimensions (and back)
+		- ReLU activation
