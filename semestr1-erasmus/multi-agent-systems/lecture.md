@@ -306,3 +306,9 @@
 	- trust, moral values, ethics
 	- cognitive biases
 	- motivation, engagement
+	- …
+- we need to simulate emotions
+	- BDI logical model of emotions
+	- book: The Cognitive Structure of Emotions
+	- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
+- biases – confirmation bias, …
