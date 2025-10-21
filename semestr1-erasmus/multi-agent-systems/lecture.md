@@ -251,3 +251,58 @@
 - planning speech acts in logical programming
 - simulating communication
 	- with neighbours vs. with acquiantances
+
+## Modelling
+
+- agent-based modelling and simulation
+	- model – simplified abstraction of reality
+	- macro patterns emerge from individual decisions
+- 7 goals of simulation (Axelrod)
+	- prediction – e.g. weather
+	- task performance – we want to mimic a human performing the task
+	- training – e.g. flight simulator
+	- entertainment – imaginary virtual world, for amusement
+	- education – users can learn what happens if they do *this* or *that* in the simulation
+	- proof – prove existence/conjecture
+	- discovery – discover new knowledge
+- social simulation
+	- model should be valid (faithful to reality)
+- questions to ask before building a model
+- simulator – inputs, outputs, what we show
+- NetLogo, GAMA
+- Game of Life
+- Schelling's segregation model
+- traffic simulation
+- urban planning
+	- acteur project, multi-level decision-making
+		- strategical – establish list of destinations and try to reach them
+		- tactical – adjust plans to implement strategy
+			- ordinary situation – adjust to traffic, choose best trajectory, less populated roads, …
+			- extraordinary situation – escaper (flee danger), bystander, random wanderer, road runner (less congested), sheep (follow crowd), …
+		- operational
+	- HIANIC project
+		- shared space (cars, pedestrians, bikes)
+		- autonomous car navigation
+	- Switch project
+		- car → bike?
+		- 4 mobility modes (walk, bike, bus, car)
+		- 6 criteria (comfort, ecology, price, simplicity, safety, time)
+			- every agent has priorities
+		- decision model with habits
+			- with some probability, we rationally reevaluate (if the context has changed – price of gas went up…)
+			- otherwise, we stick to our habit
+- evacuation modelling, crisis management
+	- evacuation – zigzag stairs may be better
+	- flood risk management, communication
+	- epidemics
+	- earthquake
+		- Solace – testing the role of social attachment
+	- you need realistic cognitive agents
+		- take human factors into account
+- not all models require the same level of realism
+	- entertainment models do not have to be that much realistic
+- human factors
+	- emotions, empathy, mood, personality
+	- trust, moral values, ethics
+	- cognitive biases
+	- motivation, engagement
