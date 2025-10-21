@@ -238,3 +238,40 @@
 	- evaluate properly (cross validation, train/validation sets)
 	- be aware of (and explore) the biases in the datasets
 	- push the boundaries
+- paper session
+	- plenoptic function, early vision
+		- systematic framework capturing visual information
+		- plenoptic function – 3D movie, wavelength
+			- output – intensity
+		- extraction of information … derivatives
+		- “periodic table”
+		- “blobs” – convolutional filters for extracting information
+	- focused plenoptic camera
+	- depth estimation
+		- we want
+			- simultaneous detection and depth estimation
+			- local method to detect rays
+			- method invariant to object size and depth
+			- …
+		- ray gaussian kernel
+		- lisad
+			- operator activation
+		- ray $\neq$ light
+			- we stack pictures taken from different angles
+			- on the cut, there are “rays” → we can get depth (thanks to parallax)
+				- if we move, the objects in the foreground shift
+				- the objects in the background not that much
+		- baseline
+	- spray-on optics
+		- drop extraction and simulation
+			- + remove distortion
+		- match the images
+		- what is the final resolution?
+		- manual droplet segmentation
+		- better image quality with more droplets
+	- takeaways
+		- coach: suggest improvements
+		- advocate: don't be too generic
+		- using videos
+		- how to get real data? ground truth?
+			- usually, we need both synthetic and real data
