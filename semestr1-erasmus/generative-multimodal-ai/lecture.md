@@ -98,3 +98,32 @@
 			- 115 (?) bilion parameters
 	- MLP – projection to a vector space with 4 times more dimensions (and back)
 		- ReLU activation
+- recent technical revolutions
+	- RevNet – very deep networks
+	- Transformers – adapted to next token prediction
+	- Adam – suitable for transformer optimization
+- residual NN (ResNet)
+	- $x(0)=x$
+	- $x(k+1)=x(k)+w(k)\cdot\sigma(a(k)\cdot x(k)+b(k))$
+		- $0\leq k\leq L-1$
+		- for $L\to\infty$, ResNet becomes $\dot x(t)=w(t)\cdot\sigma(a(t)\cdot x(t)+b(t))$
+			- derivative behavior
+- NNs for text generation are trained to minimize the distance of the generated text from the target
+- transformer and attention mechanism
+	- replaces previous mechanisms (like convolution) with attention
+	- first approach, similar to ResNet
+		- $\forall i\leq n:\dot x_i(t)=\frac 1Z \sum_{j=1}^n e^{\beta\braket{Q(t)x_i(t),K(t)x_j(t)}}\cdot V(t)x_j(t)$
+		- params
+			- matrices $Q,K,V$
+			- scalar $\beta$ (hyperparameter?)
+- theorem
+	- for “simple functions”, there exists an assignment that achieves $(1+\varepsilon)$-optimum and the form of the assignment is $x_i(t)\sim e^{\text{something}}$
+		- *something* has a $\frac 1\varepsilon$ factor
+- assume there is no causality in the order of tokens, then
+	- $x(t+1)=\sum_s \delta_s$
+	- where $\delta_s=1$ if $s$ is next token, otherwise 0
+- better … $x(t+1)=\mu$ (prob. distribution over all tokens in the dictionary)
+- theorem
+	- if non-causality and $t\to+\infty$, then
+		- $\mu\to\delta_s$ (Dirac function)
+		- $\|\mu(t)-\delta_{s^+}\|\leq\frac{O(1)}{f(t)}$
