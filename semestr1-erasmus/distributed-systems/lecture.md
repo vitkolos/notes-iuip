@@ -167,11 +167,66 @@
 			- weak – some correct processes are never suspected
 			- eventually strong – there is a time after which we get the strong accuracy
 			- eventually weak – there is a time after which we get the weak accuracy (some correct processes are not suspected)
-		- perfect failure detector – strong completeness, strong accuracy
+		- perfect failure detector $(P)$ – strong completeness, strong accuracy
 		- eventually perfect failure detector $(\Diamond P)$ – strong completeness + eventually strong accuracy
 		- strong failure detector $(S)$ – strong completeness + weak accuracy
 		- eventually strong failure detector $(\Diamond S)$ – strong completeness + eventually weak accuracy
 	- exam question: is this going to work if we have a strong failure detector?
 	- if we have a perfect failure detector, the system is almost synchronous
-	- the system can have short periods of instability´at some point
+	- the system can have short periods of instability at some point
 		- then it is going to calm down – we want to be able to somehow reliably capture the result
+
+## Reliable Broadcast
+
+- properties
+	- safety – nothing bad will ever happen
+	- liveness – something good will eventually happen
+- we assume crash-stop failure model for processes and quasi-reliable channels
+- best-effort broadcast
+	- integrity – each process delivers message $m$ at most once and only if it was broadcasted by some process
+		- safety property
+	- validity – if a correct process broadcasts a message $m$, then every correct process eventually delivers $m$
+		- liveness property
+	- implementation straightforward using quasi-reliable channels
+	- performance metrics
+		- number of communication steps required to terminate one operation – one
+		- number of messages exchanged during one operation – $O(N)$, where $N$ is the number of processes
+	- problem: if a sender crashes, some processes might not get the message
+- (regular) reliable broadcast
+	- properties: integrity & validity & agreement
+	- agreement – if a message $m$ is delivered by some correct process, then $m$ is eventually delivered by every correct process
+		- liveness property
+	- implementation uses best-effort broadcast and perfect failure detector
+	- two rules
+		- if a process delivers $m$, whose sender has crashed, it broadcasts $m$ again
+		- when $p$ becomes aware that $q$ has crashed, $p$ broadcasts all $q$'s messages that $p$ has already delivered
+	- performance
+		- best case: one communication step, $O(N)$ messages
+		- worst case: $N$ communication steps, $O(N^2)$ messages
+	- exercise
+		- if we used a failure detector satisfying only weak accuracy, the performance would be worse
+		- with only weak completeness, agreement is not ensured (I suppose)
+		- if we don't wanna rely on the failure detector, we can just broadcast every received (broadcasted) message
+	- problematic scenario
+		- $m$ is delivered by a process and then it crashes (the sender crashes too)
+		- other correct processes don't get $m$
+- uniform reliable broadcast
+	- properties: integrity & validity & uniform agreement
+	- uniform agreement – if a message m is delivered by some process (whether correct or not), then m is eventually delivered by every correct process
+	- implementation in [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-4-bcast.pdf#page=5)
+	- the proposed solution is called All-ack Uniform Reliable Broadcast
+	- idea – process can deliver a message only when it has received a copy of that message from all correct processes 
+		- so every process broadcasts $m$ after receiving it for the first time
+		- process also updates its list of correct processes
+		- $p$ checks whether $m$ can be delivered every time 1) $p$ it receives $m$, 2) a process crashes
+	- performance
+		- best case: two communication steps
+			1. sender broadcasts … $N$ messages
+			2. everyone else broadcasts … $(N-1)\times N$ messages
+		- worst case: $N+1$ steps required to terminate (if processes crash in sequence)
+		- $N^2$ messages sent
+- FIFO reliable broadcast
+	- properties: integrity & validity & agreement & FIFO delivery
+	- FIFO delivery – if some process broadcasts message $m_1$ before it broadcasts message $m_2$, then no correct process delivers $m_2$ unless it has already delivered $m_1$
+	- solution – piggybacking sequence numbers
+		- so we just sort the messages (delay some of them)
