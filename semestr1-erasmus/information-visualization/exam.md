@@ -1,0 +1,112 @@
+# Exam
+
+- InfoVis × SciVis × DataVis
+	- InfoVis – use of computer-supported, interactive visual representations of data to amplify cognition
+	- SciVis – datasets have a given spatialisation
+	- DataVis – web-based, communication
+	- challenges: diversity, scale
+- visual information-seeking mantra
+	- overview first
+	- zoom and filter
+	- details on demand
+- visual perception is a two stage process
+	- parallel extraction of low-level properties … retina
+	- sequential goal-directed processing … brain
+- Gestalt psychology
+	- one stimulus, two perceptions
+	- there is a difference between stimulus and perception
+	- emergence – we need to see the whole picture, not just parts
+	- reification – perception contains more spatial information than the stimulus
+	- multistability – ambiguous stimuli can generate different perceptions but they cannot coexist simultaneously
+	- invariance – objects are recognized independently of various variations (transformations, lightning, …)
+	- laws of grouping – law level perceptions are grouped into higher-level objects
+		- good Gestalt
+- information visualization pipeline
+	- source data → data tables
+		- data transformations
+	- data tables → visual abstraction
+		- visual mappings
+		- transition from data form to visual form
+		- we use data attributes to create (visual) marks
+	- visual abstraction → views
+		- view transformations
+		- result … actual pixels
+- taxonomies of data types
+	- “what comparisons can I make?”
+	- “how can I aggregate the data?”
+	- nominal … only equality (=)
+		- aggregation … mode (we show the most frequent one) or top-k
+			- if we have a taxonomy (hierarchy), we can group the data
+	- ordered … ordering and equality (<, =)
+		- aggregation … median, quantiles, histogram (count per bucket)
+	- quantitative … “how much smaller is it?”
+		- → intervals … $v-v'$
+		- → ratios … $v/v'$
+			- only if there is a meaningful zero on the scale
+		- aggregation … mean, std dev, skew
+- properties of visual channels
+	- association $(\equiv)$
+		- does the visual channel play well with the other visual channels?
+		- size does not provide association – the other visual variables are more difficult to see for smaller sizes
+	- selection $(\neq)$
+		- can you focus on a specific subset in this visual channel?
+		- color provides selection
+	- order $(O)$
+		- items can be ordered according to this variable, without relying on a lookup to a legend
+	- quantity $(Q)$
+		- the difference between two items can be quantified
+- channels (according to Bertin)
+	- position $(\equiv,\neq,O,Q)$
+	- size $(\neq,O,Q)$
+		- beware: for quantity judgement, our perception is biased
+			- Stevens' Law: $\frac{p(x_1)}{p(x_0)}=\left(\frac{x_1}{x_0}\right)^\beta$
+			- $p$ … perception
+			- $\beta$ is different for length, area, and volume
+			- in 2D, we underestimate large sizes (in 3D it's even worse)
+		- note on depth
+			- depth is perceived mainly because it impacts size
+			- using the third dimension introduces ambiguity: is it small or is it far away?
+			- but we can keep all the objects the same size and only apply motion parallax & skew instead of perspective
+	- value $(\neq,O)$
+		- lightness of color
+		- light marks are harder to see
+	- texture $(\equiv,\neq,O)$
+		- usually black and white (dark and light color) – we can mix it with color channel
+		- probably underused
+	- color $(\equiv,\neq)$
+		- we don't perceive the axis of wavelengths
+		- colors are usually used as labels
+	- orientation $(\equiv,\neq)$
+		- only for some shapes (not circles)
+	- shape $(\equiv)$
+		- does not provide selection → it's better to use color for grouping
+- Mackinlay: suitability of variables, possible combinations
+	- distinguishes more visual channels
+	- ordered lists – the best channels on top
+	- systematic approach to choosing visual channels
+	- position is the best visual channel
+- Card & Mackinlay table
+	- Variable – name of the variable
+	- D (data type)
+		- N (nominal)
+		- O (ordinal)
+		- Q (quantitative)
+		- QX, QY (quantitative and intrinsically spatial)
+		- QXlon, QYlat (geographical)
+	- X, Y, Z, T (position in space and time)
+		- P (point)
+		- L (line)
+		- A (area)
+	- R (retinal encoding)
+		- C (color)
+		- S (size)
+	- — (connection)
+	- \[] (enclosure)
+	- CP (control processing)
+		- text
+- interesting visualizations
+	- multi-dimensional data
+		- scatter plot matrix
+		- parallel coordinates
+	- time series
+		- horizon graph – example of composite visual mapping (one attribute → multiple graphic variables)

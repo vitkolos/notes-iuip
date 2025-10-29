@@ -114,7 +114,7 @@
 	- ordered lists – the best channels on top
 	- systematic approach to choosing visual channels
 - position is the best visual channel
-- example: gaminder
+- example: gapminder
 	- attribute, data type (N/O/Q), X Y Z T R, CP
 	- life expectancy Q, Y→P (0D)
 	- income per capita Q, X→P
