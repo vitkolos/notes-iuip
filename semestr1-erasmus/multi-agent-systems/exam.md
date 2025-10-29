@@ -1,29 +1,17 @@
-# Lecture
+# Exam
 
-- challenges in AI (or computer science in general): scale, autonomy, delegation, cooperation
-- MAS … field of AI interested in designing systems of autonomous interacting entities
-- course overview
-	- general introduction
-	- agent interactions: communication, game theory
-	- distributed problem solving
-	- agent-based modelling and simulation (course, case study, tutorials)
-	- human factors in MAS
-	- collective decisions in MAS: theory of social choice
-- agent … perceiving and acting
-- autonomy (but autonomous agent still could decide randomly)
-- rational agent
-- another definition: agent
+## Introduction
+
+- agent
 	- physical or virtual entity, has its own resources, possibly a representation of its environment
 	- acts autonomously to satisfy some tendencies (goals) … proactive
 	- while taking into account its limited resources, perceptions etc. … reactive
-- physical vs. communicative actions
 - agent architectures
 	- simple reactive agent
 	- agent with an internal state
 	- goal-based agent
 	- utility-based agent
 		- in case of conflicting goals or uncertain effects
-- performance vs. utility
 - properties of environments
 	- accessibility
 		- are all the relevant aspects of the environment instantly available to the agent? → we don't need to maintain an internal state
@@ -39,43 +27,52 @@
 		- static environment does not change during deliberation, time does not matter
 	- discrete vs. continuous
 		- discrete environment – limited number of distinct, clearly defined percepts and actions
-- examples
-	- chess: accessible, deterministic, sequential, static or semi-dynamic (with a clock), discrete
-	- poker: inaccessible, indeterministic, sequential
-	- taxi driving: inaccessible, indeterministic, sequential, dynamic, continuous
-- finding a balance between reactivity and proactivity (so that we don't get distracted)
-- applications
+	- examples
+		- chess: accessible, deterministic, sequential, static or semi-dynamic (with a clock), discrete
+		- poker: inaccessible, indeterministic, sequential
+		- taxi driving: inaccessible, indeterministic, sequential, dynamic, continuous
+- MAS applications
 	- distributed problem solving
 	- agent-based modelling and simulation
-- Gama, Netlogo
+
+## Agent Architectures
+
 - reactive agent vs. cognitive agent
 	- cognitive agent can reason about the environment
 	- reactive agent can only move randomly and perform some reactive actions
 - practical reasoning
 	- action-oriented reasoning = process of deciding what to do (not what to believe or what is true)
 	- human practical reasoning
-		- deliberation – what state of affairs I want to achieve?
-		- means-end reasoning – how do I get there?
+		- deliberation – what state of affairs I want to achieve? (output = intentions)
+		- means-end reasoning – how do I get there? (output = plans)
+	- philosophical foundation: Bratman's theory of practical reasoning
 	- intentions in practical reasoning
 		- effort and resources put into achieving intention
 		- no conflict: intentions serve as a filter for adopting new intentions
 		- success tracking + persistance after failure
 		- possible – intentions are believed to be possible
 		- feasibility – not believed to never be reached
-		- …
-	- Bratman's theory
+		- under some circumstances, agents believe they will reach their intention
+		- agents need not intend all the expected side effects of their intentions
 - BDI architecture
 	- beliefs
 		- representation of the world
 		- possible incorrect and incomplete
+		- but consistent/rational
 	- desires
-		- our goal
+		- our goal (ideal states)
 	- intentions
 		- how to achieve the goal
 		- intentions lead to actions
 		- in a dynamic environment, we need to reconsider the intentions
-			- we need to find a balance, we cannot be to indecisive
-			- intention reconsideration – 3 commitment strategies
+			- constraints: resources, time (in real-time envornments)
+			- two extreme strategies
+				- never reconsider
+				- reconsider constantly
+			- strategies
+				- blind commitment – only reconsider after success / total fail (all plans have failed)
+				- single-minded commitment – also reconsider when intention becomes impossible
+				- open-minded commitment – explicit meta-level controller that decides if intentions should be reconsidered
 	- BDI goal-plan diagram (tree)
 		- list of all plans we can use to achieve the goal
 		- each plan consists of several atomic actions
@@ -125,6 +122,10 @@
 	- reactive and deliberative layers
 		- obstacle avoidance can be reactive
 	- how to handle interaction between layers?
+		- horizontal layers – each layer produces output, they are merged
+		- vertical layers – layers pass inputs in one direction and outputs in the other
+	- Ferguson – TouringMachines
+		- three control layers: reactive, planning, modelling
 
 ## Game Theory
 
@@ -154,13 +155,14 @@
 - representation
 	- extensive form – decision tree
 	- strategic form – matrix
-- pure or mixed strategy
-- equilibria
-	- Nash equilibrium
-	- Bayesian equilibrium
-- dominant strategy
-- Pareto optimality
-- social vs. individual benefit
+- notions
+	- pure or mixed strategy
+	- equilibria
+		- Nash equilibrium – no agent can improve his payoff by changing his own strategy
+		- Bayesian equilibrium – extension of NE to incomplete information games
+	- dominant strategy – $s_1$ dominates $s_2$ if $s_1$ always leads to a better utility (regardles of the other players' strategies)
+	- Pareto optimality – outcome cannot be improved without hurting at least one player
+	- social vs. individual benefit
 - prisoners' dilemma
 	- happens in every situation where $T\gt R\gt P\gt S$
 	- $T$ … temptation (successful betrayal)
@@ -170,18 +172,32 @@
 - how can we establish cooperation in multi-agent systems?
 	- iterated prisoners' dilemma
 	- Axelrod's tournament
+		- winner – tit for tat
 - tragedy of the commons, free riders
+	- shared resources
+	- benefits are individual, costs are shared
 - humans are not always economically rational
 
 ## Communication
 
-- Shannon
-- Berlo
+- Shannon's model
+	- source
+	- transmitter
+	- channel
+	- receiver
+	- destination
+- Berlo's model
+	- sender
+	- message
+	- channel
+	- receiver
 - types
 	- point to point × broadcast
 	- broker
 	- propagation in environment
-- meaning – intentional × incident
+- message meaning
+	- intentional – sender intends the meaning of the message
+	- incident – receiver interprets (gives a meaning to the message)
 - 7 steps
 	- speaker
 		- intention – what information is the speaker trying to communicate
@@ -204,41 +220,44 @@
 	- locutionary act – utterance
 	- illocutionary act – intent
 	- perlocutionary act – result
-- Searle – categories of illocutionary acts
-	- assertives
-	- commissives
-	- directives
-	- declaratives
-	- expressives
+- Searle: categories of illocutionary acts
+	- assertives – commit the speaker to the truth of the proposition
+	- commissives – commit the speaker to a future action
+	- directives – cause the hearer to take an action
+	- declaratives – change the reality in accord with the content of the declaration
+	- expressives – express the speaker's attitudes/emotions
 - Vanderveken
-	- decomposition into illocutionary force and propositional content
+	- decomposition into illocutionary force (F) and propositional content (P)
+		- F … general intent (inform, ask-to-do, request, answer, …)
+		- P … specific content
 	- success and satisfaction conditions
 		- success if the hearer recognizes the intention
 		- satisfaction if the speaker's intention is achieved
 - we need to know the preconditions and the effects of each speech act
 	- we also need boolean conditions to see if a speech act is successful and/or satisfied
-- human languages are ambiguous
-	- agents use interaction languages
-- mentalist(ic) approach
-	- based on beliefs
-	- FIPA-ACL
-	- some strong assumptions/hypotheses
-- social approach
-	- based on commitment
-	- commitments are public
-	- are there two contradictory commitments?
-- public approach – based on grounding
-- deontic approach – based on norms
+- agent communication languages
+	- human languages are ambiguous → agents use interaction languages
+	- approaches
+		- mentalist(ic) approach
+			- based on beliefs
+			- FIPA-ACL
+			- some strong assumptions/hypotheses – agents are sincere and willing to cooperate
+		- social approach
+			- based on commitment
+			- commitments are public
+			- are there two contradictory commitments?
+		- public approach – based on grounding
+		- deontic approach – based on norms
 - interaction protocols
 	- shown on KQML
 		- direct (point to point)
 		- through a matchmaker
 		- through a broker
 		- through a feeder
-	- example: typical request protocol
+	- example: typical request protocol (agents are taking turns)
 		- request → accept, refuse, or modify
 		- accept → inform-done or inform-failure
-		- modify → accept, refuse, or modfiy
+		- modify → accept, refuse, or modify
 	- contract net
 		- “I need help for a task”
 		- 5 stages
@@ -248,9 +267,8 @@
 	- keyword-based chatbots
 	- logical programming
 	- LLMs
-- planning speech acts in logical programming
 - simulating communication
-	- with neighbours vs. with acquiantances
+	- with neighbours vs. with acquaintances
 
 ## Modelling
 
@@ -267,48 +285,64 @@
 	- discovery – discover new knowledge
 - social simulation
 	- model should be valid (faithful to reality)
-- questions to ask before building a model
-- simulator – inputs, outputs, what we show
-- NetLogo, GAMA
-- Game of Life
-- Schelling's segregation model
-- traffic simulation
-- urban planning
-	- acteur project, multi-level decision-making
-		- strategical – establish list of destinations and try to reach them
-		- tactical – adjust plans to implement strategy
-			- ordinary situation – adjust to traffic, choose best trajectory, less populated roads, …
-			- extraordinary situation – escaper (flee danger), bystander, random wanderer, road runner (less congested), sheep (follow crowd), …
-		- operational
-	- HIANIC project
-		- shared space (cars, pedestrians, bikes)
-		- autonomous car navigation
-	- Switch project
-		- car → bike?
-		- 4 mobility modes (walk, bike, bus, car)
-		- 6 criteria (comfort, ecology, price, simplicity, safety, time)
-			- every agent has priorities
-		- decision model with habits
-			- with some probability, we rationally reevaluate (if the context has changed – price of gas went up…)
-			- otherwise, we stick to our habit
-- evacuation modelling, crisis management
-	- evacuation – zigzag stairs may be better
-	- flood risk management, communication
-	- epidemics
-	- earthquake
-		- Solace – testing the role of social attachment
-	- you need realistic cognitive agents
-		- take human factors into account
-- not all models require the same level of realism
-	- entertainment models do not have to be that much realistic
+- how to build a model
+	- preparation
+		- define research question
+		- formulate hypothesis
+		- define (input) parameters and output indicators
+		- find relevant literature/insights describing the modelled behaviour
+		- define rules of the system
+		- formulate what is important (and what is not) – start simple
+	- who are the agents? what is the environment?
+	- simulator
+		- inputs
+		- outputs
+		- what we show?
+	- implementation
+		- NetLogo, GAMA
+- examples
+	- boid simulation in movies
+	- Game of Life
+	- Schelling's segregation model
+	- crowd simulation
+	- traffic simulation
+	- urban planning
+		- Acteur project, multi-level decision-making
+			- strategical – establish list of destinations and try to reach them
+			- tactical – adjust plans to implement strategy
+				- ordinary situation – adjust to traffic, choose best trajectory, less populated roads, …
+				- extraordinary situation – escaper (flee danger), bystander, random wanderer, road runner (less congested), sheep (follow crowd), …
+			- operational
+		- HIANIC project
+			- shared space (cars, pedestrians, bikes)
+			- autonomous car navigation
+		- Switch project
+			- car → bike?
+			- 4 mobility modes (walk, bike, bus, car)
+			- 6 criteria (comfort, ecology, price, simplicity, safety, time)
+				- every agent has priorities
+			- decision model with habits
+				- with some probability, we rationally reevaluate (if the context has changed – price of gas went up…)
+				- otherwise, we stick to our habit
+	- evacuation modelling, crisis management
+		- evacuation – zigzag stairs may be better
+		- flood risk management, communication
+		- epidemics
+		- earthquake
+			- Solace – testing the role of social attachment
+		- you need realistic cognitive agents
+			- take human factors into account
+	- not all models require the same level of realism
+		- entertainment models do not have to be that much realistic
 - human factors
 	- emotions, empathy, mood, personality
 	- trust, moral values, ethics
 	- cognitive biases
 	- motivation, engagement
-	- …
-- we need to simulate emotions
-	- BDI logical model of emotions
-	- book: The Cognitive Structure of Emotions
-	- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
-- biases – confirmation bias, …
+	- memory, attention, distraction, tiredness, focus, stress
+	- social links, attachment, altruism, cohesion
+	- we need to simulate emotions
+		- BDI logical model of emotions
+		- book: The Cognitive Structure of Emotions
+		- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
+	- biases – confirmation bias, …

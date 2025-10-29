@@ -23,6 +23,12 @@
 		- precision
 		- generality – the algorithm should be generic; the pool of situations that it can handle should be large enough
 - main vision problems
+	- calibration – where is the camera, which model, …
+	- segmentation – which parts of the image belong together
+	- detection – what is interesting/salient in the image
+	- reconstruction – where are the objects (position, shape, 3D surface)
+	- tracking – which motion is present in the image, how do objects move
+	- recognition – what do we see, semantics
 - image
 	- 2D signal, depicts a 3D scene
 	- matrix of values that represent a signal
@@ -43,6 +49,9 @@
 		- transmission and emission (human skin)
 	- most surfaces can be approximated by simple models
 	- first simplified hypothesis
+		- no fluorescent surfaces
+		- “cold” objects (they don't emit light)
+		- all light emitted from a surface point is formed solely by the light arriving there
 	- standard model: BRDF
 		- bi-directional reflectance distribution function
 		- models the ratio of energy for each wavelength $\lambda$
@@ -77,6 +86,7 @@
 	- CCD sensor, CMOS sensor
 	- rolling shutter
 		- lines of the sensor are discharged sequentially → moving objects can be distorted
+		- usually in cheap CMOS
 	- color spaces
 		- RGB … additive
 		- CMY … subtractive
@@ -97,7 +107,7 @@
 	- sensor artifacts
 		- noise: salt and pepper, thermic noise (as the camera heats up)
 		- aliasing
-	- gamma correction
+	- gamma correction – adjusting brightness to match human perception
 	- JPEG compression artifacts
 	- color models
 		- RGB – additive model, mixing wavelengths
@@ -113,8 +123,8 @@
 
 - characterization of an image
 - contours, regions (between the contours) – duality
-- how to distinguish between information and noise
 - noise filtering
+	- “how to distinguish between information and noise”
 	- most simple and adopted model: Gaussian noise
 	- convolution with a low-band Gaussian filter
 		- theorem: derivative of convolution = convolution of derivative
@@ -224,7 +234,8 @@
 - we compose simple functions and create complex functions
 - CNNs
 - https://chriswolfvision.medium.com/what-is-translation-equivariance-and-why-do-we-use-convolutions-to-get-it-6f18139d4c59
-- pooling
+- pooling to enforce invariances
+	- we want translation equivariance (detect the object wherever it is on the image)
 - AlexNet
 - http://www.incompleteideas.net/IncIdeas/BitterLesson.html
 - exercise in slides
