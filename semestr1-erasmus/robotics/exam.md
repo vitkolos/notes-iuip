@@ -1,0 +1,276 @@
+# Exam
+
+## Motion Planning, Navigation
+
+- motion planning
+	- global map, off-line, strategic resoning
+	- motion optimality
+	- convergence to the goal
+	- no reactivity
+- reactive & end-to-end navigation
+	- local sensor map, on-line, tactical reasoning
+	- motion optimality?
+	- convergence to the goal?
+	- reactivity
+
+### Workspace, Configuration Space
+
+- motion planning
+	- feasible plan = takes the capabilities of the robot into account
+	- motion strategies can have different forms – it can be a path, a set of procedural instructions
+	- for a walking humanoid robot, the plan would be quite complex
+- motion planning vs. navigation (obstacle avoidance etc.)
+	- motion planning – global map, strategic level
+	- obstacle avoidance – local map, tactical level
+- workspace
+	- physical space where the robot lives, usually $\mathbb R^2$ or $\mathbb R^3$
+	- obstacles, free space
+	- types of models
+		- continuous metric model
+			- polygons – their vertices
+			- memory complexity proportional to the number of obstacles
+		- discrete metric model
+			- pixels: free, fully occupied, partially occupied
+			- memory complexity proportional to the size of workspace and the resolution
+		- topological model
+			- nodes and edges
+			- we don't care about the geometry – we only capture places and ways to move from one to another
+			- the robot needs to be able to localize itself (what is the current “place”) and to get from one place to another according to the edges in the graph
+		- hybrid
+	- selection criteria: sensors available, precision required, complexity (memory requirements)
+- two classes of kinematic constraints
+	- holonomic – restrict the set of possible position (like obstacles)
+		- examples
+			- limitations of the robotic arm due to its joints etc.
+			- robotic hand with glass of water has to be upright – we limit the hand to some angles
+		- to account for the constraints, we only add some virtual obstacles
+	- nonholonomic – restrict the set of possible differential motions
+		- example: a wheel rolling without slipping on the plane (you should move in a direction perpendicular to the axis of the wheel)
+- **configuration**
+	- fundamental tool to address motion planning
+	- *set of independent parameters uniquely specifying the position and orientation of every component of a robotic system relative to a fixed coordinate system*
+	- usually expressed as a vector of positions/orientations
+	- configuration space = space of all the configuration
+	- example: polygonal robot which can only translate (no rotation)
+		- we pick a reference point $R$
+		- $q=(q_x,q_y)$ … configuration (coordinates of $R$)
+		- $C=\mathbb R^2$ … configuration space
+		- $W=\mathbb R^2$ … workspace
+	- example: robot which can also rotate
+		- $q=(q_x,q_y,\theta)$
+		- $C=\mathbb R^2\times S^1$
+			- $S^1$ … $[0,2\pi[$ (to some extent)
+				- we could also use $[-\pi,\pi[$ or something similar
+	- example: free-flying robot in 3D
+		- $q=(q_x,q_y,q_z,\theta_\alpha,\theta_\beta,\theta_\gamma)$
+		- Euler angles (roll, pitch, yaw)
+	- example: robotic arm with two joints
+		- $q=(\theta_1,\theta_2)$
+		- $C=S^2$
+	- example: mobile robot (car) with an arm with two joints
+		- $q=(x,y,\theta,\theta_1,\theta_2)$
+- configuration space vs. workspace
+	- example: robotic arm with two joints
+		- base of the robot can be put anywhere → workspace … $\mathbb R^2$
+		- $C=S^2$ is bounded
+		- $S^2$ topology = sphere
+		- but we cannot uniquely convert the top of the sphere to two angles → we need to use a torus
+		- $C=S^1\times S^1$
+	- what is the shortest path between two configurations in $S^1\times S^1$?
+		- in Cartesian space, it would be easy
+		- we need a metric
+- configuration space path
+	- path $\pi:[0,1]\to C$ … continuous sequence of configurations
+	- trajectory … time-parametrized path
+- configuration types
+	- free, collision, contact
+	- contact configurations are interesting if you want to pick up something with a robotic arm
+	- image of an obstacle in a $C$ space becomes much more complicated
+		- we need to capture the structure of the workspace, compute forbidden regions
+	- in the workspace, the robot is a body × in the configuration space, the robot is a point
+
+### Path Planning
+
+ - path planning
+	 - input
+		 - robot model (configuration space)
+		 - start, goal (configurations)
+		 - workspace model (obstacles, …)
+	- output – path
+- completeness issue
+	- complete algorithm: finds a solution if one exists, reports failure if not
+	- complexity of complete path planning: strong evidence that it takes time exponential in $d$, the dimension of the configuration space $C$
+	- specific complete path planning algorithms have been implemented for $d=$ 2, 3, or 4
+	- two complete general purpose path planning algorithms have been proposed, none has been implemented
+- algorithms
+	- complete … finds a solution
+	- heuristic … finds a solution in most cases
+	- probabilistic completeness … probability of finding a solution approaches 1 if given enough time
+	- resolution completeness … complete for a given resolution level
+- usual methods
+	- exploring a search graph
+	- incrementally building a search tree
+
+#### Graph-Based Methods
+
+- visibility graph
+	- topology of (semifree) C space is described using a network of 1D curves
+	- we connect start and goal to the network, then use graph search
+	- finds shortest path in 2D space (but not in 3D space)
+- Voronoï diagram
+	- paths maximizing the clearance to the obstacles
+	- mostly in 2D spaces
+- cellular decomposition
+	- trapezoidal decomposition
+		- how to move from one cell to another? we could use the centroids of the shared sides
+		- cannot be used if we don't have polygonal obstacles
+			- typical problem if the C space is torus
+	- approximate cellular decomposition
+		- discretize the C space
+		- remove the occupied and partially occupied cells
+		- problems: narrow passage
+	- hierarchical cellular decomposition
+		- highly depends on the dimensionality of the C space – the memory requirements grow exponentially
+- probabilistic roadmap
+	- it's difficult to compute C space obstacles
+	- it's easy to check if a configuration collides or not
+		- also, we can easily check if a line segment collides or not
+	- we randomly sample points, check if they collide and if the lines connecting them collide
+	- this way, we form a network
+	- the algorithm is probabilistically complete
+	- very useful for C space of high dimensionality (like 97 dimensions)
+
+#### Tree-Based Methods
+
+- grid-based methods
+	- configuration-space lattices
+	- A*
+	- bi-directional search
+		- is somehow better
+- rapidly-exploring random tree
+	- algorithm
+		- we have a tree
+		- sample a configuration in the whole space
+		- find the closest node of the tree
+		- extend the tree by $\varepsilon$ distance in the direction of the new configuration (if such path is collision-free)
+	- Brownian motion explores circle/sphere
+		- RRT works better
+		- RRT is naturally biased towards large unexplored regions
+	- probabilistic completeness
+	- we need a metric
+#### Other Methods
+
+- navigation function
+	- “feedback motion planning”
+	- navigation function should be smooth, should have global minimum at the goal and no other local minima
+	- gradient descent
+- potential field
+	- obstacle … repulsive field
+	- goal … attractive field
+	- robot … particle, subject to forces
+	- there can be multiple local minima :(
+		- how to avoid getting stuck in a local minimum
+		- we can use “basin of attraction”
+		- or we can try to move randomly out of the basin
+- path deformation
+	- start from the original path and deform it until it becomes collision-free
+	- ill-suited for dynamic environments
+	- space deformation × time deformation
+
+#### Nonholonomic Constraints
+
+- non integrable
+- example in $R^2\times S^1$
+	- $\dot x\sin\theta-\dot y\cos\theta=\theta$
+	- “the wheel has to always move in this direction”
+- nonholonomic system: the dimension of the control space is less than the dimension of the configuration space
+- controllability
+	- locally controllable system
+	- small-time locally controllable system
+- steering
+	- no general method
+	- we can use circles for a car
+- untractable problem, we need to decouple geometric and kinematic constraints
+- topological property
+	- the space we need to maneuver
+	- we want to get from the middle of the blue circle to every point in the blue circle
+	- to get there, we may need to exist the blue circle but we always stay in the pink circle
+- using topological property
+	- we have a geometrically feasible path
+	- we find the largest pink circle that does not collide with any obstacles on the path
+	- from the size of the pink circle, we compute the blue circle and “tile” the path using blue circles
+- Reeds & Shepp optimal paths
+- steering method – verifying the topological property
+- holonomic path approximation
+- we apply postprocessing to remove weird parts of the path
+- graph-based nonholonomic planner
+	- we use PRM, but connect the points using the steering method
+- can we change RRT to use it to plan paths for cars?
+	- yes, but the epsilon advancement has to be feasible – so we can use the steering method or choose from all the possible epsilon advancements the closest one to the sampled point
+
+### Obstacle Avoidance
+
+- reactive navigation (curve in the C space connecting A and B)
+	- robot model
+	- local map (sensor data)
+	- nominal motion/goal
+- bug 1 (Lumelski 86)
+	- algorithm
+		- robot moves to goal until obstacle
+		- fully circumnavigate obstacle
+		- circumnavigate again to boundary closest to the goal
+		- repeat until goal is reached
+	- low memory requirements
+	- path can be very long
+	- converges to the goal
+- bug 2
+	- we use a line towards the goal
+	- convergency does not directly follow from the algorithm
+- potential field
+	- handling local minima – random motion
+- vector field histogram
+	- occupancy probability (in a grid)
+	- detect candidate openings & select the best one (depending on the target direction and the robot heading)
+- dynamic window
+	- translational and rotational velocities
+	- takes into account the acceleration capabilities of the robot
+- velocity obstacles
+	- takes into account moving obstacles
+- end-to-end navigation
+	- we don't separate perception, localization, planning, and control
+	- instead, the robot learns a mapping between sensor data and actions
+	- supervised learning – ALVINN
+	- reinforcement learning
+		- policy learned through trial-and-error
+		- training in simulation
+		- dynamic programming, monte carlo, Q-learning, SARSA, DDPG, …
+	- LLM-based navigation
+		- GPT-driver
+	- how to combine end-to-end techniques with the more robust ones?
+		- safety filters?
+
+### Safety
+
+- we'll focus on misreasoning in dynamic environments (one of the causes of collisions)
+	- can motion safety be guaranteed?
+- in dynamic environments
+	- we reason about the future
+	- we are limited by the decision time
+	- appropriate time horizon – how far do we look in the future?
+- inevitable collision states (ICS)
+	- “I will be in collision in the future no matter what I do”
+	- we need to stay away from ICS
+	- obstacles are not independent!
+	- in general, we need an infinite time horizon
+- the time horizon and the decision time are determined by the environment
+	- if the time horizon is infinite, we cannot guarantee absolute motion safety
+- modeling the future (forbidden regions)
+	- deterministic – we know where the obstacles end up
+	- conservative – are not sure, so we let the forbidden regions grow
+		- problem: if they grow infinitely → no collision-free path in the future (with an infinite time horizon)
+	- probabilistic
+		- no obstacles in the far future
+- passive motion safety
+	- should a collision take place, the robot will be at rest
+	- now, we don't need an infinite time horizon
+	- everybody enforces it → no collision at all
