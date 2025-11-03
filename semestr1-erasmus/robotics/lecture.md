@@ -375,3 +375,28 @@
 	- using sin/cos formulas
 - we don't always need to deal with the Cartesian space
 	- we don't need the exact location of the ends of the fingertips
+- what can we do when we reach a singularity (the matrix is singular)?
+	- first approach: throw away one of the rows of the matrix and solve the equation
+	- second approach: if we cannot make the two sides of the equation equal, we try to minimize their distance (squared)
+		- least squares
+		- also, we want to minimize the norm of the solution (regularization, kind of)
+		- → Moore-Penrose pseudo-inverse
+			- we minimize a quadratic function
+			- constrained quadratic program
+				- least squares … has infinitely many minimums on a line
+					- we want to find a solution on the line
+				- least norm … has only one (global) minimum
+					- we use Lagrange multipliers to find the constrained minimum (usually different from the global minimum) on the line
+	- third approach: perturbation (modify the matrix to make it convertible)
+		- does not work well
+		- we don't divide by zero but by very small numbers → we get solutions close to infinity
+	- Tikhonov regularization (damping)
+- kinematics of one rigid body
+	- translation, rotation
+	- Horner scheme … we can compute polynomial more quickly and more precisely
+		- similar approach can be used in kinematics
+- priorities for a bus
+	- safety deceleration limit
+	- collision avoidance
+	- schedule
+- hierarchy of tasks
