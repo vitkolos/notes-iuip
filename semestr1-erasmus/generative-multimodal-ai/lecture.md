@@ -127,3 +127,48 @@
 	- if non-causality and $t\to+\infty$, then
 		- $\mu\to\delta_s$ (Dirac function)
 		- $\|\mu(t)-\delta_{s^+}\|\leq\frac{O(1)}{f(t)}$
+- a synthetic, pseudo-code like view on transformers (for the exam)
+	- see notes in Chamilo :)
+	- decoder-only model
+	- definitions
+		- $V$ … vocabulary of $|V|$ tokens, $W_E\in\mathbb R^{d_\mathrm{model}\times|V|}$
+			- columns of $W_E$ correspond to token embeddings in $d_\mathrm{model}$-dimensional vector space
+			- $\overrightarrow E_i$ denotes the embedding of the $i$-th token
+		- $L$ … number of layers
+		- $M$ … number of heads
+		- $W_q^{(\ell,m)}\in\mathbb R^{d_q\times d_\mathrm{model}},W_k^{(\ell,m)}\in\mathbb R^{d_k\times d_\mathrm{model}},W_v^{(\ell,m)}\in\mathbb R^{d_v\times d_\mathrm{model}}$
+			- $Q,K,V$ matrices for each layer and head
+		- $N$ … length of input sequence
+	- For $n=1$ to $N$
+		- $\overrightarrow E_n^{(0)}=\overrightarrow E_n+\overrightarrow{\mathrm{Pos}(n)}$
+			- embedding with positional information, $\in\mathbb R^{d_\mathrm{model}}$
+		- For $\ell=1$ to $L$
+			- For $m=1$ to $M$
+				- we define (for $j$)
+					- $\overrightarrow Q_j^{(\ell,m)}=W_q^{(\ell,m)}\times\overrightarrow E_j^{(\ell-1)}$
+					- $\overrightarrow K_j^{(\ell,m)}=W_k^{(\ell,m)}\times\overrightarrow E_j^{(\ell-1)}$
+					- $\overrightarrow V_j^{(\ell,m)}=W_v^{(\ell,m)}\times\overrightarrow E_j^{(\ell-1)}$
+				- $\overrightarrow O_n^{(\ell,m)}=\sum_{j=1}^n\mathrm{softmax}_j(\frac{\overrightarrow Q_n^{(\ell,m)}\cdot \overrightarrow K_j^{(\ell,m)}}{\sqrt{d_k}})V_j$
+			- $\overrightarrow O_n^{(\ell)}=\mathrm{concat}(\overrightarrow O_n^{(\ell,1)},\dots,\overrightarrow O_n^{(\ell,M)})$
+				- column vector in $\mathbb R^{d_v\times M}$
+			- $\Delta\overrightarrow E_n^{(\ell)}=W_O^{(\ell)}\cdot\overrightarrow O_n^{(\ell)}\quad (\in\mathbb R^{d_\mathrm{model}})$
+				- $W_O^{(\ell)}\in\mathbb R^{d_\mathrm{model}\times (d_v\times M)}$
+			- $\overrightarrow E_{n,1}^{(\ell)}=\mathrm{LayerNorm}(\overrightarrow E_n^{(\ell-1)}+\Delta\overrightarrow E_n^{(\ell)})$
+			- $\overrightarrow E_{n}^{(\ell)}=\mathrm{LayerNorm}(\overrightarrow E_{n,1}^{(\ell)}+W_\downarrow^{(\ell)}\mathrm{RELU}(W_\uparrow\overrightarrow E_{n,1}^{(\ell)}+\overrightarrow B^{(\ell)}_\uparrow)+\overrightarrow B^{(\ell)}_\downarrow)$
+				- contextualized embedding of the $n$-th token after layer $\ell$
+				- $W_\uparrow\in\mathbb R^{d\times d_\mathrm{model}},B_\uparrow\in\mathbb R^{d},W_\downarrow\in\mathbb R^{d_\mathrm{model}\times d},B_\downarrow\in\mathbb R^{d_\mathrm{model}}$
+		- $\overrightarrow Z=W_U\cdot\overrightarrow E_n^{(L)}$
+			- logit vector for next word
+			- $W_U\in\mathbb R^{{|V|}\times d_\mathrm{model}},Z\in\mathbb R^{|V|}$
+			- the logit vector provides a weight indicating the proximity of each token to $\overrightarrow E_n^{(L)}$
+		- $P=\mathrm{softmax}(\overrightarrow Z)$
+			- $p_i=\frac{e^{z_i/\alpha}}{\sum_{j=1}^{|V|} e^{z_j/\alpha}}$ … $\alpha\to 0$, Dirac distribution
+			- probability distribution over tokens derived from logit vector
+		- *training*
+			- compute loss between $P$ and true distribution $Q$ (1-hot vector)
+				- $L(P,Q)=-\sum_{i=1}^{|V|} Q_i\log P_i$ … NLL loss
+			- backpropagation
+				- $\theta\to\theta-\eta\nabla_\theta L(P,Q)$
+		- *inference*
+			- we have $P$
+			- for example, we can generate at random from top $k$ (usually, using $P$)
