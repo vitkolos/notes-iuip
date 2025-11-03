@@ -322,3 +322,56 @@
 	- should a collision take place, the robot will be at rest
 	- now, we don't need an infinite time horizon
 	- everybody enforces it → no collision at all
+
+## Kinematics of articulated robots
+
+- Pierre-Brice Wieber, INRIA Grenoble (three lectures)
+	- pen and paper, exercises for the exam (quarter of the exam points) clearly labelled
+	- not all the theory will be required
+- Hans Moravec's paradox
+- model predictive control (MPC) × reinforcement learning (RL)
+	- both have the same goal
+	- RL – we train the model (offline), the we use it
+		- approximation
+		- sim-to-real gap
+	- MPC runs optimization online for the given situation
+	- here, we focus on MPC
+	- problem with RL
+		- we don't know how it behaves in unseen scenarios
+		- robots can be dangerous – you need to make sure that you don't kill people on accident
+			- we don't know how to achieve safety without physics and mathematics
+- three lectures: kinematics, dynamics, advanced topics
+- serial manipulator robots × parallel robots
+	- serial … series of joints/motions
+		- lot of the energy goes into carrying the robot itself
+	- parallel – several motors work together to move one part of the robot
+		- errors don't add up
+		- most of the robot does not move
+	- humanoid robots are mostly serial
+		- two hands working together → parallel robotics
+- first exercise – basic geometry
+	- express $P_1,P_2$ ($x,y$ coordinates) as a function of $q_1,q_2$ (angles)
+	- $x_1=\cos q_1$
+	- $y_1=\sin q_1$
+	- $x_2=\cos q_1+\cos q_2$
+	- $y_2=\sin q_1+\sin q_2$
+- slides on Chamilo
+- notation
+	- $\dot x=\frac{dx}{dt}$
+	- $\dot q=\frac{dq}{dt}$
+- let's say $x(t)=\cos q(t)$
+	- $\dot x=-\sin(q)\dot q$
+- second exercise: write $\dot x_2,\dot x_2$
+	- then, express this as a multiplication of a matrix and a vector (Jacobian matrix)
+	- how to get $\dot q_1,\dot q_2$ if we know $\dot x_2,\dot y_2$?
+		- we need an inverse of the Jacobian matrix
+		- fully extended arm → Jacobian matrix is not invertible
+			- instantaneous speed can only be up and down
+			- intuition: skiing with bent knees
+- third exercise: is there an inverse of the Jacobian matrix?
+	- if not, why? (when yes, when no?)
+		- fully extended, fully flexed
+	- 2×2 matrix → determinant = $ad-bc$
+	- using sin/cos formulas
+- we don't always need to deal with the Cartesian space
+	- we don't need the exact location of the ends of the fingertips
