@@ -286,3 +286,73 @@
 		- using videos
 		- how to get real data? ground truth?
 			- usually, we need both synthetic and real data
+
+## 3D Vision – Geometry 1
+
+- definitions & notation
+	- point $p\in\mathbb R^3$
+	- matrix $M\in\mathbb R^{m\times n}$ ($m$ rows, $n$ columns)
+	- line … $ax+by+c=0$
+		- $(a,b,c)(x,y,1)^T=0$ … dot product
+		- one interpretation of dot product – projection of one vector into the other
+	- cross product of vectors $\in\mathbb R^3$ (!)
+		- computed using determinants of 2×2 matrices (with alternating signs)
+	- determinant
+		- $\mathrm{det}(AB)=\mathrm{det} A\cdot\mathrm{det}B$
+		- determinant zero/nonzero, co-linearity of column vectors
+	- equivalence
+		- $X\sim Y$ if $\exists\lambda\neq 0:\lambda X=Y$
+	- homogeneous coordinates – we add a one at the end of the vector, so instead of $(x,y)$ we get $(x,y,1)$
+	- Cholesky decomposition
+- projective geometry
+	- perspective deformation can be modeled with 2D projective transformation
+	- Euclidean geometry $\subset$ affine geometry $\subset$ projective geometry
+	- infinity is modeled in projective geometry – so even parallel lines intersect (in infinity)
+	- ray
+	- projective space
+		- we divide by the last coordinate
+		- if the last coordinate is zero, the rays don't intersect the plane (are in infinity)
+		- another intuition – using a sphere/dome
+	- projective geometry – infinity
+		- $(x,y,1)$
+			- we move in direction $(a,b)$
+		- $(x+\lambda a,y+\lambda b,1)\sim (\frac x\lambda+a,\frac y\lambda +b,\frac 1\lambda)$
+			- for $\lambda\to\infty$, we get $(a,b,0)$
+		- all lines with the direction $(a,b)$ meet in infinity – at point $(a,b,0)$
+	- projective transformations
+		- preserve incidence relationships – collinearity and concurence
+			- concurrence … if two lines intersect at $p$, they will intersect at $Mp$ after applying the transformation defined by $M$
+	- projective basis
+		- set of $(n+2)$ points of $\mathcal P^n$, no $(n+1)$ of which are linearly dependent
+		- example – canonical basis of $\mathbb R^{n+1}$, plus $(1,1,\dots,1)^T$
+	- change of basis are projective transformations
+	- hyperplanes
+	- duality
+		- two lines define a point, two points define a line
+		- also in some other cases
+	- exercises (solved using cross product)
+	- conics
+	- transformation groups
+		- Euclidean (allows shift and rotation)
+		- isometry (allows resizing)
+		- affine
+		- projective
+			- only 8 DOF, because it is invariant to scaling
+	- exercises
+		- homography defined by 4 point correspondances
+			- to move from 3 variables “up to scale” to 2 variables, we divide by the third variable (if its nonzero) and assume it's 1
+				- we need to consider that it could be zero → similarly, we then divide by the second variable (so the second variable is 1 and the third variable is 0)
+				- so we need to consider several situations
+					- $p_z'\neq 0$
+					- $p_z'=0$
+					- only $p'_x\neq 0$
+			- affine transformation preserve parallelism
+				- parallel lines … $L_1\times L_2=(x,y,0)^T$
+				- $L_1'\times L_2'=H(x,y,0)^T$
+				- if $H$ is affine transformation, it preserves the last 0 (projective transformation might not preserve it)
+- 3D geometry
+	- elementary transformations
+	- parallel projections
+	- perspective projections
+		- into the optical centre
+		- perspective projection matrix using Thales
