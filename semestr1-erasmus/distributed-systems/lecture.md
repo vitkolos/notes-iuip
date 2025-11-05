@@ -205,7 +205,8 @@
 		- worst case: $N$ communication steps, $O(N^2)$ messages
 	- exercise
 		- if we used a failure detector satisfying only weak accuracy, the performance would be worse
-		- with only weak completeness, agreement is not ensured (I suppose)
+		- with only weak completeness, agreement is not ensured
+			- the correct process who delivered $m$ might not know that the sender has crashed
 		- if we don't wanna rely on the failure detector, we can just broadcast every received (broadcasted) message
 	- problematic scenario
 		- $m$ is delivered by a process and then it crashes (the sender crashes too)
@@ -230,3 +231,23 @@
 	- FIFO delivery – if some process broadcasts message $m_1$ before it broadcasts message $m_2$, then no correct process delivers $m_2$ unless it has already delivered $m_1$
 	- solution – piggybacking sequence numbers
 		- so we just sort the messages (delay some of them)
+- how to make it faster?
+	- we could make the broadcast circular
+	- we could build a binary tree
+		- better latency
+		- but what if a process crashes?
+- *gossip*
+	- $k$ … number of processes to contact
+	- $r$ … number of rounds to execute
+	- for $k=3$, the original process randomly selects 3 processes it sends the message to
+		- then, each process sends the message to 3 randomly selected processes
+		- after $r$ rounds, the sending stops
+	- probabilistic broadcast algorithm – we cannot guarantee that every correct process gets the message
+	- efficiency declines over time – we send to processes who have already got the message
+		- push strategy – processes who have the information send messages to processes who don't
+		- pull strategy – “hey, is there anything I missed?”
+			- we can use a vector clock for this
+
+## Consensus
+
+- if we don't make any assumptions, it's impossible
