@@ -116,9 +116,12 @@
 		- params
 			- matrices $Q,K,V$
 			- scalar $\beta$ (hyperparameter?)
+		- $Z$ … normalization factor
 - theorem
 	- for “simple functions”, there exists an assignment that achieves $(1+\varepsilon)$-optimum and the form of the assignment is $x_i(t)\sim e^{\text{something}}$
 		- *something* has a $\frac 1\varepsilon$ factor
+	- → if you have a simple function, you can use attention simply
+		- though connection with transformers is
 - assume there is no causality in the order of tokens, then
 	- $x(t+1)=\sum_s \delta_s$
 	- where $\delta_s=1$ if $s$ is next token, otherwise 0
