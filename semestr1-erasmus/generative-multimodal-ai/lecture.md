@@ -174,3 +174,40 @@
 		- *inference*
 			- we have $P$
 			- for example, we can generate at random from top $k$ (usually, using $P$)
+- encoder × decoder
+	- encoder aims at building a representation of the sequence
+	- in our decoder-only model, we use encodings but they are not that good
+	- also, encoder would be bidirectional
+	- representation of the sequence can be obtained by pooling representations of the individual tokens
+	- models with both encoder and decoder are used for machine translation
+		- encoder – bidirectional, to encode the meaning of the original sentence
+		- decoder – unidirectional, to generate a new sentence based on the meaning of the original sentence and the previously generated words
+			- in the decoder-only model, there's no “original sentence”
+- instruction fine-tuning
+	- step 1: pretraining – only focused on predicting the next token
+	- step 2: supervised fine-tuning (SFT) on various tasks – summarization, translation, sentiment analysis, text classification, …
+		- using cross-entropy loss
+	- step 3: instruction fine-tuning using RLHF (reinforcement learning with human feedback) – model provides several responses for a given prompt, human ranks them
+		- direct preferred optimization (DPO)
+			- we use pairwise preferences
+				- $x$ … prompt
+				- $y_w$ … preferred output
+				- $y_\ell$ … less preferred output
+			- ![DPO loss](https://miro.medium.com/v2/resize:fit:1400/1*LrLZgBo-4mHScN-75oWK-A.png)
+				- $\sigma$ … sigmoid function
+				- $\beta$ … regularization parameter
+				- $\pi_\theta$ … probability distribution of our model with parameters $\theta$
+				- $\pi_\mathrm{ref}$ … probability dist. of the reference model we get after SFT
+				- we want to maximize the first term and to minimize the second term
+- teaching models to reason
+	- DeepSeek-R1 Zero
+		- simple prompt
+		- reward based on accuracy and formatting
+		- GRPO loss (group relative policy optimization)
+			- we maximize $A_\theta(o,q)=\frac{\pi_\theta(o\mid q)}{\pi_{\theta_\mathrm{old}}(o\mid q)} r(o)$
+			- $q$ … question
+			- $o$ … answer
+			- $r$ … reward (positive for desirable answers, otherwise negative)
+			- to achieve stability
+				- clip $A_\theta$ to the interval $(1-\varepsilon,1+\varepsilon)$
+				- add KL-divergence between $\pi_\theta$ and $\pi_{\theta_\mathrm{old}}$

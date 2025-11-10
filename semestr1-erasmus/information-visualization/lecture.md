@@ -218,3 +218,24 @@
 		- clicking zooms by one level
 		- but I can also draw a stroke → it zooms to the smallest node which contains the whole stroke
 		- sometimes, the animation is controlled by the interaction
+	- NodeTrix – hybrid visualization of graphs
+		- how to express graphs traditionally
+			- diagram – chaotic for large graphs
+			- adjacency matrix – difficult to find longer paths
+		- NodeTrix combines both approaches
+		- social network
+			- few nodes with a lot of connections (a lot of nodes with few connections)
+			- adjacency matrix is useful to see if some nodes form a clique
+	- similarity
+		- we need a measure of similarity for two items and for two groups
+		- dendrogram – tree representing the similarity of items
+			- the lower is the common ancestor of the items, the more similar they are
+			- we can cut the dendrogram at some level to get clustering
+		- we can use dots in matrix to visualize similarity (the larger the dot, the more similar the items are)
+			-  we can reorder the items to minimize differences between neighbors
+			- that way, we get clusters
+			- the matrix is symmetrical so we only need one half → dendrogramix
+		- we can see relations that would disappear in the dendrogram
+		- the app supports dragging items
+			- if the feedback is continuous, we can track the changes
+- when interacting directly with the visualization (not through “external” controls), we need to project from the screen space to the data space
