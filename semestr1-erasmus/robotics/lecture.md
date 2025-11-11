@@ -400,3 +400,38 @@
 	- collision avoidance
 	- schedule
 - hierarchy of tasks
+
+## Dynamic Motion Control
+
+- Lyapunov stability
+	- continuity of motion (to some extent)
+	- is $\dot x=k(x_0-x)$ stable?
+	- methods to check stability
+		- second method
+			- we use some $V(x)$ that is locally continuous positive definite and $\dot V$ is non-positive
+				- $V$ is usually related to the energy of the system
+			- let's have $V(x)=\frac12\|x-x_0\|^2$
+			- $\frac d{dt}\frac12\|x-x_0\|^2=(x-x_0)^T\dot x=-k\|x-x_0\|^2\leq 0$
+				- we plugged $\dot x$ in
+				- it is $\leq 0$, so it is stable
+	- stability does not mean convergence, just not divergence
+- spinning objects
+	- Newton equation
+		- the derivative equation does not hold if the mass changes
+	- Euler equation – for rotation
+		- the object does not lose mass but its shape is changing (seen from far away)
+		- the momentum is constant, the object keeps rotating in the same way – only its shape changes
+- dynamics of a robot
+	- we're gonna use Gauss' principle of least constraint
+	- Lagrangian dynamics
+		- $\frac{\partial\mathcal D}{\partial\ddot q}=M(q)\ddot q+N(q,\dot q)\dot q-\mathcal F=0$
+	- PD+ control
+		- proportional derivative controller + compensation for gravity
+			- if we make a small error in the compensation, the system will be stable but with respect to a different position
+	- task function approach
+		- “does the sensor output we have correspond to the output we want?”
+
+## Responsible Robotics
+
+- we should build robots to fight aliens!
+- we make robots for fun

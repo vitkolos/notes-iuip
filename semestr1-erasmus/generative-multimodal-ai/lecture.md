@@ -156,7 +156,7 @@
 			- $\Delta\overrightarrow E_n^{(\ell)}=W_O^{(\ell)}\cdot\overrightarrow O_n^{(\ell)}\quad (\in\mathbb R^{d_\mathrm{model}})$
 				- $W_O^{(\ell)}\in\mathbb R^{d_\mathrm{model}\times (d_v\times M)}$
 			- $\overrightarrow E_{n,1}^{(\ell)}=\mathrm{LayerNorm}(\overrightarrow E_n^{(\ell-1)}+\Delta\overrightarrow E_n^{(\ell)})$
-			- $\overrightarrow E_{n}^{(\ell)}=\mathrm{LayerNorm}(\overrightarrow E_{n,1}^{(\ell)}+W_\downarrow^{(\ell)}\mathrm{RELU}(W_\uparrow\overrightarrow E_{n,1}^{(\ell)}+\overrightarrow B^{(\ell)}_\uparrow)+\overrightarrow B^{(\ell)}_\downarrow)$
+			- $\overrightarrow E_{n}^{(\ell)}=\mathrm{LayerNorm}(\overrightarrow E_{n,1}^{(\ell)}+W_\downarrow^{(\ell)}\mathrm{GELU}(W_\uparrow\overrightarrow E_{n,1}^{(\ell)}+\overrightarrow B^{(\ell)}_\uparrow)+\overrightarrow B^{(\ell)}_\downarrow)$
 				- contextualized embedding of the $n$-th token after layer $\ell$
 				- $W_\uparrow\in\mathbb R^{d\times d_\mathrm{model}},B_\uparrow\in\mathbb R^{d},W_\downarrow\in\mathbb R^{d_\mathrm{model}\times d},B_\downarrow\in\mathbb R^{d_\mathrm{model}}$
 		- $\overrightarrow Z=W_U\cdot\overrightarrow E_n^{(L)}$
@@ -199,15 +199,14 @@
 				- $\pi_\theta$ … probability distribution of our model with parameters $\theta$
 				- $\pi_\mathrm{ref}$ … probability dist. of the reference model we get after SFT
 				- we want to maximize the first term and to minimize the second term
-- teaching models to reason
-	- DeepSeek-R1 Zero
-		- simple prompt
-		- reward based on accuracy and formatting
-		- GRPO loss (group relative policy optimization)
-			- we maximize $A_\theta(o,q)=\frac{\pi_\theta(o\mid q)}{\pi_{\theta_\mathrm{old}}(o\mid q)} r(o)$
-			- $q$ … question
-			- $o$ … answer
-			- $r$ … reward (positive for desirable answers, otherwise negative)
-			- to achieve stability
-				- clip $A_\theta$ to the interval $(1-\varepsilon,1+\varepsilon)$
-				- add KL-divergence between $\pi_\theta$ and $\pi_{\theta_\mathrm{old}}$
+- teaching *DeepSeek-R1 Zero* to reason
+	- simple prompt
+	- reward based on accuracy and formatting
+	- GRPO loss (group relative policy optimization)
+		- we maximize $A_\theta(o,q)=\frac{\pi_\theta(o\mid q)}{\pi_{\theta_\mathrm{old}}(o\mid q)} r(o)$
+		- $q$ … question
+		- $o$ … answer
+		- $r$ … reward (positive for desirable answers, otherwise negative)
+		- to achieve stability
+			- clip $A_\theta$ to the interval $(1-\varepsilon,1+\varepsilon)$
+			- add KL-divergence between $\pi_\theta$ and $\pi_{\theta_\mathrm{old}}$
