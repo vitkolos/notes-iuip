@@ -264,8 +264,8 @@
 - properties
 	- termination – every correct process should eventually decide
 	- validity – if a process decides $v$, then $v$ is the initial (proposed) value of some process
-	- agreement – two correct processes cannot decide differently
 	- uniform agreement – two processes cannot decide differently
+		- agreement (two *correct* processes cannot decide differently) would be too weak
 - we consider
 	- asynchronous system
 		- no bound on message delays
