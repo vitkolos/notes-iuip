@@ -250,4 +250,68 @@
 
 ## Consensus
 
-- if we don't make any assumptions, it's impossible
+- examples
+	- clients & servers
+		- all servers should behave the same
+		- the servers should agree on the order of processing clients' requests → consensus problem
+	- Kafka (who's the leader?)
+	- blockchain
+- the component should have two functions
+	- $\mathrm{propose}(v_i)$
+		- $v_i$ … value proposed by process $i$
+	- $\mathrm{decide}(v)$
+		- all processes should agree on the same $v$ in the end
+- properties
+	- termination – every correct process should eventually decide
+	- validity – if a process decides $v$, then $v$ is the initial (proposed) value of some process
+	- agreement – two correct processes cannot decide differently
+	- uniform agreement – two processes cannot decide differently
+- we consider
+	- asynchronous system
+		- no bound on message delays
+		- no bound on relative speed of processes
+	- quasi-reliable channels, processes may crash
+- if we don't make any additional assumptions, consensus is impossible to ensure
+	- FLP impossibility
+	- if $F=1$
+	- did the process crash or not?
+- proof (for a little bit different statement)
+	- $N$ … number of processes
+	- $F$ … number of crashed processed
+	- we allow $F\gt\frac N2$
+	- let's make groups $G_0,G_1$
+		- $G_0$ contains a little bit more processes than $G_1$
+	- run $R_0$
+		- all processes in $G_1$ crash
+		- all processes in $G_0$ proposed $v=0$
+		- so we decide $v=0$ after time $T_0$
+	- run $R_1$
+		- all processes in $G_0$ crash
+		- all processes in $G_1$ propose $v=1$
+		- so we decide $v=1$ after time $T_1$
+	- run $R_2$
+		- no process crashes
+		- communication between groups is delayed
+		- after time $T_0$, processes in $G_0$ do not have any message from group $G_1$
+			- so they need to decide $v=0$ (as in $R_0$)
+		- after time $T_1$, processes in $G_1$ do not have any message from group $G_0$
+			- so they need to decide $v=1$ (as in $R_1$)
+		- no consensus :(
+- let's start with a synchronous system!
+	- we have a perfect failure detector $P$
+	- we are going to use the best-effort broadcast algorithm
+	- assuming no crashes
+		- everyone broadcasts proposed values
+		- after receiving values from everyone, we'll use a deterministic decision function (like $\mathrm{min}$)
+- valence of a configuration
+	- $\mathrm{val}(c)$ … set of possible values that could be decided (initially – set of proposed values)
+	- we want to get from a multivalent configuration to a univalent configuration
+		- $v$-valent configuration … $\mathrm{val}(c)=\set{v}$
+	- then, we we want the processes to detect we reached that configuration
+- algorithm for a synchronous system
+	- see [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-5-consensus.pdf#page=4)
+	- several rounds
+	- for a round to end, we need to get messages from all the correct processes
+	- after two consecutive rounds with the same correct processes (no one crashes), we can decide
+	- in every broadcast, we send the values we have collected so far
+		- to ensure that everyone has the same information
