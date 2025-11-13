@@ -18,3 +18,5 @@
 	- la générosité (être généreux)
 - prendre du poids
 - il faut que tu aies plus confiance en toi
+- au fur et à mesure que
+	- jak… tak…
