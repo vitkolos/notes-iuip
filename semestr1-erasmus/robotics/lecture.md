@@ -410,6 +410,7 @@
 		- second method
 			- we use some $V(x)$ that is locally continuous positive definite and $\dot V$ is non-positive
 				- $V$ is usually related to the energy of the system
+				- $V$ … Lyapunov function
 			- let's have $V(x)=\frac12\|x-x_0\|^2$
 			- $\frac d{dt}\frac12\|x-x_0\|^2=(x-x_0)^T\dot x=-k\|x-x_0\|^2\leq 0$
 				- we plugged $\dot x$ in
@@ -430,8 +431,19 @@
 			- if we make a small error in the compensation, the system will be stable but with respect to a different position
 	- task function approach
 		- “does the sensor output we have correspond to the output we want?”
-
-## Responsible Robotics
-
-- we should build robots to fight aliens!
-- we make robots for fun
+	- idea
+		- you don't need a precise model if you can apply corrections
+- exam question
+	- kinetic energy of a robot
+	- $K=\frac12m_1v_1^2+\frac12m_2v_2^2$
+	- to get $v$, we need Jacobians
+	- we want to get to $K=\frac 12\dot q^T M(q)\dot q$
+- minimal coordinates
+	- joint positions
+	- position and orientation with respect to the environment
+- without external forces, you cannot translate
+	- but you can rotate
+	- also, you cannot walk with zero rotational speed
+- contact forces
+	- Newton equation – to not fall, we need contact points but their location does not matter
+	- Euler equation – location of the contact points matters

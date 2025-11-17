@@ -210,3 +210,45 @@
 		- to achieve stability
 			- clip $A_\theta$ to the interval $(1-\varepsilon,1+\varepsilon)$
 			- add KL-divergence between $\pi_\theta$ and $\pi_{\theta_\mathrm{old}}$
+
+## Multimodal AI
+
+- Pia Bideau, PhD
+- fully connected neural network – impractical for images (too many weights)
+- convolution
+	- “filter”
+	- we move a function over the signal and integrate
+	- what to do at the ends?
+		- shrink or pad
+- CNN is learning the filters to transform the images
+	- advantages
+		- spatial locality (local receptive fields) – every neuron is looking at a small patch of the image
+		- parameter sharing – we don't need that many weights
+		- translation equivariance – we don't need to preprocess the images that much (object detection works no matter the position of the object in the image)
+	- downsampling approaches
+		- stride – we are sliding the filter with a step size larger than one
+		- pooling – we apply a function (usually max) over a patch
+	- if pixel-level outputs are expected, we need to use upsampling afterwards
+	- upsampling approaches
+		- nearest neighbor (we just copy the value)
+		- bed of nails (we put the value in the upper-left corner and use zeros elsewhere)
+		- max unpooling (we need to remember where did we take the maximum from, then put it back there and put zeros elsewhere)
+- VGG architecture
+	- uses 3×3 convolutions everywhere
+	- receptive field size
+		- in the original image, the receptive field is 1×1
+		- in the first layer, the receptive field is 3×3
+		- by applying the convolution on the convoluted pixels, we get 5×5 receptive field in the second layer
+		- the formula looks like this: $RF_0=1,\ RF_i=RF_{i-1}+(K-1)$
+			- $K$ … convolution kernel size ($K=3$ for a 3×3 filter)
+- other architectures: ResNet, Inception, GoogLeNet, U-Net
+- RNNs
+	- hidden state … combination of the current input and the previous hidden state
+	- usually tanh activation
+	- there can be one or multiple outputs
+	- backpropagation becomes intractable
+		- so truncated backpropagation may be used
+	- we can even have multiple layers
+	- problem: vanishing or exploding gradients
+		- GRU and LSTM units are used to solve this problem
+- attention
