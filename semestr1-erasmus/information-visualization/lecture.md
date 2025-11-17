@@ -239,3 +239,38 @@
 		- the app supports dragging items
 			- if the feedback is continuous, we can track the changes
 - when interacting directly with the visualization (not through “external” controls), we need to project from the screen space to the data space
+- project
+	- individual (but we can discuss), report sent to the teacher
+	- chess ratings
+	- if you don't play for a year, you're considered inactive and should not be listed among top-k players
+	- in the monthly data, they may be missing rankings of players who did not play during the month
+	- months are not converted to Date object as the conversion takes too much time
+		- we can use lexicographical order
+	- there will be a smaller dataset for testing purposes
+	- we can do custom preprocessing in a different language
+	- ranking of a federation – average over its top 10 players
+	- there will be some changes in the repository during this week
+	- questions
+		- categories: getting global insights, focusing on subsets, comparing subsets, *focusing on specific items* (will be added)
+	- visual design
+		- visual mapping
+		- explain why this mapping
+		- description of interaction
+		- sketch (pen and paper works well)
+	- sending
+		- it is preferred if we include the scripts used for preprocessing and instructions how to preprocess the data
+		- we should not send the dataset as it's large
+	- in the design phase, we can envision fancy stuff even if we cannot implement it afterwards
+
+# Graphs
+
+ - graph = vertices, edges (can be directed)
+ - network = graph with attributes on the vertices and/or the edges
+ - graph theory provides metrics
+	 - vertices – degree, centrality
+	 - (sub)graphs – diameter, density, connected components
+	 - we can also compute metrics from the attributes (cost of a path if we have valued edges)
+- tasks
+	- vertices – finding neighbors, degree
+	- paths – finding shortest paths, cycles
+	- graph – finding cliques
