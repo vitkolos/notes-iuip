@@ -356,3 +356,40 @@
 	- perspective projections
 		- into the optical centre
 		- perspective projection matrix using Thales
+	- exercises
+		- you have a projection matrix $P$
+		- you move the camera or rotate it (you apply $T$), how does the new projection matrix look like?
+		- $P'=TPT^{-1}$
+		- exercises 3 and 4 as a preparation for the exam
+	- parallel projection (ortographic)
+		- as if $f\to+\infty$ (for the derived $P'$ from the exercise 1)
+- camera models
+	- transformations
+		- $M\sim(K\cdot R\quad K\cdot T)$
+	- exercises
+		- we need 5.5 correspondences to estimate $M$
+
+## Geometry 2
+
+- panoramic mosaics
+	- we assume all the images are taken from the same viewpoint
+	- we apply homography
+		- we need four correspondances to estimate it
+- two view geometry
+	- usually, the two rays don't cross (due to the noise)
+	- so we find the closest point to the 2 viewing lines
+	- epipolar geometry
+		- a point in the first image has to be on a certain line in the second image
+	- fundamental matrix
+		- every correspondence gives us only one equation (equal to 0)
+		- so we need 8 correspondences
+	- essential matrix
+- robust estimation
+	- RANSAC … random sample consensus
+	- we randomly select a set of observations, fit our model, and count outliers
+	- many variants
+
+## Motion Capture
+
+- 3D perception
+- 3D video can be observed from any viewpoint (so 3D cinema is not really 3D)
