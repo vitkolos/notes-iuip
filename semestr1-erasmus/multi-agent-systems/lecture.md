@@ -262,7 +262,7 @@
 	- task performance – we want to mimic a human performing the task
 	- training – e.g. flight simulator
 	- entertainment – imaginary virtual world, for amusement
-	- education – users can learn what happens if they do *this* or *that* in the simulation
+	- education – users can learn what happens if they do *this* or *that* in the simulation (or how does a volcano work)
 	- proof – prove existence/conjecture
 	- discovery – discover new knowledge
 - social simulation
@@ -312,3 +312,43 @@
 	- book: The Cognitive Structure of Emotions
 	- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
 - biases – confirmation bias, …
+
+### Modelling COVID-19
+
+- initially, too many unknowns
+- mathematical models
+	- people in 3 compartments
+		- susceptibles
+		- infected
+		- recovered
+	- parameters
+		- $\mu$ … birth/death rate (supposed equal)
+		- $\beta$ … contamination rate
+		- $\gamma$ … recovery rate
+- agent-based models
+	- agents can be heterogenous (individual attributes, individual choices)
+	- more detailed, better explainibility
+	- slower, more complex
+	- need individual behaviour data
+- data collection
+	- place of death
+		- people dying in hospitals (in cities), residence address not always available
+		- leads to overestimating the gravity of the situation
+	- mortality = deaths / cases
+		- how to count the deaths? (what if covid was probably not the real cause of death?)
+		- how to count the cases? (there are asymptomatic cases…)
+- CovPrehension project
+	- modelling the spread
+		- simplified, 1 contact leads to infection
+		- we can calibrate the model based on the reproduction rate
+		- we can introduce physical distancing – but in reality it's not always feasible
+		- some people cannot / don't want to respect distancing
+	- one model not enough to make important political decisions
+	- collective immunity
+	- who should be tested first?
+		- testing symptomatic people is not enough to estimate the number of infected people
+	- designing models
+		- make your hypotheses clear
+		- choose useful attributes, keep agents simple
+		- choose a limited number of parameters, should have a visible impact on the output
+		- output indicators should be measurable from the model and useful to answer the question
