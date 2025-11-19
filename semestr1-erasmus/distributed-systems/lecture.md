@@ -315,3 +315,37 @@
 	- after two consecutive rounds with the same correct processes (no one crashes), we can decide
 	- in every broadcast, we send the values we have collected so far
 		- to ensure that everyone has the same information
+	- this algorithm does not provide uniform agreement
+- how to get uniform agreement?
+	- we can do $f+1$ rounds where $f$ is the number of processes that can crash
+		- 3 rounds without crash would probably also work
+- partially synchronous system
+	- $\Delta$ bound on transition delay and $\beta$ bound on how slow the process can be
+		- both hold eventually
+		- there is a time $T$ (unknown) after which bounds $\beta,\Delta$ will hold forever
+	- $T$ … GST (global stabilization time)
+		- channels can lose messages before GST
+		- channels are quasi-reliable after GST
+	- GSR (global stabilization round) = first round when the system behaves as synchronous
+		- $\exists GSR\gt 0$ s.t. $\forall r\gt GSR,\forall p,q$ correct $(p$ sends $m$ to $q$ in round $r\implies q$ recv $m$ in round $r)$
+	- we don't use a failure detector here
+	- OneThirdRule algorithm
+		- assumption $f\lt \frac n3$
+		- at the start of each round, the process $p$ sends value $x_p$ to all processes
+		- as the process receives messages in the given round
+			- if it gets more at least $n-f$ messages, it sets $x_p$ to the most frequent value received (take the smallest if there are multiple with the same greatest frequency)
+			- if at least $n-f$ values received are equal to a value $v$, it decides $v$
+		- we transition between rounds after predefined time
+			- after GSR, we can guarantee that there is enough time to get all the messages
+	- example
+		- 1 process decides $v$ in round $r_0$
+		- → $n-f$ times $v$ received
+		- → $n-f$ processes proposed $v$
+		- → there cannot exist another $n-f$ processes proposing $v'$
+			- as $(n-f)+(n-f)\gt n$
+	- proof by contradiction
+		- round $r_1$ … smallest round in which a process $q$ changes its value
+		- $q$ received at most $f$ messages with value $\neq v$
+		- $q$ received at most $f$ messages with value $v'$
+		- …
+	- idea: you cannot create a different majority
