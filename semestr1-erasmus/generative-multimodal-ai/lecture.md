@@ -252,3 +252,60 @@
 	- problem: vanishing or exploding gradients
 		- GRU and LSTM units are used to solve this problem
 - attention
+- probabilistic models
+- Kullback-Leibler divergence
+	- non-negative, asymmetric (it's not a distance)
+	- we minimize it in ML
+- latent variables
+	- not observed directly
+	- we try to get a more compact representation based on the observation
+	- examples
+		- speech enhancement: noisy speech (observation) → clean speech (latent variable)
+		- person tracking: detections (observation) → person positions (latent variable)
+		- representation learning: raw data (observation) → representation (latent variable)
+	- we don't wanna put *log* in front of an integral
+- Gaussian mixture model
+	- basic approach to clustering: K-means algorithm
+	- more advanced approach: GMM
+		- EM algorithm
+	- $\mathcal Q$ … expected complete-data log-likelihood
+	- we set $q(z)=p(z|x)$ so $D_{KL}=0$
+- continuous latent variables
+	- linear model – PPCA (probabilistic principal component analysis)
+	- non-linear Gaussian model
+- variational autoencoders
+	- covariance matrix has to be symmetric and positive
+		- we assume the matrix to be diagonal
+		- instead of estimating the variance directly, we estimate the log-variance
+	- the network outputs $\mu_\theta,\eta_\theta$
+		- $z$ goes in, the outputs have the dimension of $x$
+	- posterior distribution cannot be computed analytically, it needs to be approximated
+		- we use another feed-forward network to do that
+		- outputs $\mu_\phi,\nu_\phi$ have the dimension of $z$ (but $x$ goes in)
+	- we “chain” the posterior (encoder) and the generative (decoder) model
+	- learning – ELBO (evidence lower-bound)
+		- beware, the first and third formulas on slide 19 are not the same
+		- we cannot compute the expectation in closed form, we need to sample it
+		- sampling is non-differentiable, we cannot backpropagate
+		- reparametrization trick
+			- instead of sampling directly from the posterior, we sample (…)
+		- we need to change the sign (instead of gradient descent, we maximize ELBO)
+		- posterior collapse
+			- KL term dominates the ELBO – we should reduce its weight
+			- also reducing dimensionality helps (?)
+	- exact EM × VAE
+		- there also exist things in the middle (variational EM)
+	- limitation of VAE
+		- frames modeled independently – we need time/sequential modeling!
+			- for spectrogram, for example
+		- one solution: consider *blocks* of spectrogram as inputs
+	- probabilistic sequential modeling & inference
+		- we can use a RNN
+- generative adversarial network (GAN)
+	- dataset (real samples), generator (fake samples)
+	- discriminator is trying to discriminate between real and generated images
+	- generator and discriminator are trained jointly in a minimax game
+	- difficult equilibrium to work with – if the generator is always caught, it does not know how to improve
+	- JS divergence
+	- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
+	- Wasserstein GAN

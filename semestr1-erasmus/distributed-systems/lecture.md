@@ -347,5 +347,5 @@
 		- round $r_1$ … smallest round in which a process $q$ changes its value
 		- $q$ received at most $f$ messages with value $\neq v$
 		- $q$ received at most $f$ messages with value $v'$
-		- …
+		- … (see lecture notes)
 	- idea: you cannot create a different majority
