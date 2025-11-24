@@ -309,3 +309,44 @@
 	- JS divergence
 	- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
 	- Wasserstein GAN
+
+### Diffusion
+
+- basic division of generative models
+	- explicit density
+		- tractable density
+		- approximate density
+	- implicit density
+		- direct sampling
+		- indirect sampling
+- basic concepts
+	- Brownian motion – continuous random movement of a particle, with increments that are Gaussian and independent
+	- diffusion (in image generation) – we add noise
+	- the goal of the model (DDPM, denoising diffusion probabilistic model) is to remove the noise
+- training
+	- the model should estimate a noise vector from a given noise level $\sigma\gt 0$ and noisy input $x_\sigma$
+	- in practice, noise level $\sigma$ range from 0.01 to 100
+	- we are trying to find an ideal *denoiser* $\epsilon^*$
+		- there is a close-form solution
+		- assumption: $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\epsilon\mid x_\sigma,\sigma]$
+		- steps
+			- replace $\epsilon$ by the forward noise relation $x_\sigma=x_0+\sigma\epsilon\implies\epsilon=\frac{x_\sigma-x_0}{\sigma}$
+				- so we get $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\frac{x_\sigma-x_0}{\sigma}\mid x_\sigma,\sigma]=\frac1\sigma(x_\sigma-\mathbb E[x_0\mid x_\sigma,\sigma])$
+				- and $\mathbb E[x_0\mid x_\sigma,\sigma]=\sum_{x_0\in\mathcal K} x_0\cdot p(x_0\mid x_\sigma,\sigma)$
+			- posterior $p(x_0\mid x_\sigma,\sigma)$
+				- forward step $p(x_0\mid x_\sigma,\sigma)\propto\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})$
+					- equal up to a constant factor (it gets canceled out in the following formula)
+				- Bayes
+					- $p(x_0\mid x_\sigma,\sigma)=\frac{p(x_\sigma\mid x_0,\sigma)p(x_0)}{\sum_{x'_0\in\mathcal K} p(x_\sigma\mid x'_0,\sigma)p(x'_0)}=\frac{\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+						- because $p(x_0)=\frac1{|\mathcal K|}$
+			- we express $\mathbb E[x_0\mid x_\sigma,\sigma]$
+			- we substitute
+- common model architectures
+	- convolutional U-nets
+	- patch-wise transformers
+- reverse denoising process – sampling
+	- for loop, we denoise the data in several steps
+	- DDPM, DDIM (?)
+- flow matching models vs. diffustion models
+	- in flow matching models, we are trying to get a function which maps from one distribution to another
+	- so we need less sampling steps
