@@ -346,10 +346,10 @@
 					- $p_z'\neq 0$
 					- $p_z'=0$
 					- only $p'_x\neq 0$
-			- affine transformation preserve parallelism
-				- parallel lines … $L_1\times L_2=(x,y,0)^T$
-				- $L_1'\times L_2'=H(x,y,0)^T$
-				- if $H$ is affine transformation, it preserves the last 0 (projective transformation might not preserve it)
+		- affine transformation preserve parallelism
+			- parallel lines … $L_1\times L_2=(x,y,0)^T$
+			- $L_1'\times L_2'=H(x,y,0)^T$
+			- if $H$ is affine transformation, it preserves the last 0 (projective transformation might not preserve it)
 - 3D geometry
 	- elementary transformations
 	- parallel projections

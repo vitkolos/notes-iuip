@@ -252,7 +252,7 @@
 	- problem: vanishing or exploding gradients
 		- GRU and LSTM units are used to solve this problem
 - attention
-- probabilistic models
+- probabilistic models – aim to learn a parametric distribution $p_\theta(x)$ that approximates the complex data distribution $p_\mathrm{data}(x)$
 - Kullback-Leibler divergence
 	- non-negative, asymmetric (it's not a distance)
 	- we minimize it in ML
@@ -264,22 +264,35 @@
 		- person tracking: detections (observation) → person positions (latent variable)
 		- representation learning: raw data (observation) → representation (latent variable)
 	- we don't wanna put *log* in front of an integral
-- Gaussian mixture model
-	- basic approach to clustering: K-means algorithm
-	- more advanced approach: GMM
+	- notation
+		- observed variable … $x$
+		- latent variable … $z$
+- simple example: clustering
+	- basic approach: K-means algorithm
+	- point-to-cluster assignment … latent variable
+		- must be inferred with the centroids (parameters of the model)
+	- more advanced approach: Gaussian mixture model
 		- EM algorithm
 	- $\mathcal Q$ … expected complete-data log-likelihood
-	- we set $q(z)=p(z|x)$ so $D_{KL}=0$
-- continuous latent variables
-	- linear model – PPCA (probabilistic principal component analysis)
-	- non-linear Gaussian model
+	- we set $q(z)=p(z\mid x)$ so $D_{KL}=0$
+- we can also consider continuous latent variables
+	- PPCA (probabilistic principal component analysis)
+	- linear × non-linear model
+	- we want to extract a representation $z$ of each $x$
 - variational autoencoders
+	- encoder + decoder
+		- encoder learns $p(z\mid x)$
+		- decoder learns $p(x\mid z)$
+		- we consider Gaussian prior $p(z)$
+		- to infer $z$ from $x$, we can use the encoder
+		- to generate $x$, we can use the prior and the decoder
 	- covariance matrix has to be symmetric and positive
 		- we assume the matrix to be diagonal
 		- instead of estimating the variance directly, we estimate the log-variance
 	- the network outputs $\mu_\theta,\eta_\theta$
 		- $z$ goes in, the outputs have the dimension of $x$
-	- posterior distribution cannot be computed analytically, it needs to be approximated
+		- the model learns $p(x\mid z)$
+	- if $p(x\mid z)$ is non-linear (implemented as deep network), the posterior distribution $p(z\mid x)$ cannot be computed analytically, it needs to be approximated
 		- we use another feed-forward network to do that
 		- outputs $\mu_\phi,\nu_\phi$ have the dimension of $z$ (but $x$ goes in)
 	- we “chain” the posterior (encoder) and the generative (decoder) model
@@ -314,11 +327,11 @@
 
 - basic division of generative models
 	- explicit density
-		- tractable density
-		- approximate density
+		- tractable density → autoregressive
+		- approximate density → VAE
 	- implicit density
-		- direct sampling
-		- indirect sampling
+		- direct sampling → GAN
+		- indirect sampling → diffusion
 - basic concepts
 	- Brownian motion – continuous random movement of a particle, with increments that are Gaussian and independent
 	- diffusion (in image generation) – we add noise
@@ -326,6 +339,7 @@
 - training
 	- the model should estimate a noise vector from a given noise level $\sigma\gt 0$ and noisy input $x_\sigma$
 	- in practice, noise level $\sigma$ range from 0.01 to 100
+		- sampled from a noise schedule
 	- we are trying to find an ideal *denoiser* $\epsilon^*$
 		- there is a close-form solution
 		- assumption: $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\epsilon\mid x_\sigma,\sigma]$
@@ -336,17 +350,18 @@
 			- posterior $p(x_0\mid x_\sigma,\sigma)$
 				- forward step $p(x_0\mid x_\sigma,\sigma)\propto\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})$
 					- equal up to a constant factor (it gets canceled out in the following formula)
-				- Bayes
-					- $p(x_0\mid x_\sigma,\sigma)=\frac{p(x_\sigma\mid x_0,\sigma)p(x_0)}{\sum_{x'_0\in\mathcal K} p(x_\sigma\mid x'_0,\sigma)p(x'_0)}=\frac{\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
-						- because $p(x_0)=\frac1{|\mathcal K|}$
-			- we express $\mathbb E[x_0\mid x_\sigma,\sigma]$
-			- we substitute
+				- Bayes: $p(x_0\mid x_\sigma,\sigma)=\frac{p(x_\sigma\mid x_0,\sigma)p(x_0)}{\sum_{x'_0\in\mathcal K} p(x_\sigma\mid x'_0,\sigma)p(x'_0)}=\frac{\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+					- because $p(x_0)=\frac1{|\mathcal K|}$
+			- so $\mathbb E[x_0\mid x_\sigma,\sigma]= \frac{\sum_{x_0\in\mathcal K} x_0\cdot\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+			- and $\epsilon^*(x_\sigma,\sigma)=\frac{\sum_{x_0\in\mathcal K} (x_\sigma-x_0)\cdot\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sigma\cdot \sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
 - common model architectures
 	- convolutional U-nets
 	- patch-wise transformers
 - reverse denoising process – sampling
-	- for loop, we denoise the data in several steps
-	- DDPM, DDIM (?)
+	- the learned denoiser $\epsilon_\theta(x_\sigma,\sigma)$ estimates $\hat x_0=x_\sigma-\sigma\epsilon_\theta(x_\sigma,\sigma)$
+	- *for loop*, we denoise the data in several steps
+	- DDIM (denoising diffusion *implicit* model) × DDPM (*probabilistic*)
+		- in DDPM, we need to add noise proportional to uncertainty in the denoising steps
 - flow matching models vs. diffustion models
 	- in flow matching models, we are trying to get a function which maps from one distribution to another
 	- so we need less sampling steps
