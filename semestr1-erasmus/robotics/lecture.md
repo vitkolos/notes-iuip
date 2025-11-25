@@ -361,7 +361,7 @@
 	- $\dot q=\frac{dq}{dt}$
 - let's say $x(t)=\cos q(t)$
 	- $\dot x=-\sin(q)\dot q$
-- second exercise: write $\dot x_2,\dot x_2$
+- second exercise: write $\dot x_2,\dot y_2$
 	- then, express this as a multiplication of a matrix and a vector (Jacobian matrix)
 	- how to get $\dot q_1,\dot q_2$ if we know $\dot x_2,\dot y_2$?
 		- we need an inverse of the Jacobian matrix
