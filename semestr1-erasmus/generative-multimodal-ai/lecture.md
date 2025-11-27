@@ -365,3 +365,64 @@
 - flow matching models vs. diffustion models
 	- in flow matching models, we are trying to get a function which maps from one distribution to another
 	- so we need less sampling steps
+- written exam with questions
+	- last class – quizzes about papers, in groups (not graded)
+		- some questions may occur in the exam
+- types of learning
+	- supervised
+	- unsupervised
+	- semi-supervised – training data + a few desired outputs
+- unsupervised learning
+	- useful if we don't have enough annotations
+	- initial approach: pretraining (e.g. ImageNet) & fine-tuning
+		- to fine-tune, we drop the last weight matrix with dimension $f\times 1000$ and replace it with a matrix with dimension $f\times c$ where $c$ is the desired number of classes ($f$ … number of features)
+	- problems
+		- not optimal for every problem (e.g. video, medical)
+		- humans don't need ImageNet pretraining
+	- solution
+		- replace ImageNet pre-training by an unsupervised training (representation learning)
+- autoencoders
+	- input data $x$ → encoder → features $z$ → decoder → reconstructed input data $\hat x$
+		- $z$ typically has less features than $x$
+		- we minimize $\|x-\hat x\|^2$
+	- the encoder learns the representation
+- pretext task
+	- we don't care about this specific task but it helps the model to learn the representations
+	- e.g. relative patch prediction
+		- but it's not that easy
+			- color distortion helps the model cheat the task
+			- solution: drop two channels, replace by Gaussian noise
+	- another task: solving jigsaw puzzles
+		- to make it easier, we can subset 1000 permutations and only train the classifier on them
+	- other tasks
+		- colorization
+		- rotation prediction
+		- super-resolution
+- self-supervised learning – supervision comes from the data (no need to annotate)
+- contrastive learning
+	- goal: to learn features that are discriminative among instances
+	- but we would need too many classes (one for each instance in the training dataset)
+		- non-parametric softmax & memory bank
+	- SimCLR
+		- we have two images $A,B$, apply two random transformations to each of them
+		- so we get four images $A_1,A_2,B_1,B_2$, we want to maximize agreement between the ones based on the same image (e.g. $A_1,A_2$) and minimize agreement between the ones based on different images (e.g. $A_1,B_1$)
+	- MoCo
+		- instead of end-to-end learning or memory bank, we use momentum encoder
+		- we mix the previous parameters of the network with the current one
+	- Dino
+		- vision transformer (ViT)
+			- linear projection of flattened 16×16 patches + *learned* position embedding
+			- additional classifier token
+		- two networks: student and teacher
+- what is a good representation?
+	- we need robustness
+		- appearance changes due to different sensors – infrared vs. normal camera
+		- use of synthetic data
+		- unseen scenarios (e.g. natural disasters)
+		- biased datasets
+- discrepancy-based methods
+	- source and target distributions, we want them to have similar representations
+	- MMD
+	- alignment layers – batch normalization
+	- adversarial-based methods
+	- adaptation through translation
