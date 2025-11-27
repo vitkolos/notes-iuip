@@ -20,3 +20,8 @@
 - il faut que tu aies plus confiance en toi
 - au fur et à mesure que
 	- jak… tak…
+- plus on utilise un réseau, plus il prospère
+- autant j'aime le ski, autant je déteste le foot
+- autant de + que
+- autant que
+- aussi + que
