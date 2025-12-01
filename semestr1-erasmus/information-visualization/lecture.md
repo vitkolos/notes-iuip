@@ -274,3 +274,36 @@
 	- vertices – finding neighbors, degree
 	- paths – finding shortest paths, cycles
 	- graph – finding cliques
+- project
+	- there's a simple python script for processing data
+	- there are some smaller datasets available now
+- visualization of graphs
+	- we can even represent vertices as lines and edges as dots
+	- hierarchical representation – no explicit edges, only hierarchy using enclosure
+	- usual: node-link diagram
+		- challenge – how to layout the nodes (“graph drawing”)
+		- goal: optimize a quality metric (e.g. the number of links crossing)
+		- for planar graphs – there can be no links crossing
+		- sometimes, using attributes to compute the layout may be a good idea
+- node-link layouts
+	- linear layouts
+		- even on a line, choosing the right order of the nodes is an interesting question
+	- radial layouts
+		- nodes on concentric circles
+	- force-directed layout
+		- attractive forces (links) and repulsive forces (nodes)
+		- repulsion of nodes decreases with distance … $\frac1{d^2}$
+		- attraction of two nodes connected by a link increases with distance … $d$
+		- we need to compute the forces for all pairs of nodes
+			- to get the final force of the node, we combine all the partial forces
+		- problem: the initial random layout influences the final layout, there's no determinism
+		- we can add constraints and generate a layout, which uses them
+			- e.g. several nodes have to be on a line
+- node-link edges
+	- edge-bundling
+		- attractive/repulsive forces between segments of links → some links are bundled
+		- very time consuming (quadratic number of edges, quadratic number of segment pairs)
+		- another approach: computation in the pixel space
+	- edge compression
+		- power graph compression
+		- there has to be a stopping condition for edge reduction

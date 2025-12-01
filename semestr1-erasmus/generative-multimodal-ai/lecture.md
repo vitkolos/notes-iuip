@@ -288,7 +288,7 @@
 		- to generate $x$, we can use the prior and the decoder
 	- covariance matrix has to be symmetric and positive
 		- we assume the matrix to be diagonal
-		- instead of estimating the variance directly, we estimate the log-variance
+		- instead of estimating the variance directly, we estimate the log-variance (→ variance is positive)
 	- the network outputs $\mu_\theta,\eta_\theta$
 		- $z$ goes in, the outputs have the dimension of $x$
 		- the model learns $p(x\mid z)$
@@ -426,3 +426,91 @@
 	- alignment layers – batch normalization
 	- adversarial-based methods
 	- adaptation through translation
+- Wasserstein GANs
+	- in our example, the JS divergence is constant → bad
+	- idea: Wasserstein (earth mover's) distance
+		- it is a real distance, not a divergence
+	- in high-dimensional spaces, it is more efficient to compute the dual problem
+	- WGANs have a critic instead of a discriminator
+		- not a competition anymore
+		- the critic is trained to approximate the Wasserstein distance
+		- the generator is trained to minimize this distance
+
+### Evaluation of Generative Models
+
+- objective metrics
+	- Inception Score (IS)
+		- measures *diversity* and *quality* of the data
+		- it uses the Inception classification model
+	- Fréchet Inception Distance
+		- measures the Wasserstein distance
+		- in the feature space
+		- assumes Gaussian distributions
+	- limitations of IS, FID
+		- rely on Inception model trained on ImageNet
+			- trained for classification, might not reflect all the aspects of the image quality
+			- the model might not well reflect the evaluated data
+				- example: spectrograms
+- subjective evaluation
+	- user studies and visual inspection
+	- provide valuable insights
+	- costly
+- hybrid alternative – mean opinion score
+	- crowd-source evaluation technique where human evaluators rate the quality of generated samples on a scale (e.g. 1 to 5)
+	- MOS network trained to predict the score
+
+## Audio
+
+- introduction
+	- we sample the signal using frequency $F_s$
+	- Nyquist-Shannon sampling theorem: we can only reconstruct frequencies $\lt F_s/2$
+	- discrete Fourier transform
+		- but energy for frequencies changes over time
+	- short-time Fourier transform (STFT)
+		- sliding window with a kernel
+		- apply DFT to each segment
+		- the modulus
+	- mel frequency scale
+		- better matches human perception (compared to the linear scale)
+		- mel-frequency cepstral coefficients (MFCC)
+- audio representations based on self-supervised learning
+	- sometimes, part of the representation is not learned (classical audio representations are used)
+	- wav2vec 2.0
+		- masked speech in latent space
+		- architecture similar to STFT, but the transformation is learnt
+	- hidden-unit BERT (HuBERT)
+		- extension of wav2vec 2.0
+		- learns from unlabeled audio
+		- idea: use clustering to generate pseudo-labels for audio segments, then train a model to predict those labels
+	- WavLM
+		- extension of HuBERT
+		- more robust learning objective, more data
+		- relative position bias – attention is affected by the distance between tokens (tokens close to each other should attend more)
+		- gated relative position bias
+	- summary
+		- self-supervised learning (SSL)
+		- architecture: CNN + transformer encoder
+		- loss: contrastive or cross-entropy
+		- use of classical features (like MFCC) when needed
+- end-to-end approaches (audio → audio)
+	- WaveNet
+		- capturing long-range dependencies in an efficient way
+		- unconditioned
+	- SampleRNN
+		- upper tiers summarize longer contexts
+		- lower tiers generate fine-grained details
+	- it's very difficult to capture very long dependencies (like 60 seconds)
+- generating audio from intermediate representations
+	- STFT is invertible but the reconstruction of the audio signal from the spectrogram is not immediate (we used modulus)
+	- we need the phase of the signal
+	- classical approach: Griffin-Lim
+	- learning-based approach: HiFi-GAN
+	- Tacotron
+		- end-to-end TTS model
+		- maps character or phoneme sequences to Mel-spectrograms
+		- no need for hand-crafted linguistic features
+		- typically used together with WaveNet or HiFi-GAN to generate the final waveform from the predicted spectrogram
+	- AnCoGen
+		- masked-modeling-based model
+		- idea: map the spectrogram to attributes (pitch, SNR, reverbation, content, …)
+- exam: open-book
