@@ -349,3 +349,71 @@
 		- $q$ received at most $f$ messages with value $v'$
 		- … (see lecture notes)
 	- idea: you cannot create a different majority
+- (broken) consensus algorithms that don't satisfy one of the criteria
+	- only validity & uniform agrement – we don't need to do anything
+	- only uniform agreement & termination – decide “1”
+	- only validity & termination – everyone decides their own proposed value
+- Floodset algorithm
+	- $W_p=\set{v_p}$ … everyone starts with a value
+	- in round $r$
+		- send $W_p$
+		- on recv $W_q:W_p=W_p\cup W_q$
+		- at round $f+1:$ decide $\min W_p$
+- does Floodset satisfy uniform agreement?
+	- there exists one round when no process crashes
+	- $\implies$ everyone not crashed has the same $W_p$
+	- if we used round $f$ instead, it would not satisfy uniform agreement (counterexample: one crash every round – there could be a process $p$ having a different $W_p$ than the other processes)
+
+### In Practice
+
+- older algorithms – before distributed systems, based on mathematical models, very complex (implementations actually quite close to Raft)
+	- Paxos – consensus on one value
+	- MultiPaxos
+- Raft 2015
+	- used in MongoDB, Kubernetes
+	- clients, multiple servers
+	- one server is a leader, the other are followers
+	- clients send requests to the leader server
+	- leader has a log of values received by the clients, periodically sends updates to everyone
+	- if no one crashes, it is correct
+	- if the leader crashes
+		- some followers may have different state than the other ones → inconsistency
+		- if the leader performs some external actions and crashes before delivering all the values to all the follower, we lose uniform agreement
+		- note: if the leader receives a value and crashes without doing anything else, it's alright (every system has this property)
+	- leader sends ACK to the client after $f+1$ processes (the leader & $f$ followers) successfully received the value
+	- usually, $n=2f+1$
+	- it's based on timeouts
+		- there is an empty packet exchange if there are no changes to propagate
+		- if there is a period when the timeouts are exceeded, the system can recover
+		- usual timeout – 150 ms (the local latency in datacenters is under 1 ms)
+	- what happens if the leader crashes
+		- the followers don't receive the periodic message (heartbeat) from the leader → they now the leader crashed
+		- every follower has a timer, after this time the follower broadcasts “I'm the leader”
+			- if it receives enough ACKs from the other processes (majority = $f+1$ including myself), it becomes the new leader
+		- what if there are two proposed leaders?
+			- if one gets the majority → it becomes the leader (and broadcasts its leadership – we assume honesty)
+			- no one gets the majority → another round
+	- another approach
+		- everyone pings everyone – so everyone has a list of alive processes
+		- if the leader fails, the machine with the lowest ID becomes the new leader
+		- but this requires sending more traffic over the network
+	- in iCloud and similar storages
+		- 3 servers, than tape storage (or something like that)
+- leader change procedure
+	- the logs may only differ in the latest value(s)
+	- some processes may have more values than the newly elected leader
+	- leader retrieves the values from everyone (in some types of systems) and then propagates the new values to everyone
+	- were the new values acknowledged?
+		- we don't know
+		- there is no good approach to address this
+		- they are probably not ACKed (again)
+	- in Raft: message, then ACK, then commit message
+		- so we know the state of the data (if the data is committed or not)
+- recovery
+	- if $f+1$ server are in the error state, game over
+	- if a server reconnects to the system
+		- if it's been offline for a short period of time, it downloads the new values
+		- if it's been offline for longer (or it's a new server), it downloads the *snapshot* and the values
+	- recovery process is very intense – the servers must be ready for it
+		- some companies run the servers on 10% load
+- main problem – timers
