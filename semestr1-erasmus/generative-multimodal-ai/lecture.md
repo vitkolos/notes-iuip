@@ -513,4 +513,7 @@
 	- AnCoGen
 		- masked-modeling-based model
 		- idea: map the spectrogram to attributes (pitch, SNR, reverbation, content, …)
+		- ratio – used for masking
+			- (0,1) → audio non-masked, attributes masked
+			- masking can be partial (e.g. 0.7)
 - exam: open-book
