@@ -459,7 +459,7 @@
 	- crowd-source evaluation technique where human evaluators rate the quality of generated samples on a scale (e.g. 1 to 5)
 	- MOS network trained to predict the score
 
-## Audio
+### Audio
 
 - introduction
 	- we sample the signal using frequency $F_s$
@@ -517,3 +517,66 @@
 			- (0,1) → audio non-masked, attributes masked
 			- masking can be partial (e.g. 0.7)
 - exam: open-book
+
+### Image Generation
+
+- variational autoencoders (VAEs)
+	- encoder (predicts distribution in latent space) + decoder (predicts distribution in feature space)
+	- we want the latent space to be close to Gaussian (?)
+		- (that's what KL divergence does?)
+	- dimensions in latent space may correspond to some properties of the objects in the image
+	- we can do linear interpolation – we encode two images, “mix” them (in some ratio), then decode
+- GANs
+	- basics
+		- minimax objective function
+		- gradient ascent on discriminator
+		- gradient descent on generator
+	- Progressive GAN – training layer by layer (we start by training simple small layers, then add larger layers)
+	- BigGAN
+	- style stransfer
+		- we want to take content from one image and style from the other one
+		- we don't want to transfer only color but also brush strokes
+		- architecture: VGG encoder → normalization tricks → decoder
+		- we don't change the structure of the original image, we change statistical properties of its patches (to get different style)
+		- to compute loss, we need another VGG encoder
+	- style-based GAN
+		- traditional approach: latent vector comes from the source image
+		- style-based GAN starts with learned constant tensor, adds noise and style (in each layer)
+			- we swap source images at some point in the process to get the mix of style and content
+- image-to-image translation
+	- we assume we have access to $p(x,y)$ and train model to sample $y\sim p(y\mid x)$
+		- or $x\sim p(x\mid y)$
+	- Pix2Pix
+	- we use GAN, discriminator gets both images (we want the generated images to be both plausible and to correspond to the original image)
+	- U-Net, uses skip connections from the encoder to the decoder (not everything has to be encoded in the latent space)
+	- example: generating image based on segmentation
+		- we can use a trained segmentation model to segment the generated image
+		- then, we can apply metrics used for image segmentation evaluation
+	- smarter discriminator
+		- instead of predicting only one score (on the scale from real to fake), we can predict multiple scores (one for each region of the image)
+		- this doesn't work for too small regions – “is this pixel realistic?” is not a good question (the discriminator cannot see patterns, only colors of individual pixels)
+	- we don't always have $p(x,y)$
+		- example: you may have many images of horses and many images of zebras, but never a pair of corresponding images
+		- CycleGAN
+			- cycle-consistency loss
+			- if we generate zebra based on a horse, we want to be able to generate horse based on the zebra and get the same horse as before
+			- not using U-Net
+		- let's have a shared latent space!
+			- so we have two encoders (one for zebra, one for horse) and two decoders that share the same latent space
+		- geometry-consistency
+			- we check how well the model works for transformed images (we then inverse the transformation and compared with the result for untransformed image)
+- high resolution images
+	- Pix2PixHD
+	- we don't want to use many layers – you lose information
+	- architecture similar to style-based GAN
+	- struggles with uniform surfaces
+- video generation
+	- we need temporal consistency
+	- we could do 3D convolution instead of 2D convolution
+		- but we would need a lot of data
+	- we could consider static background and moving objects
+		- so we generate static background (image) and two videos – foreground and mask (ratio for mixing the foreground and background)
+	- let's generate a trajectory of vectors in latent space we can then pass to a decoder
+		- fixed-length videos only
+		- no control over motion and content
+	- video discriminator
