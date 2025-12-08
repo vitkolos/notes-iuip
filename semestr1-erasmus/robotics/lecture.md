@@ -592,3 +592,27 @@
 	- $R$ … noise on the vector $z$ (measurement)
 	- $h(\mu_b)$ … predicted observation
 	- $z^m-h(\mu_b)$ … innovation
+- example
+	- $h(x)=\mathrm{atan}(\frac{L_y}{L_x-x})$
+	- $H=\frac{\partial h}{\partial x}\bigg\vert_{\mu_b}$ … a number
+- example: GPS
+	- $S=(x,y,\theta)$
+	- $h(S)=\begin{bmatrix}x\\ y\end{bmatrix}$
+	- $H=\begin{bmatrix}1&0&0\\ 0&1&0\end{bmatrix}$
+	- $R=\begin{bmatrix}\sigma_1^2&0\\ 0&\sigma_2^2\end{bmatrix}$
+		- if we (wrongly) assume the errors are independent
+- example: compass
+	- $h(S)=\theta$
+	- $H=[0,0,1]$
+- example
+	- $h(S)=\begin{bmatrix}\sqrt{x^2+y^2}\\ \mathrm{atan2}(-y,-x)-\theta\end{bmatrix}$
+	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}}&\frac y{\sqrt{x^2+y^2}} & 0\\ *&\dagger &-1\end{bmatrix}$
+- how to implement EKF
+	1. define the state
+	2. determine the expressions of $f,h$
+	3. compute the Jacobians $\frac{\partial f}{\partial S},\frac{\partial f}{\partial U},\frac{\partial h}{\partial S}$
+	4. we need the covariance matrices $Q,R$
+- EKF is a heuristic solution (we are performing linearization)
+- initial $\mu,P$ depends on the problem
+	- when estimating the initial $P$ (“errors”), we may assume independence
+- usual problems: SLAM, cooperative localization, self-calibration
