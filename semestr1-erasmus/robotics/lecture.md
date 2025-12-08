@@ -544,7 +544,51 @@
 		- we need to get $\eta$ by computing $P(z\mid L)P(L)$ for every $L$ and making sure $P(L'\mid z)$ sums to 1
 			- in other words, $\eta=\frac1{\sum_{L} P(z\mid L)P(L)}$
 - sometimes, we can assume that the functions are linear and the (error) distributions are Gaussian
-	- then, everything is Gaussian
+	- then, everything is Gaussian (we get convolution of two Gaussians which is a Gaussian)
 	- we only need mean (vector) and variance (covariance matrix – symmetric and positive semi-definite)
 	- → Kalman filter
 	- if the assumptions don't hold, we may use a heuristic solution (extended Kalman filter)
+- reminder (simplified)
+	- $P(S_i\mid U_i)=\int dS_{i-1}\; P(S_i\mid S_{i-1}u_i)P(S_{i-1})$ … action
+	- $P(S_i\mid Z_i)=\eta P(z_i\mid S_i)P(S_i)$ … perception
+- let's say $x$ is a random variable with Gaussian distribution
+	- $x=N(\mu,\sigma^2)$
+	- $P(x)=\frac1{\sqrt{2\pi\sigma^2}}\exp(-\frac12\frac{(x-\mu)^2}{\sigma^2})$
+	- mean value $\braket{x}=\int_{-\infty}^\infty dx\; xP(x)$
+	- variance $\braket{(x-\braket{x})^2}$
+- let's consider $P(x_1,x_2)$
+	- covariance matrix
+- vector case
+	- mean vector $\mu$
+	- covariance matrix $P$
+	- before … $\mu_b,P_b$
+	- after … $\mu_a,P_a$
+- we need to approximate a non-linear function with a linear function
+	- $g(x)\approx g(x_0)+\frac{dg}{dx}\bigg\vert_{x_0}(x-x_0)$
+	- so $f(S_{i-1},U_i)=f(\mu_b,u^m)+\frac{\partial f}{\partial S}\bigg\vert_{\mu_b,u^m} (S_{i-1}-\mu_b)+\frac{\partial f}{\partial U}\bigg\vert_{\mu_b,u^m} (U_i-u^m)$
+- extended Kalman filter (EKF) prediction
+	- $\mu_a=f(\mu_b,u^m)$
+	- $P_a=F_xP_bF_x^T+F_uQF_u^T$
+	- $Q$ … covariance of the noise of the measurement
+- example: wheel
+	- $x_i=x_{i-1}+R\alpha_i$
+	- $f(S,u)=S+Ru$
+	- $\mu_a=\mu_b+R\alpha^m$
+	- $F_x=1$
+	- $F_u=R$
+	- $P_a=\sigma^2_a=\sigma^2_b+R^2\sigma_q^2$
+- example: differential drive
+	- we have
+		- $\delta\rho=\frac{s^R+s^L}2$
+		- $\delta\theta=\frac{s^R-s^L}{b}$
+		- $f(S,u)=\begin{bmatrix}x+\delta\rho\cos\theta\\ y+\delta\rho\sin\theta \\ \theta+\delta\theta\end{bmatrix}$
+		- so $f(S,u)=\begin{bmatrix}x+\frac{s^R+s^L}2\cos\theta\\ y+\frac{s^R+s^L}2\sin\theta \\ \theta+\frac{s^R-s^L}{b}\end{bmatrix}$
+	- $F_x$ … Jacobian of $f$ w.r.t. $(x,y,\theta)$
+	- $F_u$ … Jacobian of $f$ w.r.t. $(s^R,s^L)$
+	- $Q$ … covariance for $(s^R,s^L)$
+- after an exteroceptive measurement
+	- $\mu_a=\mu_b+P_bH^T[HPH^T+R]^{-1}(z^m-h(\mu_b))$
+	- $P_a=P_b-P_bH^T[HP_bH^T+R]^{-1}HP_b$
+	- $R$ … noise on the vector $z$ (measurement)
+	- $h(\mu_b)$ … predicted observation
+	- $z^m-h(\mu_b)$ … innovation
