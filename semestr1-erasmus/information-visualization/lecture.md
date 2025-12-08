@@ -290,6 +290,7 @@
 		- even on a line, choosing the right order of the nodes is an interesting question
 	- radial layouts
 		- nodes on concentric circles
+		- may be based on the selected node
 	- force-directed layout
 		- attractive forces (links) and repulsive forces (nodes)
 		- repulsion of nodes decreases with distance … $\frac1{d^2}$
@@ -307,3 +308,43 @@
 	- edge compression
 		- power graph compression
 		- there has to be a stopping condition for edge reduction
+- adjacency matrix
+	- vertices as rows and columns, edges as intersections
+	- symmetrical for undirected graphs
+	- we can represent all edges without overlapping or occlusion
+	- hard to encode attributes of vertices – we can use the width of the line
+	- patterns
+		- central nodes – a lot of connections in one row/column
+		- cliques – “squares”
+			- if the rows/columns are in the correct order
+			- → 1D layout problem, minimization of distances between vectors
+			- we can use clustering
+		- off-diagonal block pattern – kind of bipartite (sub)graph
+		- bands pattern – “rings”
+		- noise anti-pattern
+			- hard to distinguish from badly ordered rows
+		- bandwidth anti-pattern
+			- if we sort the nodes in some special way (by their degree?)
+			- it looks interesting but there's not interesting structure in the graph
+	- Reorderable matrices (Bertin)
+		- undirected bipartite graph → rectangular adjacency matrix
+		- some reordering can be automatic, some can be manual
+	- TableLens – spreadsheet with graphical visualization of attributes
+	- for large graphs, node-link outperforms adjacency matrices only on tasks involving finding path
+- trees
+	- definition – DAG?
+	- every vertex points to its parent (and stores other attributes)
+	- tasks
+		- find parent/children/siblings of a node
+		- size/width/depth of a subtree
+		- path to a node
+	- layouts – node-link or nested
+	- node-link
+		- first approach
+			- vertical coordinate corresponds to depth
+			- to get horizontal coordinates, we start from the leaves and assign each leaf its coordinate (for parents, we can average their children or the leaves)
+		- second approach
+			- the same as first but in polar coordinates
+		- collapsible subtrees
+			- collapsed subtrees are represented by triangles (which corresponding width, height, and color)
+		- to get enough space, we may use hyperbolic geometry → we get infinite space (but infinitely small nodes at the edge of the circle)
