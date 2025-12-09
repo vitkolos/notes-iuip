@@ -24,7 +24,7 @@
 	- utility-based agent
 		- in case of conflicting goals or uncertain effects
 - performance vs. utility
-- properties of environments
+- 5 properties of environments
 	- accessibility
 		- are all the relevant aspects of the environment instantly available to the agent? → we don't need to maintain an internal state
 	- determinism
@@ -352,3 +352,76 @@
 		- choose useful attributes, keep agents simple
 		- choose a limited number of parameters, should have a visible impact on the output
 		- output indicators should be measurable from the model and useful to answer the question
+
+## Agent Control
+
+- basic types
+	- procedural – limited
+	- learned – needs data, prone to biases
+	- control by planning – goal oriented behavior, BDI architecture
+- difficulties of planning
+	- environment – dynamic, partially observable, continuous
+	- perception errors
+	- goals – …
+	- actions
+	- other agents
+- classical planning problem
+	- many simplifying assumptions
+	- …
+- model of the problem – we need a formal description of all the following elements
+	- initial state
+	- list of goals
+	- set of actions – with their preconditions and effects
+- one approach: situation calculus
+	- basic elements
+		- actions
+		- fluents – describe the state of the world
+		- situations – sequence of (past) actions
+	- domain then consists of
+		- world state descriptions (fluents)
+		- actions (one precondition axiom per action + effect axioms)
+		- successor state axioms (one per fluent; how fluents change over time)
+	- how situations work
+		- let's say we are in situation $S$
+		- then $S'=\mathrm{Do}(\mathrm{action}(\dots),S)$ is the situation after performing *action*
+		- so the situations store the history
+	- action preconditions and effects
+		- *Poss*
+		- block world example of precondition: Poss(move(x,y,z),S) <-> clear(x,S) & on(x,y,S) & clear(z,S)
+	- frame problem
+		- successor state axioms solve it
+- definition: plan
+	- set of plan steps
+	- set of ordering constraints (timing of steps) – what needs to happen before what; total or partial order
+	- set of variables
+	- set of causal links between steps
+- several types of plans: linear, non-linear, hierarchical
+- examples: recipe, itinerary, hanoi towers
+- planning algorithms
+	- properties: soundness (produces only correct solutions), completeness (produces all existing solutions), optimality (finds the best solution first), speed
+	- we can use graph search algorithms: DFS (possible endless loop if tree-search used on a graph), BFS, A\*
+		- *expand*, *insert*
+		- forward chaining – what can we do at this point?
+		- backward chaining – what can lead us to our goal?
+	- linear planning
+		- means-end analysis – tries to reduce the difference between the current state and the goal
+		- STRIPS – implements means-end analysis
+		- Sussman anomaly – if we divide the goal (conjuction) into subgoals, we may get suboptimal plans
+		- linear plan = sequence of actions
+		- linear planning – summary
+			- state space
+			- operators – transitions between states
+			- test function (is goal reached?)
+			- path cost (how many steps)
+			- progressive × regressive (forward or backward chaining)
+		- advantages
+			- reduced search space – goals solved one at a time
+				- advantageous if goals are independent (but they may often conflict!)
+			- sound – only finds correct plans
+		- disadvantages
+			- may produce suboptimal solutions
+			- incomplete
+	- non-linear planning
+		- considers all goals at the same time
+		- more complex
+		- may be parallelized
