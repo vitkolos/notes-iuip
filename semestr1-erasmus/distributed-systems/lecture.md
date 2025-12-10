@@ -474,8 +474,10 @@
 				- broadcast `<Echo,v>`
 			- when receive `<Echo,v>` from $n-f$ distinct nodes
 				- broadcast `<Vote,v>`
+				- here, we would usually decide (but we cannot as some processes may get stuck without deciding → we need to tell them!)
 			- when receive `<Vote,v>` from $f+1$ distinct nodes
 				- broadcast `<Vote,v>`
+				- if a process receives $f+1$ votes, it means that there is at least one honest process willing to decide
 			- when receive `<Vote,v>` from $n-f$ distinct
 				- decide $v$
 	- two parts – OTR and voting phase
