@@ -417,3 +417,69 @@
 	- recovery process is very intense – the servers must be ready for it
 		- some companies run the servers on 10% load
 - main problem – timers
+- reminder – Raft, goal: achieve consensus, crash-stop model
+- OneThirdRule algorithm – exercises
+	- example of univalent configuration – everyone starts with the same value (or everyone but one process…)
+	- if more than $f$ processes crash, termination is broken
+## Byzantine
+
+- example: when broadcasting, the process sends its value to a subset of the processes
+	- it can be the fault of the network or of the process
+	- whose fault is this?
+		- the process who did not receive the message thinks the sender is faulty
+		- other processes think the receiver is faulty
+- so the byzantine process (node)…
+	- can send the value or not
+	- can equivocate (send different values to different processes)
+- byzantine processes can do whatever they want
+- we consider the byzantine processes as faulty
+	- so we assume there are up to $f$ byzantine processes
+	- using OTR (OneThirdRule), can 2 correct processes decide two different values?
+		- no, byzantine processes can only achieve *non termination* of some or all nodes
+	- can byzantine processes create a network partition?
+		- yes, byzantine processes can make some nodes terminate and some not
+		- this may cause a problem – if some processes think the payment has been made and some think it has not
+- undetectable bitflips happen cca every 10–20 PB of data transmitted over the network
+- Raft is not tolerant to byzantine fault model (consider byzantine leader)
+- we won't have (strong) termination in byzantine model
+- we'll consider weak termination
+	- leader is honest → everyone terminates & decides the value of the leader
+	- leader is malicious → every honest node decides the same value OR no one decides
+- we consider leader-based (broadcast) approaches here
+- numbers of processes required to tolerate faults
+	- consensus … $n\geq 2f+1$
+	- byzantine … $n\geq 3f+1$
+- proof
+	- $t$ … threshold of messages before making a decision
+	- $n=d+h$ (nodes = dishonest + honest)
+	- we know $t\leq h$, because $d$ nodes may never send their values
+	- $d$ dishonest nodes may try to split the honest nodes in 2
+		- every honest node receives $d+\frac h2$ times the same value
+		- clearly $t\gt d+\frac h2$
+	- we get $h\geq t\gt d+\frac h2$
+		- $h\gt d+\frac h2$
+		- $d\lt\frac h2$
+		- $2d\lt n-d$
+		- $n\gt 3d$
+	- so $n\geq 3f+1$ to tolerate byzantine processes
+- byzantine-tolerant algorithm: Bracha '89
+	- requires eventual synchrony
+	- assumes $n\geq 3f+1$
+	- broadcast algorithm – leader broadcasts and everyone decides
+	- algorithm
+		- leader
+			- broadcasts value to all (or not – if byzantine)
+		- all nodes
+			- when receive $v$ from leader
+				- broadcast `<Echo,v>`
+			- when receive `<Echo,v>` from $n-f$ distinct nodes
+				- broadcast `<Vote,v>`
+			- when receive `<Vote,v>` from $f+1$ distinct nodes
+				- broadcast `<Vote,v>`
+			- when receive `<Vote,v>` from $n-f$ distinct
+				- decide $v$
+	- two parts – OTR and voting phase
+- many years later: PBFT (practical byzantine fault tolerance)
+	- the code had many bugs
+	- until ~2010 no correct implementation of byzantine fault tolerant system
+- in practice, leader sends signed values → we know who misbehaved
