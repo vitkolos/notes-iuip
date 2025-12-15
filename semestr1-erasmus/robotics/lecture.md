@@ -587,7 +587,7 @@
 	- $F_u$ … Jacobian of $f$ w.r.t. $(s^R,s^L)$
 	- $Q$ … covariance for $(s^R,s^L)$
 - after an exteroceptive measurement
-	- $\mu_a=\mu_b+P_bH^T[HPH^T+R]^{-1}(z^m-h(\mu_b))$
+	- $\mu_a=\mu_b+P_bH^T[HP_bH^T+R]^{-1}(z^m-h(\mu_b))$
 	- $P_a=P_b-P_bH^T[HP_bH^T+R]^{-1}HP_b$
 	- $R$ … noise on the vector $z$ (measurement)
 	- $h(\mu_b)$ … predicted observation
@@ -610,9 +610,47 @@
 - how to implement EKF
 	1. define the state
 	2. determine the expressions of $f,h$
-	3. compute the Jacobians $\frac{\partial f}{\partial S},\frac{\partial f}{\partial U},\frac{\partial h}{\partial S}$
+	3. compute the Jacobians $F_x=\frac{\partial f}{\partial S},F_u=\frac{\partial f}{\partial U},H=\frac{\partial h}{\partial S}$
 	4. we need the covariance matrices $Q,R$
 - EKF is a heuristic solution (we are performing linearization)
 - initial $\mu,P$ depends on the problem
 	- when estimating the initial $P$ (“errors”), we may assume independence
 - usual problems: SLAM, cooperative localization, self-calibration
+- example: differential drive
+	- we cannot measure the distance of the wheels and the radii of the wheels precisely
+	- also, there's a noise on the sensor
+	- $S=(x,y,\theta,\delta^R,\delta^L,\delta^b)$
+		- $\delta$ … calibration parameters
+		- real shift of the right wheel = $s^R\cdot \delta^R$
+		- real distance of the wheels = $b\cdot\delta^b$
+	- $u=(s^R,s^L)$
+	- we define $f(S,u)$ using the following expressions (without the lower indices)
+		- $x_i=x_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \cos\theta_{i-1}$
+		- $y_i=y_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \sin\theta_{i-1}$
+		- $\theta_i=\theta_{i-1}+\frac{s^R\delta^R_{i-1}-s^L\delta_{i-1}^L}{b\delta^b_{i-1}}$
+		- for $\delta^R,\delta^L,\delta^b$ it holds that $\delta_i=\delta_{i-1}$
+	- we define $h(S)=\sqrt{x^2+y^2}$
+	- $F_x=\begin{bmatrix} 1 & 0 & -\delta\rho\sin\theta & \frac{s^R}2\cos\theta & \frac{s^L}2\cos\theta & 0 \\ 0 & 1 & \delta\rho\cos\theta & \frac{s^R}2\sin\theta & \frac{s^L}2\sin\theta & 0 \\ 0 & 0 & 1 & \frac{s^R}{b\delta^b} & \frac{-s^L}{b\delta^b} & ? \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0&0&0&0&1&0 \\ 0&0&0&0&0&1 \end{bmatrix}$
+		- where $\delta\rho=\frac{s^R\delta^R+s^L\delta^L}2$
+		- we can write $F_x$ as four blocks: $F_x^R,F^C$, then $O,I$
+	- we also compute $F_u$ (six rows, two columns)
+		- two blocks: $F_u^R$ (robot) and $O$
+	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}} & \frac y{\sqrt{x^2+y^2}} & 0 & 0&0&0\end{bmatrix}$
+		- two blocks: $H^R,O$
+	- $Q$ … 2×2 matrix (usually diagonal)
+	- $R$ … positive scalar
+	- let's consider
+		- $P_b=\begin{bmatrix} P^R & O \\ O & P^C\end{bmatrix}$
+		- $P^C$ … diagonal matrix with $0.1^2$ on the diagonal
+		- upper indices
+			- $R$ … robot
+			- $C$ … calibration
+		- then $\mu$ does not get updated for the three parameters $\delta$
+			- because $P_bH^T$ has a zero block there
+		- so we need to use $P^{RC}$ instead – like this: $P_b=\begin{bmatrix} P^R & P^{RC} \\ (P^{RC})^T & P^C\end{bmatrix}$
+	- we start with $P^{RC}=O$ (zero matrix), we'll show that after some time we get non-zero matrix
+		- $P_a=F_xP_bF_x^T+F_uQF_u^T$
+		- for the second term, we get three zero blocks so it does not influence $P^{RC}$
+		- for the first term, we get $F_xP_bF_x^T=\begin{bmatrix} F_x^RP^RF_x^{RT}+F^CP^CF^{CT} & F^CP^C \\ P^CF^{CT} & P^C\end{bmatrix}$
+		- so we get a non-zero correlation
+		- to make sure we are calibrating, we should prove that the update of $P$ reduces $P^C$ over time
