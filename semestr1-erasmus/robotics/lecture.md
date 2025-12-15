@@ -701,3 +701,4 @@
 	- $\dot S=f_0(S)+u_1f_1(S)+\dots+u_mf_m(S)$
 	- $\dot{\begin{bmatrix}x\\ y\\ \theta\end{bmatrix}}=\underbrace{\begin{bmatrix}0\\0\\0\end{bmatrix}}_{f_0(S)}+v\underbrace{\begin{bmatrix}\cos\theta \\ \sin\theta \\ 0\end{bmatrix}}_{f_1(S)}+\omega \underbrace{\begin{bmatrix}0\\0\\1\end{bmatrix}}_{f_2(S)}$
 	- Lie derivatives
+	- next time: SLAM
