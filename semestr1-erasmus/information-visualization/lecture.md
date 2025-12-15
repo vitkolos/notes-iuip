@@ -291,6 +291,7 @@
 	- radial layouts
 		- nodes on concentric circles
 		- may be based on the selected node
+			- it's better if the animation uses linear interpolation of polar coordinates
 	- force-directed layout
 		- attractive forces (links) and repulsive forces (nodes)
 		- repulsion of nodes decreases with distance … $\frac1{d^2}$
@@ -300,6 +301,7 @@
 		- problem: the initial random layout influences the final layout, there's no determinism
 		- we can add constraints and generate a layout, which uses them
 			- e.g. several nodes have to be on a line
+			- Cola.js library
 - node-link edges
 	- edge-bundling
 		- attractive/repulsive forces between segments of links → some links are bundled
@@ -347,4 +349,21 @@
 			- the same as first but in polar coordinates
 		- collapsible subtrees
 			- collapsed subtrees are represented by triangles (which corresponding width, height, and color)
+			- SpaceTree
 		- to get enough space, we may use hyperbolic geometry → we get infinite space (but infinitely small nodes at the edge of the circle)
+		- it's probably a bad idea to use 3D for trees
+	- nested layouts
+		- TreeMap
+		- nodes are rectangles, parents enclose their children (their subtrees)
+		- if leaves have attributes (values) we can sum to get values for their parents, these attributes can correspond to the area (e.g. sizes of files)
+			- simple implementation: we switch between splitting horizontally and vertically (slice and dice)
+				- we still need to define traversal order
+				- we have no control over aspect ratio
+					- it's hard to compare areas of rectangles with too different aspect ratio
+		- edges correspond to the enclosure
+		- how to make the hierarchy understandable?
+			- we can use colors and text orientation
+		- nested circles waste a lot of space but look nicer
+	- mixed layouts
+		- Elastic Hierarchies
+- one last lecture: exam preparation, we can go through the questions on the exam (we can see what we don't understand – then go through it together)
