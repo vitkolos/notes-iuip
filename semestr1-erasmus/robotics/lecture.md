@@ -654,3 +654,50 @@
 		- for the first term, we get $F_xP_bF_x^T=\begin{bmatrix} F_x^RP^RF_x^{RT}+F^CP^CF^{CT} & F^CP^C \\ P^CF^{CT} & P^C\end{bmatrix}$
 		- so we get a non-zero correlation
 		- to make sure we are calibrating, we should prove that the update of $P$ reduces $P^C$ over time
+
+### State observability
+
+- the hallway is aligned with X axis, robot moves
+	- if the hallway is uniform, I will be lost along the X axis for sure (I cannot estimate X)
+	- all the initial state that differ only in the X coordinate are indistinguishable
+- let's assume we are always in 2D
+- $S=(x,y,\theta)$
+- exteroceptive sensors
+	- distance from the origin
+	- bearing of the origin in the local frame
+	- bearing of the robot in the global frame
+- $u(t),z(t)$ for $t\in[0,T]$
+- suppose we know distance from the origin $z(0)$ and we know the bearing of the origin in the local frame, but we don't know the bearing of the robot in the global frame
+	- so $x$ is not observable
+		- the initial state of the robot could be anywhere on the circle with the radius $z(0)$
+	- but $x^2+y^2$ is observable
+- suppose we know the bearing of the robot in the global frame and the traveled distance + the robot only travels on a straight line
+	- just by using three measurements of the bearing, we can get the exact position of the robot
+	- so the state $S$ is observable
+- question: is there such a motion we can perform to find the exact initial state?
+- observability rank condition
+	- state $S$ with $n$ components
+	- can we determine the initial state by performing continuous measurement?
+	- we have $n$ unknowns
+		- we don't need to find them
+		- we just want to say if they are observable or not
+	- classical problem … $Ax=b$
+		- observable if $\det A \neq 0$
+	- or if we know that $g_1(x_1,\dots,x_n)=0,\dots,g_n(x_1,\dots,x_n)=0$
+		- inverse function theorem
+		- we can find such $x_1,\dots,x_n$ if $\det J\neq 0$
+	- $z(t)=h(S(t))$
+	- so $z(0)=h(S(0))$
+	- there's a theorem that we can transform $z(t)$ and $u(t)$ into functions dependent on the initial state
+	- we need continuous description of state
+	- we have $s_i=f(s_{i-1},u_i)$ and $z_i=h(s_i)$
+	- we need something like $\dot s=f(s,u)$
+	- we had $x_i=x_{i-1}+\delta\rho\cos\theta_{i-1}$
+		- $x_i-x_{i-1}=\delta\rho\cos\theta_{i-1}$
+		- so we get $\dot x=v\cos\theta$
+		- $\dot y=v\sin\theta$
+		- $\dot\theta=\omega$
+	- then $u=(v,\omega)$ … linear speed, angular speed
+	- $\dot S=f_0(S)+u_1f_1(S)+\dots+u_mf_m(S)$
+	- $\dot{\begin{bmatrix}x\\ y\\ \theta\end{bmatrix}}=\underbrace{\begin{bmatrix}0\\0\\0\end{bmatrix}}_{f_0(S)}+v\underbrace{\begin{bmatrix}\cos\theta \\ \sin\theta \\ 0\end{bmatrix}}_{f_1(S)}+\omega \underbrace{\begin{bmatrix}0\\0\\1\end{bmatrix}}_{f_2(S)}$
+	- Lie derivatives
