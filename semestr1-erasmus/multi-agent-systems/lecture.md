@@ -425,3 +425,85 @@
 		- considers all goals at the same time
 		- more complex
 		- may be parallelized
+
+## Working Together
+
+- coordination of multiple agents
+	- local decision
+	- global goal
+	- anticipate other agents' behavior
+- multiplication and specialization of agents increase effectiveness (redundancy, economy of scale), but also introduce some challenges (communication, making rational choices, planning, cooperation, coordination, negotiation)
+- coordination
+	- additional information processing we need to perform when multiple agents pursue goals (if there was only a single agent, it would not perform these processing steps)
+	- managing dependencies between agents
+	- purpose of coordination … increase effectiveness with increasing number of agents
+- reflex agents – reactive coordination
+	- no planning, no direct communication with other agents
+	- methods for reactive coordination: stimergy (pheromones, radioactive crumbs), force fields, behavior rules (boids)
+- cognitive coordination
+	- planning, communication (e.g. ContractNet), organization (e.g. form coalitions)
+	- self-interested vs. benevolent agents
+		- problem-solving in benevolent system … cooperative distributed problem solving
+		- self-interested agents → game theory
+	- are the goals compatible, resources sufficient, and skills (of individual robots) sufficient?
+		- compatible goals & sufficient resources & sufficient skills → disinterest, independance
+		- compatible goals (but missing skills or resources or both) → cooperation
+		- incompatible goals → antagonism
+	- coodination mechanisms
+		- centralized × decentralized
+		- static (rule-based) × dynamic
+		- implicit (altering the environment to gradually solve the problem) × explicit (what to do and when)
+- coordinated distributed problem solving (CDPS)
+	- divide and conquer
+	- sub-problems are easier to solve, can be solve in parallel
+	- for steps: decomposition, task allocation, local solving, conflict solving
+	- a good decomposition allows agents to work in parallel
+	- positive × negative interaction
+		- positive interaction – action helps achieving several necessary facts
+		- negative interaction – achieving a fact deletes other necessary facts
+	- homogeneous (all have the same skills) × heterogeneous agents
+		- task allocation for homogeneous agents is easier
+	- local solving – each agent generates its sub-plan
+	- conflict solving – sharing information, synchronizing actions and resource access
+		- it's easier to solve conflicts between sub-plans than to design a global plan based on global constraints
+	- task allocation protocols
+		- agents can form temporary alliances – coalitions
+		- ”who can I work with?“
+		- if agents don't know skills of others → ContractNet
+		- if agents know skills of others and can reason about them → dependence-based coalitions (DBC)
+			- goal-dependence
+				- agent $i$ depends on agent $j$ for a given goal $g$ w.r.t. a set of plans $P$ if…
+					- $i$ has $g$ in its set of goals and has no feasible plan achieving $g$
+					- but there exists a plan $p$ achieving $g$
+					- and $j$ has an action $a$ in its set of actions, s.t. $a\in p$
+					- and $i$ does not have such action
+				- OR-dependence – any of these agents can help me
+				- AND-dependence – I need all these agents to help me in order to achieve my goal
+			- principles of DBC: non-benevolence, sincerity, self-knowledge, consistency
+			- each agent has its beliefs about others
+			- diagram in slides
+				- plans $p111,p112,p18$
+				- agent 1 can perform $a1$, does not need help
+				- $p111$ … AND-dependence
+				- $a2$ … OR-dependence
+			- situations for agent $i$ and goal $g$
+				- NG … agent $i$ does not have goal $g$
+				- NP … has $g$ but no plan
+				- AUT … has $g$ and autonomous plan
+				- DEP … has $g$ and every plan is action-dependent
+			- situations for agents $i,j$ and a goal $g$ (according to $i$'s plans and $j$'s plans that $i$ knows about)
+				- independence – $i$ does not need $j$ to achieve $g$
+				- unilateral dependence – $i$ needs $j$ for $g$ and $j$ does not need $i$ (for any goals)
+				- mutual dependence – $i$ needs $j$ and $j$ needs $i$ to achieve $g$
+				- locally believed mutual dependence – $i$ believes there's a mutual dependence and also believes that $j$ does not believe so
+				- mutually believed mutual dependence – $i$ believes that both $i,j$ believe there's a mutual dependence
+			- situations for $i,j$ and $g,g'$
+				- reciprocal dependence – $i$ needs $j$ for $g$ and $j$ needs $i$ for $g'$
+				- locally believed reciprocal dependence
+				- mutually believed reciprocal dependence
+			- algorithm
+			- preferred situations
+			- choice of partner
+			- social reasoning
+- multi-agent planning
+	- distributed STRIPS
