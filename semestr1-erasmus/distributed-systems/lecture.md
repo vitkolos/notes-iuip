@@ -485,3 +485,81 @@
 	- the code had many bugs
 	- until ~2010 no correct implementation of byzantine fault tolerant system
 - in practice, leader sends signed values → we know who misbehaved
+- issue of the byzantine-tolerant algorithm
+	- there's no incentive for the node to follow the protocol (if it misbehaves, nothing happens to the node)
+
+## Blockchain
+
+- B-tree
+	- B usually equal to the size of a cache line
+- Merkle tree
+	- similar structure to a B-tree
+	- every node has a hash
+		- hash of a node is the hash of its content + the sum of hashes of its children
+		- (hash of a leaf is the hash of its content)
+		- hash … SHA-512
+	- hash of the root is “unique” per tree
+		- if hashes of roots of two trees equal, the two trees are equal with a high probability
+- blockchain state for Bitcoin
+	- pairs: account (hash/wallet) → number of BTC
+	- stored in Merkle tree
+	- we can compare the hash of the root to see if everyone agrees on the tree
+- example (Bitcoin)
+	- as a client, I want to send amount $Y$ to an account $X$
+	- this message is signed and broadcasted to all the nodes (clients)
+	- some clients are “miners”, they try to create blocks
+		- their goal is to add a block in the blockchain
+		- in a block, there is…
+			- time
+			- hash of the root before transactions
+			- list of transactions
+			- hash of the root after applying transactions
+			- challenge
+		- to append a block to the chain, the “hash before” of the new block must be equal to the ”hash after” of the last block
+		- then, there's a challenge
+			- ”find a number $R$ such that the hash $h(h_\mathrm{before}+h_\mathrm{after}+h_\mathrm{mywallet}+R)$ starts with a certain number of zeros“
+		- there should be 1 block every 10 minutes
+			- if the challenge is too hard, the difficulty is decreased (by reducing the number of zeros?)
+			- clocks need to be synchronized (to some extent)
+	- what if two miners propose solution at the same time?
+		- longest chain is chosen
+		- rule of thumb: wait for 6 blocks before being sure the transaction is in the system
+	- as a new client
+		- you first download the whole chain
+		- you check it's correct
+		- from that moment, you receive new blocks, you integrate them in the chain
+		- if there's a fork, you assume that both are correct
+			- you resolve the problem when one side gets longer (delete the shorter chain)
+			- if you receive a block you cannot integrate in the chain (e.g. you already deleted this part of the fork), you ask for all the missing blocks
+	- problems
+		- you can have forks
+		- you can flood the protocol
+		- latency
+	- advantage
+		- working non stop since 2004
+	- as a miner, you can assign yourself a reward in the block
+	- challenge … compute many hashes
+		- the higher the reward for the block, the more electricity is used
+- Ethereum
+	- proof of stake
+	- a miner sends a transaction to the network saying “I want to mine”
+	- then, the network says ”it's your turn” periodically
+	- if the miner misbehaves, the network confiscates the miner's money
+	- rounds are 6 minutes long
+	- choosing the next miner
+		- first round: miner broadcasts hash of a secret + stake
+			- and receives back many hashes (of the other secrets)
+		- second round: miner broadcasts the secret
+			- and receives all the secrets from other miners
+		- the next miner is chosen using a function of all the secrets
+	- if a node misbehaves, people confiscate its money (at stake)
+		- all the messages are signed so we can prove that a node misbehaved
+	- in the system, there are validators
+		- if you detect the problem, you can send send an alarm and confiscate some coins
+	- Bracha broadcasting algorithm is used
+	- Ethereum is Turing-complete
+		- you can store code in the state
+		- there are smart contracts, e.g. ”if I receive money from two people, I send money to a third person”
+	- you need to pay a fee to execute a transaction … gas
+		- this is voluntary in Bitcoin (but will be mandatory after all the coins are mined)
+	- there are no forks in Ethereum, the system is byzantine-tolerant
