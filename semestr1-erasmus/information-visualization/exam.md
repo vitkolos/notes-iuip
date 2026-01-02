@@ -188,7 +188,7 @@
 		- very time consuming (quadratic number of edges, quadratic number of segment pairs)
 		- another approach: computation in the pixel space
 	- edge compression
-		- power graph compression
+		- power graph compression (one edge between sets of vertices instead of many edges between individual vertices)
 		- there has to be a stopping condition for edge reduction
 - adjacency matrix
 	- vertices as rows and columns, edges as intersections
