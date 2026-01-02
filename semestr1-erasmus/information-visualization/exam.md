@@ -1,5 +1,7 @@
 # Exam
 
+## Visualization
+
 - InfoVis × SciVis × DataVis
 	- InfoVis – use of computer-supported, interactive visual representations of data to amplify cognition
 	- SciVis – datasets have a given spatialisation
@@ -110,3 +112,135 @@
 		- parallel coordinates
 	- time series
 		- horizon graph – example of composite visual mapping (one attribute → multiple graphic variables)
+- interaction
+	- ScatterDice – choosing axes for the graph
+	- Zoomable Treemaps
+		- treemap of the internet
+		- large collections are divided by initial numbers
+		- clicking zooms by one level
+		- but I can also draw a stroke → it zooms to the smallest node which contains the whole stroke
+		- sometimes, the animation is controlled by the interaction
+	- when interacting directly with the visualization (not through “external” controls), we need to project from the screen space to the data space
+- similarity
+	- we need a measure of similarity for two items and for two groups
+	- dendrogram – tree representing the similarity of items
+		- the lower is the common ancestor of the items, the more similar they are
+		- we can cut the dendrogram at some level to get clustering
+	- we can use dots in matrix to visualize similarity (the larger the dot, the more similar the items are)
+		-  we can reorder the items to minimize differences between neighbors
+		- that way, we get clusters
+		- the matrix is symmetrical so we only need one half → [Dendrogramix](https://iihm.imag.fr/publication/BDB15a/)
+			- we can see relations that would disappear in the dendrogram
+			- the app supports dragging items
+				- if the feedback is continuous, we can track the changes
+- NodeTrix – hybrid visualization of graphs
+	- how to express graphs traditionally
+		- diagram – chaotic for large graphs
+		- adjacency matrix – difficult to find longer paths
+	- NodeTrix combines both approaches
+	- social network
+		- few nodes with a lot of connections (a lot of nodes with few connections)
+		- adjacency matrix is useful to see if some nodes form a clique
+
+## Networks
+
+- graph, network: definitions, metrics, tasks
+	 - graph = vertices, edges (can be directed)
+	 - network = graph with attributes on the vertices and/or the edges
+	 - graph theory provides metrics
+		 - vertices – degree, centrality
+		 - (sub)graphs – diameter, density, connected components
+		 - we can also compute metrics from the attributes (cost of a path if we have valued edges)
+	- tasks
+		- vertices – finding neighbors, degree
+		- paths – finding shortest paths, cycles
+		- graph – finding cliques
+- visualization of graphs
+	- we can even represent vertices as lines and edges as dots
+	- hierarchical representation – no explicit edges, only hierarchy using enclosure
+	- usual: node-link diagram
+		- challenge – how to layout the nodes (“graph drawing”)
+		- goal: optimize a quality metric (e.g. the number of links crossing, edge length, symmetry, angles, …)
+		- for planar graphs – there can be no links crossing
+		- sometimes, using attributes to compute the layout may be a good idea (e.g. time for linear layout)
+- node-link layouts
+	- linear layouts
+		- even on a line, choosing the right order of the nodes is an interesting question
+	- radial layouts
+		- nodes on concentric circles
+		- may be based on the selected node
+			- it's better if the animation uses linear interpolation of polar coordinates
+	- force-directed layout
+		- attractive forces (links) and repulsive forces (nodes)
+		- repulsion of nodes decreases with distance … $\frac1{d^2}$
+		- attraction of two nodes connected by a link increases with distance … $d$
+		- we need to compute the forces for all pairs of nodes
+			- to get the final force of the node, we combine all the partial forces
+		- problem: the initial random layout influences the final layout, there's no determinism
+		- we can add constraints and generate a layout, which uses them
+			- e.g. several nodes have to be on a line
+			- Cola.js library
+- node-link edges
+	- edge-bundling
+		- attractive/repulsive forces between segments of links → some links are bundled
+			- parts of links going in the similar direction are bundled
+			- visualization becomes more clear (edges cover smaller area of the chart)
+		- very time consuming (quadratic number of edges, quadratic number of segment pairs)
+		- another approach: computation in the pixel space
+	- edge compression
+		- power graph compression
+		- there has to be a stopping condition for edge reduction
+- adjacency matrix
+	- vertices as rows and columns, edges as intersections
+	- symmetrical for undirected graphs
+	- we can represent all edges without overlapping or occlusion
+	- hard to encode attributes of vertices – we can use the width of the line
+	- patterns
+		- central nodes – a lot of connections in one row/column
+		- cliques – “squares”
+			- if the rows/columns are in the correct order
+			- → 1D layout problem, minimization of distances between vectors
+			- we can use clustering
+		- off-diagonal block pattern – kind of bipartite (sub)graph
+		- bands pattern – “rings”
+		- noise anti-pattern
+			- hard to distinguish from badly ordered rows
+		- bandwidth anti-pattern
+			- if we sort the nodes in some special way (by their degree?)
+			- it looks interesting but there's not interesting structure in the graph
+	- Reorderable matrices (Bertin)
+		- undirected bipartite graph → rectangular adjacency matrix
+		- some reordering can be automatic, some can be manual
+	- TableLens – spreadsheet with graphical visualization of attributes
+	- for large graphs, node-link outperforms adjacency matrices only on tasks involving finding path
+- trees
+	- definition – DAG (?)
+	- every vertex points to its parent (and stores other attributes)
+	- tasks
+		- find parent/children/siblings of a node
+		- size/width/depth of a subtree
+		- path to a node
+	- layouts – node-link or nested
+- trees: node-link
+	- first approach
+		- vertical coordinate corresponds to depth
+		- to get horizontal coordinates, we start from the leaves and assign each leaf its coordinate (for parents, we can average their children or the leaves)
+	- second approach
+		- the same as first but in polar coordinates
+	- collapsible subtrees
+		- collapsed subtrees are represented by triangles (which corresponding width, height, and color)
+		- SpaceTree
+	- to get enough space, we may use hyperbolic geometry → we get infinite space (but infinitely small nodes at the edge of the circle)
+	- it's probably a bad idea to use 3D for trees
+- trees: nested layouts
+	- TreeMap
+	- nodes are rectangles, parents enclose their children (their subtrees)
+		- edges correspond to the enclosure
+	- if leaves have attributes (values) we can sum to get values for their parents, these attributes can correspond to the area (e.g. sizes of files)
+		- simple implementation: we switch between splitting horizontally and vertically (slice and dice)
+			- we still need to define traversal order
+			- we have no control over aspect ratio (it's hard to compare areas of rectangles with too different aspect ratio)
+	- how to make the hierarchy understandable?
+		- we can use colors and text orientation
+	- nested circles waste a lot of space but look nicer
+	- can be combined with node-link → Elastic Hierarchies
