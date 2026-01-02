@@ -207,7 +207,7 @@
 			- hard to distinguish from badly ordered rows
 		- bandwidth anti-pattern
 			- if we sort the nodes in some special way (by their degree?)
-			- it looks interesting but there's not interesting structure in the graph
+			- it looks interesting but there's no interesting structure in the graph
 	- Reorderable matrices (Bertin)
 		- undirected bipartite graph → rectangular adjacency matrix
 		- some reordering can be automatic, some can be manual
