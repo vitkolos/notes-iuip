@@ -81,10 +81,12 @@
 
 ## Abstractions, Failure Detectors
 
-- abstractions – we want something simple but useful
-	- we use a stack of components, every component has an interface
+- abstractions
+	- we want something simple but useful
+	- we use a stack of components
+	- every component has an interface
 - fault models for processes
-	- crash-stop
+	- **crash-stop**
 		- process crashes and never comes back
 		- the most typical model
 	- crash-recovery
@@ -109,17 +111,17 @@
 		- problem: $p$ could crash right after sending $m$
 	- quasi-reliable link – satisfies integrity & if $p$ sends $m$ and $p,q$ are correct, then $q$ receives $m$
 		- if $m$ gets lost, $p$ can “send it again”
-- why do we define reliable link?
-	- it can help us to determine if a problem is solvable or not
-	- if we cannot solve the problem using reliable link, there is no way to solve it using weaker fault models
-- in reality we only have fair links
-	- we can implement stubborn links and then quasi-reliable links
-	- then, we want to add a FIFO property on top of that
-- implementation
+	- why do we define reliable link?
+		- it can help us determine if a problem is solvable or not
+		- if we cannot solve the problem using reliable link, there is no way to solve it using weaker fault models
+	- in reality we only have fair links
+		- we can implement stubborn links and then quasi-reliable links
+		- then, we want to add a FIFO property on top of that
+- implementation of quasi-reliable links
 	- stubborn link – if $p$ sends $m$ once (and is correct?), $q$ receives it an infinite number of times
 		- does not satisfy integrity (creates messages)
 		- we just send all the previously sent messages repeatedly every $\Delta$ time units
-		- see [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-3-failure_detectors.pdf) for the implementation
+		- we deliver every received message
 		- receive vs. deliver
 			- in our stack of abstractions, there are several layers: network, fair links, stubborn links, quasi-reliable links, process
 			- the layer receives a message and then decides to deliver it
@@ -147,35 +149,32 @@
 - synchronous system
 	- bound on message delay … $\Delta$
 		- the maximum time required to deliver a message
-	- bound on process speed … $x\beta$
+	- bound on process speed … $\beta$
 		- the fastest process needs $x$ time to do something $\implies$ the slowest process needs $x\beta$ time to do this
 	- $p_1$ asks $p_2$: “are you alive?”
 		- in an asynchronous system, there is no way to tell if the other process is alive
 		- in a synchronous system, $p_1$ can be sure that the response has to arrive at most after $2\Delta+x\beta$
-	- failure detector
-		- a magic box
-		- tells the process which other processes are alive
-		- two properties: completeness, accuracy
-		- by default
-			- can make mistakes
-			- can change its mind
-			- different FDs can have different opinions
-		- completeness
-			- strong – eventually every crashed process is suspected by every correct process
-			- weak – eventually every crashed process is suspected by some correct processes (at least one)
-		- accuracy
-			- strong – no process is suspected before it crashes
-			- weak – some correct processes are never suspected
-			- eventually strong – there is a time after which we get the strong accuracy
-			- eventually weak – there is a time after which we get the weak accuracy (some correct processes are not suspected)
+- failure detector
+	- a magic box which tells the process which other processes are alive
+	- two properties: completeness, accuracy
+	- by default
+		- can make mistakes
+		- can change its mind
+		- different FDs can have different opinions
+	- completeness
+		- strong – eventually every crashed process is suspected by every correct process
+		- weak – eventually every crashed process is suspected by at least one correct process (but this is too weak to be used in practice)
+	- accuracy
+		- strong – no process is suspected before it crashes
+		- weak – some correct processes are never suspected
+		- eventually strong – there is a time after which we get the strong accuracy
+		- eventually weak – there is a time after which we get the weak accuracy (some correct processes are not suspected)
+	- types of detectors
 		- perfect failure detector $(P)$ – strong completeness, strong accuracy
+			- if we have a perfect failure detector, the system is almost synchronous
 		- eventually perfect failure detector $(\Diamond P)$ – strong completeness + eventually strong accuracy
 		- strong failure detector $(S)$ – strong completeness + weak accuracy
 		- eventually strong failure detector $(\Diamond S)$ – strong completeness + eventually weak accuracy
-	- exam question: is this going to work if we have a strong failure detector?
-	- if we have a perfect failure detector, the system is almost synchronous
-	- the system can have short periods of instability at some point
-		- then it is going to calm down – we want to be able to somehow reliably capture the result
 
 ## Reliable Broadcast
 
