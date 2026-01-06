@@ -443,3 +443,94 @@
 - multi view stereo (with color)
 	- we construct depth map using photoconsistency
 	- challenge: occlusion (there is some other object visible from a different angle – it's blocking the view of a certain camera)
+
+## Deep Learning 2
+
+- artificial neuron, MLP
+- CNNs, pooling, normalization
+- CNN architectures: Lenet, AlexNet, VGG
+	- GoogleNet Inception
+		- very deep
+		- problem: gradient vanishing
+		- solution: intermediate losses are used
+	- ResNet
+		- solution: skip connections
+	- U-Net
+- object detection
+	- two-stage detection: 1) is there something? (where?) 2) what is it?
+		- R-CNN (region CNN) – extract regions, classify
+			- problems: too many regions (slow), extracting regions is not learning-based
+		- Fast R-CNN
+		- Faster R-CNN
+		- Mask R-CNN
+			- predicts a binary mask for each detected object
+	- one-stage detection
+		- Yolo (you only look once)
+		- class probabilities, bounding box prediction (with confidence)
+		- v4 uses mosaic augmentation (combining several annotated images into a mosaic and using it for training, makes the model more robust)
+- generative models
+	- many applications
+	- autoencoder
+		- learns a representation (encodings) of unlabeled data
+		- dimensionality reduction (ignoring insignificant data)
+		- usual technique for dimensionality reduction: PCA
+			- limitation: we cannot do non-linear reparametrization (like switching from Cartesian to polar coordinates)
+		- encoder → code → decoder
+		- code size is very important
+			- too big → overfit, lack of interest
+			- too small → loss of information
+		- denoising AE
+			- add noise to input image
+			- pass through network
+			- measure reconstruction loss against original image
+		- for PCA, we can interpolate (we can safely take a point between too points and it's meaningful)
+		- generally, AEs can lead to an irregular latent space (with no meaningful interpolation → close points in the latent space are not similar when decoded)
+		- we want to regularize the latent space to enable generation → **variational AE**
+			- so an input is encoded as a distribution (not as a point) in the latent space
+			- regularization using KL-divergence
+				- closed form for two normal distributions
+			- the decoder then decodes a sample from the distribution
+			- the loss consists of the distance of the decoded image from the original and the KL divergence of the encoded distribution from the $N(0, I)$ distribution
+			- how to sample to allow back propagation?
+				- reparametrization trick
+				- instead of sampling $z$ from $N(\mu_x,\sigma_x)$, we always sample $\zeta$ from $N(0,I)$ and then compute $z=\sigma_x\zeta+\mu_x$
+					- so we can differentiate $z$ (and backpropagate)
+			- limitation: images are blurry
+	- generative adversarial network
+		- generator, training set, discriminator
+		- trying to match the real distribution
+		- goal: fool the discriminator
+	- GANs get sharper images than VAEs
+		- VAEs use mean square error, producing sharp edges is not worth the risk
+		- GAN discriminator can easily spot blurry images
+	- diffusion models
+		- slowly destroy structure in data distribution by adding noise
+		- parameter $\beta_t$ (for time $t$) that governs the noise distribution (Gaussian)
+			- its schedule affects the learning
+		- the model tries to remove the noise
+			- only step by step to improve stability
+		- trained using U-Net (with adjustments)
+		- can be conditioned with other inputs (other images, text, style, …)
+			- then $\epsilon$ gets another parameter
+		- ways to make diffusion faster
+	- diffusion vs. GANs
+		- training stability
+			- GAN's optimum is a saddle point (min max)
+			- diffusion is more stable
+		- diversity
+			- GANs have a risk of mode collapse (generating just one type of output)
+			- diffusion models the distribution
+		- cost & memory
+			- GANs – fast, medium memory
+			- diffusion – slow, high memory
+		- conditional generation – diffusion outperforms GANs
+- recurrent neural networks
+	- for sequences, persistence
+	- problem of long-term dependencies
+	- long short-term memory
+		- we are updating the state with multiplication and addition
+		- forget gate: is this worth remembering (multiplying by a number $\in[0,1]$)
+		- input gate: what new information are we storing in the cell state
+		- output gate: output of the cell
+- existing tasks are solved (to some extent)
+	- new tasks need to be created → ARC-AGI datasets
