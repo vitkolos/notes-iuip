@@ -507,3 +507,100 @@
 			- social reasoning
 - multi-agent planning
 	- distributed STRIPS
+
+## Social Choice
+
+- general problem
+	- set of options
+	- set of agents expressing opinions on that options
+	- how to select an option?
+- 3 fields
+	- fair allocation of resources
+	- voting theory
+	- judgement aggregation
+
+### Fair Division
+
+- example: Pleiades satellites constellation
+- the division (allocation) problem
+	- inputs: finite set of agents with preferences/demands (numerical or ordinal), common limited resource (divisible or indivisible), set of constraints, optimization criterion
+	- output: allocation
+- central principle – every agent knows how they value the resource, they should make the division themselves (there should be no central bottleneck)
+- the resource can be heterogeneous and divisible (example: cake)
+- utility function
+	- $u:2^X\to [0,1]$
+	- normalized, so that $u(\emptyset)=0$ and $u(X)=1$
+	- usually additive so $u(A)+u(B)=u(A+B)$ for $A\cap B=\emptyset$
+- Pareto dominance
+- Pareto efficiency – quite weak criterion (giving the cake to one agent is efficient but not necessarily fair)
+- what is fair?
+	- no objective value of each item
+	- two ways to define a good division
+		- maximizing social welfare (collective utility)
+		- maximizing individual criteria
+	- collective utility (social welfare) function can be defined in different ways
+		- utilitartian … maximizing total utility
+		- egalitarian … maximizing the minimum utility
+		- Nash collective utility function … maximizing the product of utilities
+	- individual fairness criteria
+		- envy-free
+			- there is no other agent whose bundle (share) would the agent want more
+			- does not always exist
+		- exact
+			- all agents agree about the value of all shares
+		- proportional
+			- if each agent gets at least their due share according to their own value function
+			- if they have strictly more → super proportional
+		- equitable
+			- agents feel the same hapiness
+			- hard to verify
+- price of fairness – fair division may be less efficient than some other division (according to economic welfare)
+- allocation approaches
+	- centralized allocation
+	- distributed allocation
+		- start with random allocation
+		- let the agents negotiate
+	- sequential allocation
+		- agents take turns
+		- problem: find a good sequence
+		- knowing preferences of other agents can be used to manipulate the result
+- example: cut & choose method
+	- first agent cuts cake into equal parts (subjectively)
+	- second agent chooses which part they prefer
+	- is proportional and envy-free
+	- adaptations for more agents
+
+### Voting Theory
+
+- formal framework
+	- $n$ voters, finite set $X$ of $m$ alternatives
+	- each voter expresses a preference = linear order over $X$
+	- …
+- voters need to express strict preferences
+- some nonstandard methods don't fit into this framework
+- rules
+	- plurality rule – wins the one who ranks first the most
+	- Borda rule – voters assign points in order (e.g. 4, 3, 2, 1, 0 for $m=5$)
+	- plurality rule with run-off (two rounds)
+- we want to incentivize voters to be truthful
+- single transferable vote (STV)
+	- generalization of the plurality with runoff
+	- collect preferences, eliminate loser (with the least top votes), recalculate preferences (without the loser), eliminate the next loser, …
+	- if someone gets over 50 % in the process, this is the winner
+	- used in some countries
+	- no-show paradox
+		- it may be better to abstain than to vote for your favorite candidate
+- participation criterion
+	- addition of ballot $A\succ B$ should not worsen the position of $A$
+- positional scoring rule (PSR)
+- Condorcet principle
+	- the total winner should win in every pairwise majority contest
+- PSR violates Condorcet principle
+	- Condorcet principle is incompatible with participation criterion
+- utilitarian & egalitarian rules
+
+### Judgement Aggregation
+
+- consolidating individual beliefs
+- judgement aggregation problem
+	- we cannot just use majority vote to consolidate interdependent statements (it may lead to inconsistency even if the individual agents are consistent)
