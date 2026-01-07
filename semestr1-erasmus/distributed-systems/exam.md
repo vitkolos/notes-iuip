@@ -175,6 +175,7 @@
 		- eventually perfect failure detector $(\Diamond P)$ – strong completeness + eventually strong accuracy
 		- strong failure detector $(S)$ – strong completeness + weak accuracy
 		- eventually strong failure detector $(\Diamond S)$ – strong completeness + eventually weak accuracy
+	- note: when solving consensus with a majority of correct processes, eventually weak failure detector ($\Diamond W$, weak completeness and eventually weak accuracy) may be enough
 
 ## Reliable Broadcast
 
@@ -252,119 +253,127 @@
 
 ## Consensus
 
-- examples
+- consensus applications
 	- clients & servers
 		- all servers should behave the same
 		- the servers should agree on the order of processing clients' requests → consensus problem
 	- Kafka (who's the leader?)
 	- blockchain
-- the component should have two functions
-	- $\mathrm{propose}(v_i)$
-		- $v_i$ … value proposed by process $i$
-	- $\mathrm{decide}(v)$
-		- all processes should agree on the same $v$ in the end
-- properties
-	- termination – every correct process should eventually decide
-	- validity – if a process decides $v$, then $v$ is the initial (proposed) value of some process
-	- uniform agreement – two processes cannot decide differently
-		- agreement (two *correct* processes cannot decide differently) would be too weak
-- we consider
-	- asynchronous system
-		- no bound on message delays
-		- no bound on relative speed of processes
-	- quasi-reliable channels, processes may crash
-- if we don't make any additional assumptions, consensus is impossible to ensure
-	- FLP impossibility
-	- if $F=1$
-	- did the process crash or not?
-- proof (for a little bit different statement)
-	- $N$ … number of processes
-	- $F$ … number of crashed processed
-	- we allow $F\gt\frac N2$
-	- let's make groups $G_0,G_1$
-		- $G_0$ contains a little bit more processes than $G_1$
-	- run $R_0$
-		- all processes in $G_1$ crash
-		- all processes in $G_0$ proposed $v=0$
-		- so we decide $v=0$ after time $T_0$
-	- run $R_1$
-		- all processes in $G_0$ crash
-		- all processes in $G_1$ propose $v=1$
-		- so we decide $v=1$ after time $T_1$
-	- run $R_2$
-		- no process crashes
-		- communication between groups is delayed
-		- after time $T_0$, processes in $G_0$ do not have any message from group $G_1$
-			- so they need to decide $v=0$ (as in $R_0$)
-		- after time $T_1$, processes in $G_1$ do not have any message from group $G_0$
-			- so they need to decide $v=1$ (as in $R_1$)
-		- no consensus :(
-- let's start with a synchronous system!
+- definition of the consensus problem, valence
+	- primitives
+		- $\mathrm{propose}(v_i)$
+			- $v_i$ … value proposed by process $i$
+		- $\mathrm{decide}(v)$
+			- all processes should agree on the same $v$ in the end
+	- properties
+		- termination – every correct process should eventually decide
+		- validity – if a process decides $v$, then $v$ is the initial (proposed) value of some process
+		- uniform agreement – two processes cannot decide differently
+			- agreement (two *correct* processes cannot decide differently) would be too weak
+	- valence of a configuration
+		- $\mathrm{val}(c)$ … set of possible values that could be decided (initially – set of proposed values)
+		- we want to get from a multivalent configuration to a univalent configuration
+			- $v$-valent configuration … $\mathrm{val}(c)=\set{v}$
+		- then, we we want the processes to detect we reached that configuration
+	- we consider
+		- asynchronous system
+			- no bound on message delays
+			- no bound on relative speed of processes
+		- quasi-reliable channels, processes may crash
+	- if we don't make any additional assumptions, consensus is impossible to ensure
+- impossibility results
+	- theorem: consensus cannot be solved in an asynchronous system with reliable channels if a majority of processes may be faulty
+	- proof
+		- we partition the processes into two sets $\Pi_0,\Pi_1$, containing $\lceil n/2\rceil$ and $\lfloor n/2\rfloor$ processes respectively
+			- processes in $\Pi_0$ always propose 0, processes in $\Pi_1$ always propose 1
+		- we consider three runs ($R_0,R_1,R$)
+			- in run $R_0$, only processes in $\Pi_0$ are correct (the other crash at the beginning of the run)
+				- by validity, they decide 0
+				- so some process $q_0\in\Pi_0$ decides 0 at time $t_0$
+			- in run $R_1$, only processes in $\Pi_1$ are correct
+				- therefore $q_1\in\Pi_1$ decides 1 at time $t_1$
+			- in run $R$, no process crashes
+				- but the transmission of messages between the two sets is delayed until $t=\max(t_0,t_1)$
+				- until time $t$, $R$ is indistinguishable from $R_0$ for processes in $\Pi_0$
+				- similarly, processes in $\Pi_1$ cannot distinguish $R$ from $R_1$
+				- therefore, in $R$ some processes decide 0 and some other decide 1, which violates the agreement
+	- theorem (FLP impossibility result): there exists no deterministic algorithm that solves consensus in an asynchronous system with reliable channels if one single process may crash
+	- intuition of the proof
+		- there's no way to know if a non-responsive process $q$ has crashed or is just slow
+		- if we wait, we might wait forever
+		- if we decide, we might find out later that $q$ took a different decision
+	- of course, we can make some additional assumptions (there are algorithms that work if we ignore some problematic situations)
+- consensus algorithm in a synchronous system
 	- we have a perfect failure detector $P$
-	- we are going to use the best-effort broadcast algorithm
-	- assuming no crashes
+	- we use the best-effort broadcast algorithm
+	- assuming no crashes – trivial
 		- everyone broadcasts proposed values
-		- after receiving values from everyone, we'll use a deterministic decision function (like $\mathrm{min}$)
-- valence of a configuration
-	- $\mathrm{val}(c)$ … set of possible values that could be decided (initially – set of proposed values)
-	- we want to get from a multivalent configuration to a univalent configuration
-		- $v$-valent configuration … $\mathrm{val}(c)=\set{v}$
-	- then, we we want the processes to detect we reached that configuration
-- algorithm for a synchronous system
-	- see [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-5-consensus.pdf#page=4)
-	- several rounds
-	- for a round to end, we need to get messages from all the correct processes
-	- after two consecutive rounds with the same correct processes (no one crashes), we can decide
-	- in every broadcast, we send the values we have collected so far
-		- to ensure that everyone has the same information
-	- this algorithm does not provide uniform agreement
-- how to get uniform agreement?
-	- we can do $f+1$ rounds where $f$ is the number of processes that can crash
-		- 3 rounds without crash would probably also work
-- partially synchronous system
-	- $\Delta$ bound on transition delay and $\beta$ bound on how slow the process can be
-		- both hold eventually
-		- there is a time $T$ (unknown) after which bounds $\beta,\Delta$ will hold forever
-	- $T$ … GST (global stabilization time)
-		- channels can lose messages before GST
-		- channels are quasi-reliable after GST
-	- GSR (global stabilization round) = first round when the system behaves as synchronous
-		- $\exists GSR\gt 0$ s.t. $\forall r\gt GSR,\forall p,q$ correct $(p$ sends $m$ to $q$ in round $r\implies q$ recv $m$ in round $r)$
-	- we don't use a failure detector here
+		- after receiving values from everyone, we use a deterministic decision function (like $\mathrm{min}$)
+	- flooding consensus
+		- several rounds
+			- in every round, every process sends the values it has collected so far (to ensure that everyone has the same information)
+			- for a round to end, the process needs to get messages from all the correct processes
+		- edge case
+			- in the first round, $p_1$ manages to send its (unique) value $v_1$ to only $p_2$ and then crashes (in the middle of the round)
+			- in the second round, $p_2$ manages to propagate $v_1$ only to $p_3$, then $p_2$ also crashes
+			- processes keep crashing one by one
+		- after two consecutive rounds with the same correct processes (no one crashes between rounds), we can decide
+			- we can be sure that we have all the information
+		- this algorithm does not provide uniform agreement
+			- there could have been a process $p'$ that managed to propagate a unique value to $p$ but crashed right after $p$ decided (so other processes don't have the unique value)
+			- in other words: after two rounds, we can be sure that *we* have all the information, but we cannot be sure that *everyone else* has all the information 
+	- how to get uniform agreement?
+		- we can always do $f+1$ rounds where $f$ is the number of processes that can crash (3 rounds without crash would probably also work)
+		- FloodSet algorithm
+			- $W_p:=\set{v_p}$ … everyone starts with a value
+			- in round $r$
+				- send $W_p$
+				- on recv $W_q$
+					- $W_p:= W_p\cup W_q$
+				- if $r=f+1$
+					- decide $\min W_p$
+- consensus in a partially synchronous system
+	- partially synchronous system
+		- $\Delta$ bound on transition delay and $\beta$ bound on how slow the process can be
+			- both hold *eventually*
+			- there is a time $T$ (unknown) after which bounds $\beta,\Delta$ will hold forever
+		- $T$ … GST (global stabilization time)
+			- channels can lose messages before GST
+			- channels are quasi-reliable after GST
+		- GSR (global stabilization round) = first round when the system behaves as synchronous
+			- $\exists GSR\gt 0$ s.t. $\forall r\gt GSR,\forall p,q$ correct $(p$ sends $m$ to $q$ in round $r\implies q$ recv $m$ in round $r)$
+		- we don't use a failure detector here
 	- OneThirdRule algorithm
 		- assumption $f\lt \frac n3$
+			- so $n-f\gt\frac23 n$
 		- at the start of each round, the process $p$ sends value $x_p$ to all processes
 		- as the process receives messages in the given round
-			- if it gets more at least $n-f$ messages, it sets $x_p$ to the most frequent value received (take the smallest if there are multiple with the same greatest frequency)
+			- if it gets at least $n-f$ messages, it sets $x_p$ to the most frequent value received (take the smallest if there are multiple with the same greatest frequency)
 			- if at least $n-f$ values received are equal to a value $v$, it decides $v$
 		- we transition between rounds after predefined time
 			- after GSR, we can guarantee that there is enough time to get all the messages
-	- example
-		- 1 process decides $v$ in round $r_0$
-		- → $n-f$ times $v$ received
-		- → $n-f$ processes proposed $v$
-		- → there cannot exist another $n-f$ processes proposing $v'$
-			- as $(n-f)+(n-f)\gt n$
-	- proof by contradiction
-		- round $r_1$ … smallest round in which a process $q$ changes its value
-		- $q$ received at most $f$ messages with value $\neq v$
-		- $q$ received at most $f$ messages with value $v'$
-		- … (see lecture notes)
-	- idea: you cannot create a different majority
+	- proof of uniform agreement
+		- let $r_0$ be the smallest round when a process $p$ decides $v$
+			- → $n-f$ times $v$ received
+			- → $n-f$ processes proposed $v$
+			- there cannot exist other $n-f$ processes proposing $v'$ (s.t. $v'\neq v$) in the same round
+				- so all the other processes deciding in the same round also decide $v$
+		- let $r_1\geq r_0$ be the smallest round when a process $q$ changes its value $x_q$
+			- at this point, at most $f$ processes have a value $v'$ (as $n-f$ processes proposed $v$ at time $r_0$)
+			- the new value $x_q$ has to be $v$ as there is no way for a $v'$ to achieve majority ($f$ cannot be the majority of $n-f$ messages)
+			- so after $r_0$, there cannot arise a majority for $v'$
+	- termination is easy
+		- consider it's after GSR and all faulty processes have crashed
+		- everyone gets $n-f$ messages and sets $x_p$ to the most frequent value
+		- in the next round, everyone decides this value
+	- valence
+		- configuration where $n-f$ correct processes have value $v$ is $v$-valent
+		- if in some round $r$ all correct processes receive $v$ from $n-f$ processes, the configuration becomes $v$-valent
+		- if configuration becomes $v$-valent in round $r\geq GSR$, processes will decide in round $r+1$
 - (broken) consensus algorithms that don't satisfy one of the criteria
 	- only validity & uniform agrement – we don't need to do anything
 	- only uniform agreement & termination – decide “1”
 	- only validity & termination – everyone decides their own proposed value
-- Floodset algorithm
-	- $W_p=\set{v_p}$ … everyone starts with a value
-	- in round $r$
-		- send $W_p$
-		- on recv $W_q:W_p=W_p\cup W_q$
-		- at round $f+1:$ decide $\min W_p$
-- does Floodset satisfy uniform agreement?
-	- there exists one round when no process crashes
-	- $\implies$ everyone not crashed has the same $W_p$
-	- if we used round $f$ instead, it would not satisfy uniform agreement (counterexample: one crash every round – there could be a process $p$ having a different $W_p$ than the other processes)
 
 ### In Practice
 
