@@ -1,4 +1,4 @@
-# Lecture
+# Exam
 
 - distributed system, partial failure
 	- distributed system is composed of multiple processes that seek to achieve some form of cooperation; its components may fail independently (= *partial failure*)
@@ -178,16 +178,19 @@
 
 ## Reliable Broadcast
 
-- properties
-	- safety – nothing bad will ever happen
-	- liveness – something good will eventually happen
-- we assume crash-stop failure model for processes and quasi-reliable channels
+- properties and assumptions of reliable broadcast
+	- properties
+		- safety – nothing bad will ever happen
+		- liveness – something good will eventually happen
+	- we assume crash-stop failure model for processes and quasi-reliable channels
 - best-effort broadcast
 	- integrity – each process delivers message $m$ at most once and only if it was broadcasted by some process
 		- safety property
 	- validity – if a correct process broadcasts a message $m$, then every correct process eventually delivers $m$
 		- liveness property
 	- implementation straightforward using quasi-reliable channels
+		- broadcast … send to all processes in the group $\Pi$ (group of processes into which message $m$ is broadcasted)
+		- deliver … simply deliver message
 	- performance metrics
 		- number of communication steps required to terminate one operation – one
 		- number of messages exchanged during one operation – $O(N)$, where $N$ is the number of processes
@@ -214,8 +217,7 @@
 - uniform reliable broadcast
 	- properties: integrity & validity & uniform agreement
 	- uniform agreement – if a message m is delivered by some process (whether correct or not), then m is eventually delivered by every correct process
-	- implementation in [lecture notes](https://tropars.github.io/downloads/lectures/DS/DS-4-bcast.pdf#page=5)
-	- the proposed solution is called All-ack Uniform Reliable Broadcast
+	- the proposed solution is called *All-ack Uniform Reliable Broadcast*
 	- idea – process can deliver a message only when it has received a copy of that message from all correct processes 
 		- so every process broadcasts $m$ after receiving it for the first time
 		- process also updates its list of correct processes
@@ -231,22 +233,22 @@
 	- FIFO delivery – if some process broadcasts message $m_1$ before it broadcasts message $m_2$, then no correct process delivers $m_2$ unless it has already delivered $m_1$
 	- solution – piggybacking sequence numbers
 		- so we just sort the messages (delay some of them)
-- how to make it faster?
+- how to make the broadcast faster?
 	- we could make the broadcast circular
 	- we could build a binary tree
 		- better latency
 		- but what if a process crashes?
-- *gossip*
-	- $k$ … number of processes to contact
-	- $r$ … number of rounds to execute
-	- for $k=3$, the original process randomly selects 3 processes it sends the message to
-		- then, each process sends the message to 3 randomly selected processes
-		- after $r$ rounds, the sending stops
-	- probabilistic broadcast algorithm – we cannot guarantee that every correct process gets the message
-	- efficiency declines over time – we send to processes who have already got the message
-		- push strategy – processes who have the information send messages to processes who don't
-		- pull strategy – “hey, is there anything I missed?”
-			- we can use a vector clock for this
+	- *gossip*
+		- $k$ … number of processes to contact
+		- $r$ … number of rounds to execute
+		- for $k=3$, the original process randomly selects 3 processes it sends the message to
+			- then, each process sends the message to 3 randomly selected processes
+			- after $r$ rounds, the sending stops
+		- probabilistic broadcast algorithm – we cannot guarantee that every correct process gets the message
+		- efficiency declines over time – we send to processes who have already got the message
+			- push strategy – processes who have the information send messages to processes who don't
+			- pull strategy – “hey, is there anything I missed?”
+				- we can use a vector clock for this
 
 ## Consensus
 
