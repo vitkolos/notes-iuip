@@ -563,3 +563,63 @@
 	- you need to pay a fee to execute a transaction … gas
 		- this is voluntary in Bitcoin (but will be mandatory after all the coins are mined)
 	- there are no forks in Ethereum, the system is byzantine-tolerant
+
+## Distributed Hash Tables
+
+- implementation – [Kademlia](https://pdos.csail.mit.edu/~petar/papers/maymounkov-kademlia-lncs.pdf) 2003
+	- used by Bittorrent, Ethereum, (Bitcoin)
+- every node has an ID
+	- computed by hashing a random number
+	- 160 bits
+- every node should
+	- have a fine-grained knowledge of all the nodes that are close (that have small distance)
+	- have a coarse knowledge of nodes farther away
+- distance is defined as XOR of IDs
+- so if node gets some work which should be done by another node, they can send it in the correct direction (even if they don't know the node)
+- every node maintains a tree of other nodes ordered by distance
+	- the tree should not be too big
+	- → we group the nodes in the “right” branches into buckets
+		- ![](attachments/buckets.png)
+	- maximum of $k$ nodes per bucket
+	- = $k$-bucket tree
+	- so we store $k$ far-away nodes, $k$ nodes that are a bit closer, $k$ much closer nodes, $\leq k$ very close nodes, and all the neighbors
+	- in the buckets, we keep nodes that have been alive for long time (to minimize likelihood that they disappear)
+- the client wants to store value for a certain key
+	- we compute a hash from the key
+	- we let $k$ machines closest to the hash to be responsible for storing the value
+		- this $k$ can be different from the previous $k$ but is (probably) the same in practice
+- another task: I delegate the work to a node of the bucket closest to the key (or its hash)
+	- it takes $\log N$ hops to get to the closest node
+- hashtable operations
+	- find_value(hash) → value
+		- if I am responsible, I answer
+		- otherwise, I answer with find_nodes(hash)
+	- find_nodes(hash) → nodes
+		- send bucket closest to hash
+	- store_value(hash, value)
+	- ping(node) → alive?
+- connecting to the network
+	- you generate your own hash
+	- bootstrapping
+		- you have a hardcoded list of peers who participate
+		- you send them a query find_nodes(myself)
+
+## Modern Consensus
+
+- TCP/UDP
+	- `write` syscall copies data into kernel buffer and sends them
+	- similarly, data is read from the kernel buffer (the app needs to be waken up after receiving the data)
+	- it's very slow
+- modern network
+	- 400 Gbps, 400 millions I/O per second
+		- CPU cannot do enough reads to support that
+	- RDMA
+		- client app performs rdma alloc, gets its own buffer
+		- server app also performs rdma alloc, gets buffer
+		- memory is then copied over network directly from one buffer to another
+			- it is performed by network card
+			- that way, it's easier to implement Raft (the entire log can be in the memory accessible by the network card)
+		- downside: you can corrupt someone else's memory
+- exam
+	- 1 A4 of written notes (both sides)
+	- nothing taught by Baptiste Lepers
