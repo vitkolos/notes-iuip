@@ -374,61 +374,24 @@
 	- only validity & uniform agrement – we don't need to do anything
 	- only uniform agreement & termination – decide “1”
 	- only validity & termination – everyone decides their own proposed value
-
-### In Practice
-
-- older algorithms – before distributed systems, based on mathematical models, very complex (implementations actually quite close to Raft)
-	- Paxos – consensus on one value
-	- MultiPaxos
-- Raft 2015
-	- used in MongoDB, Kubernetes
-	- clients, multiple servers
-	- one server is a leader, the other are followers
-	- clients send requests to the leader server
-	- leader has a log of values received by the clients, periodically sends updates to everyone
-	- if no one crashes, it is correct
-	- if the leader crashes
-		- some followers may have different state than the other ones → inconsistency
-		- if the leader performs some external actions and crashes before delivering all the values to all the follower, we lose uniform agreement
-		- note: if the leader receives a value and crashes without doing anything else, it's alright (every system has this property)
-	- leader sends ACK to the client after $f+1$ processes (the leader & $f$ followers) successfully received the value
-	- usually, $n=2f+1$
-	- it's based on timeouts
-		- there is an empty packet exchange if there are no changes to propagate
-		- if there is a period when the timeouts are exceeded, the system can recover
-		- usual timeout – 150 ms (the local latency in datacenters is under 1 ms)
-	- what happens if the leader crashes
-		- the followers don't receive the periodic message (heartbeat) from the leader → they now the leader crashed
-		- every follower has a timer, after this time the follower broadcasts “I'm the leader”
-			- if it receives enough ACKs from the other processes (majority = $f+1$ including myself), it becomes the new leader
-		- what if there are two proposed leaders?
-			- if one gets the majority → it becomes the leader (and broadcasts its leadership – we assume honesty)
-			- no one gets the majority → another round
-	- another approach
-		- everyone pings everyone – so everyone has a list of alive processes
-		- if the leader fails, the machine with the lowest ID becomes the new leader
-		- but this requires sending more traffic over the network
-	- in iCloud and similar storages
-		- 3 servers, than tape storage (or something like that)
-- leader change procedure
-	- the logs may only differ in the latest value(s)
-	- some processes may have more values than the newly elected leader
-	- leader retrieves the values from everyone (in some types of systems) and then propagates the new values to everyone
-	- were the new values acknowledged?
-		- we don't know
-		- there is no good approach to address this
-		- they are probably not ACKed (again)
-	- in Raft: message, then ACK, then commit message
-		- so we know the state of the data (if the data is committed or not)
-- recovery
-	- if $f+1$ server are in the error state, game over
-	- if a server reconnects to the system
-		- if it's been offline for a short period of time, it downloads the new values
-		- if it's been offline for longer (or it's a new server), it downloads the *snapshot* and the values
-	- recovery process is very intense – the servers must be ready for it
-		- some companies run the servers on 10% load
-- main problem – timers
-- reminder – Raft, goal: achieve consensus, crash-stop model
-- OneThirdRule algorithm – exercises
-	- example of univalent configuration – everyone starts with the same value (or everyone but one process…)
-	- if more than $f$ processes crash, termination is broken
+- bonus: LastVoting algorithm (for a partially synchronous system)
+	- it's possible to increase $f$ from $f\lt n/3$ to $f\lt n/2$ by considering a non-symmetric algorithm
+	- round-based LastVoting algorithm (similar to the Paxos consensus algorithm)
+		- assumes $f\lt n/2$
+		- so $n-f\gt \frac12 n$
+	- rounds are grouped into phases – one phase consists of three rounds
+	- in each phase, one of the processes serves as a coordinator
+		- the coordinator role rotates ($p_1$ is the coordinator in the first phase, then $p_2,p_3,\dots,p_n$, then $p_1$ again…)
+	- every process $p$ stores the proposed value $x_p$ and the timestamp $ts_p$ (number of the most recent phase when $x_p$ was updated)
+	- first round
+		- everyone sends $(x_p,ts_p)$ to the coordinator
+		- if the coordinator gets $\geq n-f$ messages, it selects one $x$ such that its $ts$ is the largest
+	- second round
+		- if the coordinator managed to select one $x$ in the first round, it now broadcasts this $x$
+		- as the processes receive this value, they update their $x_p$ and $ts_p$
+	- third round
+		- every process which updated its $ts_p$ in the second round now broadcasts $(\mathrm{ack}, x_p)$
+		- if the number of $(\mathrm{ack}, v)\geq n-f$, the process $p$ decides $v$
+	- configuration becomes $v$-valent when there's a set $Q$ of processes s.t. $|Q|\geq n-f$, every $q\in Q$ has value $v$, and there are no processes outside $Q$ with a larger timestamp
+		- in the third round, the $v$-valent configuration is identified
+		- note that the second round cannot disrupt the $v$-valence (thanks to the condition in the first round)
