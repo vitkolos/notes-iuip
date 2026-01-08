@@ -298,3 +298,268 @@
 			- for two point masses, we can get $K=\frac12 m_1\dot q^TJ_1^TJ_1\dot q+\frac12 m_2\dot q^TJ_2^TJ_2\dot q$
 				- we may want to modify the expression so that $K=\frac12\dot q^T(m_1J_1^TJ_1+m_2J_2^TJ_2)\dot q$
 				- then $M(q)=m_1J_1^TJ_1+m_2J_2^TJ_2$
+
+## Estimation Techniques
+
+*work in progress*
+
+### State Estimation
+
+- we estimate the state (several physical quantities) of the robot
+	- e.g. localization
+		- 3 dimensions in 2D (x, y, angle)
+		- 6 dimensions in 3D
+	- based on measurements (sensors)
+	- in general, the sensors don't directly provide the components of the state
+	- usually, there is also some noise
+- classes of sensors
+	- related to the evolution of the state
+		- e.g. encoder on the wheels
+		- $S_i=f(S_{i-1},u_i)$
+			- $S_i$ … state at time $i$
+			- $u_i$ … measurement at time $i$
+		- *proprioceptive sensor*
+	- related only to the current state at a given time
+		- $z_i=h(S_i)$
+			- $z_i$ … measurement at time $i$
+		- *exteroceptive sensor*
+- synchronous drive: free-moving robot with three synchronous wheels (just like a single moving wheel, it can rotate and move forwards/backwards)
+	- $u_i=(\delta\rho_i,\delta\theta_i)$
+	- $S=(x,y,\theta)$
+	- actions of rotation and move are not commutative w.r.t. position
+		- we end up at a different position if we first move and then rotate
+		- but we can assume that the sampling is very fast
+	- we can define $f$ like this
+		- $x_i=x_{i-1}+\delta\rho_{i-1}\cos\theta_{i-1}$
+		- $y_i=y_{i-1}+\delta\rho_{i-1}\sin\theta_{i-1}$
+		- $\theta_i=\theta_{i-1}+\delta\theta_i$
+- differential drive
+	- $u_i=(\alpha^R_i,\alpha^L_i)$
+	- $r^R,r^L$ … radii of wheels
+	- shift: $s^R=r^R\alpha^R$ (similar for $s^L$)
+	- $\delta\rho=\frac{s^R+s^L}2$
+	- $\delta\theta=\frac{s^R-s^L}{b}$
+- examples of $h$
+	- if we measure the distance from origin
+		- $z=h(S)=\sqrt{x^2+y^2}$
+- we try to find (and update) a probability distribution
+	- we start with a uniform distribution
+	- how to update it to reflect the new measurements?
+
+### Bayes Filter
+
+- total probability
+	- $P(A)=\sum_B P(A,B)$
+	- $P(A\mid C)=\int dB\;P(A\mid B,C)P(B\mid C)$
+- Bayes law
+	- $P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}$
+	- $P(A\mid B,C)=\frac{P(B\mid A,C)P(A\mid C)}{P(B\mid C)}$
+- $U_i=[u_0,u_1,\dots,u_{i-1},u_i]$
+- $Z_i=[z_0,z_1,\dots,z_{i-1},z_i]$
+- we start with $P(S_{i-1}\mid U_{i-1}Z_{i-1})$
+- *action* leads to $P(S_{i}\mid U_{i}Z_{i-1})$
+	- it adds $u_i$
+- *perception* leads to $P(S_{i}\mid U_{i}Z_{i})$
+	- it adds $z_i$
+- clearly $P(S_i\mid U_iZ_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},U_iZ_{i-1})P(S_{i-1}\mid U_iZ_{i-1})$
+	- where $P(S_{i-1}\mid U_iZ_{i-1})=P(S_{i-1}\mid U_{i-1}Z_{i-1})$ as the previous state is independent on the next measurement
+	- by Markov assumption, $P(S_i\mid S_{i-1},U_iZ_{i-1})=P(S_i\mid S_{i-1},u_i)$
+		- it's an approximation (in reality, for example, the error of the sensor may be influenced by the past measurements)
+	- so we get $P(S_i\mid U_i Z_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},u_i)P(S_{i-1}\mid U_{i-1}Z_{i-1})$
+- $P(S_i\mid z_i,U_i Z_{i-1})=\frac{P(z_i\mid S_i,U_iZ_{i-1})P(S_i\mid U_iZ_{i-1})}{P(z_i\mid U_iZ_{i-1})}$
+	- so $P(S_i\mid U_i Z_{i})=\eta P(z_i\mid S_i) P(S_i\mid U_i Z_{i-1})$
+	- $\eta$ … normalization factor
+- example: exteroceptive sensor
+	- $h(x)=L-x=h(S)$
+	- let's consider Gaussian
+	- $z^m=N(z,\sigma^2)$
+		- $z^m$ … measured
+		- $z$ … true
+	- $z^m=N(L-x,\sigma^2)$
+	- $P(z\mid S)=N(L-x,\sigma^2)$
+- example: proprioceptive sensor
+	- $x_i=x_{i-1}+R\alpha$
+	- $\alpha=N(\alpha^m,\sigma_\alpha^2)$
+	- $x_i=N(x_{i-1}+R\alpha^m,R^2\sigma_\alpha^2)$
+- in reality: trade-off between precision and computational cost (time)
+- example
+	- we define initial $P(L)$
+		- $P(3)=0.2$
+		- $P(4)=P(8)=0.4$
+		- otherwise, $P(L)=0$
+	- $P(L'\mid u)=\sum_L P(L'\mid L,u)P(L)$
+		- $u$ … observed shift
+		- we can define $P(L'\mid L,u)=\begin{cases}1&\text{if }L'=L+u\\0&\text{otherwise}\end{cases}$
+		- more realistic definition
+			- 0.8 if $L'=L+u$
+			- 0.1 if $L'=L+u\pm 1$
+	- $P(L'\mid z)=\eta P(z\mid L')P(L')$
+		- again, we have $P(z\mid L')$ defined somehow
+		- we also have $P(L')$
+		- we need to get $\eta$ by computing $P(z\mid L)P(L)$ for every $L$ and making sure $P(L'\mid z)$ sums to 1
+			- in other words, $\eta=\frac1{\sum_{L} P(z\mid L)P(L)}$
+
+### Extended Kalman Filter
+
+- sometimes, we can assume that the functions are linear and the (error) distributions are Gaussian
+	- then, everything is Gaussian (we get convolution of two Gaussians which is a Gaussian)
+	- we only need mean (vector) and variance (covariance matrix – symmetric and positive semi-definite)
+	- → Kalman filter
+	- if the assumptions don't hold, we may use a heuristic solution (extended Kalman filter)
+- reminder (simplified)
+	- $P(S_i\mid U_i)=\int dS_{i-1}\; P(S_i\mid S_{i-1}u_i)P(S_{i-1})$ … action
+	- $P(S_i\mid Z_i)=\eta P(z_i\mid S_i)P(S_i)$ … perception
+- let's say $x$ is a random variable with Gaussian distribution
+	- $x=N(\mu,\sigma^2)$
+	- $P(x)=\frac1{\sqrt{2\pi\sigma^2}}\exp(-\frac12\frac{(x-\mu)^2}{\sigma^2})$
+	- mean value $\braket{x}=\int_{-\infty}^\infty dx\; xP(x)$
+	- variance $\braket{(x-\braket{x})^2}$
+- let's consider $P(x_1,x_2)$
+	- covariance matrix
+- vector case
+	- mean vector $\mu$
+	- covariance matrix $P$
+	- before … $\mu_b,P_b$
+	- after … $\mu_a,P_a$
+- we need to approximate a non-linear function with a linear function
+	- $g(x)\approx g(x_0)+\frac{dg}{dx}\bigg\vert_{x_0}(x-x_0)$
+	- so $f(S_{i-1},U_i)=f(\mu_b,u^m)+\frac{\partial f}{\partial S}\bigg\vert_{\mu_b,u^m} (S_{i-1}-\mu_b)+\frac{\partial f}{\partial U}\bigg\vert_{\mu_b,u^m} (U_i-u^m)$
+- extended Kalman filter (EKF) prediction
+	- $\mu_a=f(\mu_b,u^m)$
+	- $P_a=F_xP_bF_x^T+F_uQF_u^T$
+	- $Q$ … covariance of the noise of the measurement
+- example: wheel
+	- $x_i=x_{i-1}+R\alpha_i$
+	- $f(S,u)=S+Ru$
+	- $\mu_a=\mu_b+R\alpha^m$
+	- $F_x=1$
+	- $F_u=R$
+	- $P_a=\sigma^2_a=\sigma^2_b+R^2\sigma_q^2$
+- example: differential drive
+	- we have
+		- $\delta\rho=\frac{s^R+s^L}2$
+		- $\delta\theta=\frac{s^R-s^L}{b}$
+		- $f(S,u)=\begin{bmatrix}x+\delta\rho\cos\theta\\ y+\delta\rho\sin\theta \\ \theta+\delta\theta\end{bmatrix}$
+		- so $f(S,u)=\begin{bmatrix}x+\frac{s^R+s^L}2\cos\theta\\ y+\frac{s^R+s^L}2\sin\theta \\ \theta+\frac{s^R-s^L}{b}\end{bmatrix}$
+	- $F_x$ … Jacobian of $f$ w.r.t. $(x,y,\theta)$
+	- $F_u$ … Jacobian of $f$ w.r.t. $(s^R,s^L)$
+	- $Q$ … covariance for $(s^R,s^L)$
+- after an exteroceptive measurement
+	- $\mu_a=\mu_b+P_bH^T[HP_bH^T+R]^{-1}(z^m-h(\mu_b))$
+	- $P_a=P_b-P_bH^T[HP_bH^T+R]^{-1}HP_b$
+	- $R$ … noise on the vector $z$ (measurement)
+	- $h(\mu_b)$ … predicted observation
+	- $z^m-h(\mu_b)$ … innovation
+- example
+	- $h(x)=\mathrm{atan}(\frac{L_y}{L_x-x})$
+	- $H=\frac{\partial h}{\partial x}\bigg\vert_{\mu_b}$ … a number
+- example: GPS
+	- $S=(x,y,\theta)$
+	- $h(S)=\begin{bmatrix}x\\ y\end{bmatrix}$
+	- $H=\begin{bmatrix}1&0&0\\ 0&1&0\end{bmatrix}$
+	- $R=\begin{bmatrix}\sigma_1^2&0\\ 0&\sigma_2^2\end{bmatrix}$
+		- if we (wrongly) assume the errors are independent
+- example: compass
+	- $h(S)=\theta$
+	- $H=[0,0,1]$
+- example
+	- $h(S)=\begin{bmatrix}\sqrt{x^2+y^2}\\ \mathrm{atan2}(-y,-x)-\theta\end{bmatrix}$
+	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}}&\frac y{\sqrt{x^2+y^2}} & 0\\ *&\dagger &-1\end{bmatrix}$
+- how to implement EKF
+	1. define the state
+	2. determine the expressions of $f,h$
+	3. compute the Jacobians $F_x=\frac{\partial f}{\partial S},F_u=\frac{\partial f}{\partial U},H=\frac{\partial h}{\partial S}$
+	4. we need the covariance matrices $Q,R$
+- EKF is a heuristic solution (we are performing linearization)
+- initial $\mu,P$ depends on the problem
+	- when estimating the initial $P$ (“errors”), we may assume independence
+- example: self-calibration for differential drive
+	- we cannot measure the distance of the wheels and the radii of the wheels precisely
+	- also, there's a noise on the sensor
+	- $S=(x,y,\theta,\delta^R,\delta^L,\delta^b)$
+		- $\delta$ … calibration parameters
+		- real shift of the right wheel = $s^R\cdot \delta^R$
+		- real distance of the wheels = $b\cdot\delta^b$
+	- $u=(s^R,s^L)$
+	- we define $f(S,u)$ using the following expressions (without the lower indices)
+		- $x_i=x_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \cos\theta_{i-1}$
+		- $y_i=y_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \sin\theta_{i-1}$
+		- $\theta_i=\theta_{i-1}+\frac{s^R\delta^R_{i-1}-s^L\delta_{i-1}^L}{b\delta^b_{i-1}}$
+		- for $\delta^R,\delta^L,\delta^b$ it holds that $\delta_i=\delta_{i-1}$
+	- we define $h(S)=\sqrt{x^2+y^2}$
+	- $F_x=\begin{bmatrix} 1 & 0 & -\delta\rho\sin\theta & \frac{s^R}2\cos\theta & \frac{s^L}2\cos\theta & 0 \\ 0 & 1 & \delta\rho\cos\theta & \frac{s^R}2\sin\theta & \frac{s^L}2\sin\theta & 0 \\ 0 & 0 & 1 & \frac{s^R}{b\delta^b} & \frac{-s^L}{b\delta^b} & ? \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0&0&0&0&1&0 \\ 0&0&0&0&0&1 \end{bmatrix}$
+		- where $\delta\rho=\frac{s^R\delta^R+s^L\delta^L}2$
+		- we can write $F_x$ as four blocks: $F_x^R,F^C$, then $O,I$
+	- we also compute $F_u$ (six rows, two columns)
+		- two blocks: $F_u^R$ (robot) and $O$
+	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}} & \frac y{\sqrt{x^2+y^2}} & 0 & 0&0&0\end{bmatrix}$
+		- two blocks: $H^R,O$
+	- $Q$ … 2×2 matrix (usually diagonal)
+	- $R$ … positive scalar
+	- let's consider
+		- $P_b=\begin{bmatrix} P^R & O \\ O & P^C\end{bmatrix}$
+		- $P^C$ … diagonal matrix with $0.1^2$ on the diagonal
+		- upper indices
+			- $R$ … robot
+			- $C$ … calibration
+		- then $\mu$ does not get updated for the three parameters $\delta$
+			- because $P_bH^T$ has a zero block there
+		- so we need to use $P^{RC}$ instead – like this: $P_b=\begin{bmatrix} P^R & P^{RC} \\ (P^{RC})^T & P^C\end{bmatrix}$
+	- we start with $P^{RC}=O$ (zero matrix), we'll show that after some time we get non-zero matrix
+		- $P_a=F_xP_bF_x^T+F_uQF_u^T$
+		- for the second term, we get three zero blocks so it does not influence $P^{RC}$
+		- for the first term, we get $F_xP_bF_x^T=\begin{bmatrix} F_x^RP^RF_x^{RT}+F^CP^CF^{CT} & F^CP^C \\ P^CF^{CT} & P^C\end{bmatrix}$
+		- so we get a non-zero correlation
+		- to make sure we are calibrating, we should prove that the update of $P$ reduces $P^C$ over time
+- cooperative localization
+	- …
+- SLAM
+	- …
+
+### Observability
+
+- the hallway is aligned with X axis, robot moves
+	- if the hallway is uniform, I will be lost along the X axis for sure (I cannot estimate X)
+	- all the initial state that differ only in the X coordinate are indistinguishable
+- let's assume we are always in 2D
+- $S=(x,y,\theta)$
+- exteroceptive sensors
+	- distance from the origin
+	- bearing of the origin in the local frame
+	- bearing of the robot in the global frame
+- $u(t),z(t)$ for $t\in[0,T]$
+- suppose we know distance from the origin $z(0)$ and we know the bearing of the origin in the local frame, but we don't know the bearing of the robot in the global frame
+	- so $x$ is not observable
+		- the initial state of the robot could be anywhere on the circle with the radius $z(0)$
+	- but $x^2+y^2$ is observable
+- suppose we know the bearing of the robot in the global frame and the traveled distance + the robot only travels on a straight line
+	- just by using three measurements of the bearing, we can get the exact position of the robot
+	- so the state $S$ is observable
+- question: is there such a motion we can perform to find the exact initial state?
+- observability rank condition
+	- state $S$ with $n$ components
+	- can we determine the initial state by performing continuous measurement?
+	- we have $n$ unknowns
+		- we don't need to find them
+		- we just want to say if they are observable or not
+	- classical problem … $Ax=b$
+		- observable if $\det A \neq 0$
+	- or if we know that $g_1(x_1,\dots,x_n)=0,\dots,g_n(x_1,\dots,x_n)=0$
+		- inverse function theorem
+		- we can find such $x_1,\dots,x_n$ if $\det J\neq 0$
+	- $z(t)=h(S(t))$
+	- so $z(0)=h(S(0))$
+	- there's a theorem that we can transform $z(t)$ and $u(t)$ into functions dependent on the initial state
+	- we need continuous description of state
+	- we have $s_i=f(s_{i-1},u_i)$ and $z_i=h(s_i)$
+	- we need something like $\dot s=f(s,u)$
+	- we had $x_i=x_{i-1}+\delta\rho\cos\theta_{i-1}$
+		- $x_i-x_{i-1}=\delta\rho\cos\theta_{i-1}$
+		- so we get $\dot x=v\cos\theta$
+		- $\dot y=v\sin\theta$
+		- $\dot\theta=\omega$
+	- then $u=(v,\omega)$ … linear speed, angular speed
+	- $\dot S=f_0(S)+u_1f_1(S)+\dots+u_mf_m(S)$
+	- $\dot{\begin{bmatrix}x\\ y\\ \theta\end{bmatrix}}=\underbrace{\begin{bmatrix}0\\0\\0\end{bmatrix}}_{f_0(S)}+v\underbrace{\begin{bmatrix}\cos\theta \\ \sin\theta \\ 0\end{bmatrix}}_{f_1(S)}+\omega \underbrace{\begin{bmatrix}0\\0\\1\end{bmatrix}}_{f_2(S)}$
+	- Lie derivatives
+- …
