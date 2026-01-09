@@ -301,8 +301,6 @@
 
 ## Estimation Techniques
 
-*work in progress*
-
 ### State Estimation
 
 - we estimate the state (several physical quantities) of the robot
@@ -324,7 +322,7 @@
 			- $z_i$ … measurement at time $i$
 		- *exteroceptive sensor*
 - synchronous drive: free-moving robot with three synchronous wheels (just like a single moving wheel, it can rotate and move forwards/backwards)
-	- $u_i=(\delta\rho_i,\delta\theta_i)$
+	- $u_i=(\delta\rho_i,\delta\theta_i)$ … traveled distance and change in angle
 	- $S=(x,y,\theta)$
 	- actions of rotation and move are not commutative w.r.t. position
 		- we end up at a different position if we first move and then rotate
@@ -334,7 +332,7 @@
 		- $y_i=y_{i-1}+\delta\rho_{i-1}\sin\theta_{i-1}$
 		- $\theta_i=\theta_{i-1}+\delta\theta_i$
 - differential drive
-	- $u_i=(\alpha^R_i,\alpha^L_i)$
+	- $u_i=(\alpha^R_i,\alpha^L_i)$ … wheel rotations (angles)
 	- $r^R,r^L$ … radii of wheels
 	- shift: $s^R=r^R\alpha^R$ (similar for $s^L$)
 	- $\delta\rho=\frac{s^R+s^L}2$
@@ -354,52 +352,42 @@
 - Bayes law
 	- $P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}$
 	- $P(A\mid B,C)=\frac{P(B\mid A,C)P(A\mid C)}{P(B\mid C)}$
-- $U_i=[u_0,u_1,\dots,u_{i-1},u_i]$
-- $Z_i=[z_0,z_1,\dots,z_{i-1},z_i]$
-- we start with $P(S_{i-1}\mid U_{i-1}Z_{i-1})$
-- *action* leads to $P(S_{i}\mid U_{i}Z_{i-1})$
-	- it adds $u_i$
-- *perception* leads to $P(S_{i}\mid U_{i}Z_{i})$
-	- it adds $z_i$
-- clearly $P(S_i\mid U_iZ_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},U_iZ_{i-1})P(S_{i-1}\mid U_iZ_{i-1})$
-	- where $P(S_{i-1}\mid U_iZ_{i-1})=P(S_{i-1}\mid U_{i-1}Z_{i-1})$ as the previous state is independent on the next measurement
-	- by Markov assumption, $P(S_i\mid S_{i-1},U_iZ_{i-1})=P(S_i\mid S_{i-1},u_i)$
-		- it's an approximation (in reality, for example, the error of the sensor may be influenced by the past measurements)
-	- so we get $P(S_i\mid U_i Z_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},u_i)P(S_{i-1}\mid U_{i-1}Z_{i-1})$
-- $P(S_i\mid z_i,U_i Z_{i-1})=\frac{P(z_i\mid S_i,U_iZ_{i-1})P(S_i\mid U_iZ_{i-1})}{P(z_i\mid U_iZ_{i-1})}$
-	- so $P(S_i\mid U_i Z_{i})=\eta P(z_i\mid S_i) P(S_i\mid U_i Z_{i-1})$
-	- $\eta$ … normalization factor
+- we have
+	- $U_i=[u_0,u_1,\dots,u_{i-1},u_i]$
+	- $Z_i=[z_0,z_1,\dots,z_{i-1},z_i]$
+- we want to get $P(S_i)$ based on $U_i,Z_i$ and the initial distribution
+	- we start with $P(S_{i-1}\mid U_{i-1}Z_{i-1})$
+	- *action* leads to $P(S_{i}\mid U_{i}Z_{i-1})$
+		- it adds $u_i$
+	- *perception* leads to $P(S_{i}\mid U_{i}Z_{i})$
+		- it adds $z_i$
+	- clearly $P(S_i\mid U_iZ_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},U_iZ_{i-1})P(S_{i-1}\mid U_iZ_{i-1})$
+		- where $P(S_{i-1}\mid U_iZ_{i-1})=P(S_{i-1}\mid U_{i-1}Z_{i-1})$ as the previous state is independent on the next measurement
+		- by Markov assumption, $P(S_i\mid S_{i-1},U_iZ_{i-1})=P(S_i\mid S_{i-1},u_i)$
+			- it's an approximation (in reality, for example, the error of the sensor may be influenced by the past measurements)
+		- so we get $P(S_i\mid U_i Z_{i-1})=\int dS_{i-1}\;P(S_i\mid S_{i-1},u_i)P(S_{i-1}\mid U_{i-1}Z_{i-1})$
+	- $P(S_i\mid z_i,U_i Z_{i-1})=\frac{P(z_i\mid S_i,U_iZ_{i-1})P(S_i\mid U_iZ_{i-1})}{P(z_i\mid U_iZ_{i-1})}$
+		- so $P(S_i\mid U_i Z_{i})=\eta P(z_i\mid S_i) P(S_i\mid U_i Z_{i-1})$
+		- $\eta$ … normalization factor
 - example: exteroceptive sensor
-	- $h(x)=L-x=h(S)$
-	- let's consider Gaussian
-	- $z^m=N(z,\sigma^2)$
-		- $z^m$ … measured
-		- $z$ … true
-	- $z^m=N(L-x,\sigma^2)$
+	- $z=h(S)=L-x$
+	- let's consider Gaussian noise (measurement error) $v\sim N(0,\sigma^2)$
+		- $z^m=L-x+v$
+		- $z^m\sim N(L-x,\sigma^2)$
 	- $P(z\mid S)=N(L-x,\sigma^2)$
 - example: proprioceptive sensor
 	- $x_i=x_{i-1}+R\alpha$
-	- $\alpha=N(\alpha^m,\sigma_\alpha^2)$
-	- $x_i=N(x_{i-1}+R\alpha^m,R^2\sigma_\alpha^2)$
+	- $\alpha\sim N(\alpha^m,\sigma_\alpha^2)$
+	- $x_i\sim N(x_{i-1}+R\alpha^m,R^2\sigma_\alpha^2)$
 - in reality: trade-off between precision and computational cost (time)
-- example
-	- we define initial $P(L)$
-		- $P(3)=0.2$
-		- $P(4)=P(8)=0.4$
-		- otherwise, $P(L)=0$
-	- $P(L'\mid u)=\sum_L P(L'\mid L,u)P(L)$
-		- $u$ … observed shift
-		- we can define $P(L'\mid L,u)=\begin{cases}1&\text{if }L'=L+u\\0&\text{otherwise}\end{cases}$
-		- more realistic definition
-			- 0.8 if $L'=L+u$
-			- 0.1 if $L'=L+u\pm 1$
-	- $P(L'\mid z)=\eta P(z\mid L')P(L')$
-		- again, we have $P(z\mid L')$ defined somehow
-		- we also have $P(L')$
-		- we need to get $\eta$ by computing $P(z\mid L)P(L)$ for every $L$ and making sure $P(L'\mid z)$ sums to 1
-			- in other words, $\eta=\frac1{\sum_{L} P(z\mid L)P(L)}$
+	- numerical (grid-based) approach – computationally intensive
+		- directly uses $P(S_i\mid U_i Z_{i})=\eta P(z_i\mid S_i) \int dS_{i-1}\;P(S_i\mid S_{i-1},u_i)P(S_{i-1}\mid U_{i-1}Z_{i-1})$
+		- needs $P(S_0),P(z\mid S),P(S\mid S',u)$
+	- analytical approach – Extended Kalman Filter, efficient, relies on linear approximation
 
 ### Extended Kalman Filter
+
+*work in progress*
 
 - sometimes, we can assume that the functions are linear and the (error) distributions are Gaussian
 	- then, everything is Gaussian (we get convolution of two Gaussians which is a Gaussian)
