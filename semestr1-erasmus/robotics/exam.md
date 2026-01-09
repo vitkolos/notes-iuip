@@ -387,9 +387,8 @@
 
 ### Extended Kalman Filter
 
-*work in progress*
-
-- sometimes, we can assume that the functions are linear and the (error) distributions are Gaussian
+- sometimes, we can assume that the functions are linear and the (error) distributions are Gaussian & uncorrelated
+	- we also assume Gaussian prior
 	- then, everything is Gaussian (we get convolution of two Gaussians which is a Gaussian)
 	- we only need mean (vector) and variance (covariance matrix – symmetric and positive semi-definite)
 	- → Kalman filter
@@ -398,61 +397,64 @@
 	- $P(S_i\mid U_i)=\int dS_{i-1}\; P(S_i\mid S_{i-1}u_i)P(S_{i-1})$ … action
 	- $P(S_i\mid Z_i)=\eta P(z_i\mid S_i)P(S_i)$ … perception
 - let's say $x$ is a random variable with Gaussian distribution
-	- $x=N(\mu,\sigma^2)$
+	- $x\sim N(\mu,\sigma^2)$
 	- $P(x)=\frac1{\sqrt{2\pi\sigma^2}}\exp(-\frac12\frac{(x-\mu)^2}{\sigma^2})$
 	- mean value $\braket{x}=\int_{-\infty}^\infty dx\; xP(x)$
 	- variance $\braket{(x-\braket{x})^2}$
-- let's consider $P(x_1,x_2)$
-	- covariance matrix
 - vector case
 	- mean vector $\mu$
 	- covariance matrix $P$
 	- before … $\mu_b,P_b$
 	- after … $\mu_a,P_a$
-- we need to approximate a non-linear function with a linear function
+- we need to approximate a non-linear function with a linear function using first-order Taylor expansion
 	- $g(x)\approx g(x_0)+\frac{dg}{dx}\bigg\vert_{x_0}(x-x_0)$
-	- so $f(S_{i-1},U_i)=f(\mu_b,u^m)+\frac{\partial f}{\partial S}\bigg\vert_{\mu_b,u^m} (S_{i-1}-\mu_b)+\frac{\partial f}{\partial U}\bigg\vert_{\mu_b,u^m} (U_i-u^m)$
-- extended Kalman filter (EKF) prediction
+	- so $f(S_{i-1},u_i)\approx f(\mu_b,u^m)+\frac{\partial f}{\partial S}\bigg\vert_{\mu_b,u^m} (S_{i-1}-\mu_b)+\frac{\partial f}{\partial U}\bigg\vert_{\mu_b,u^m} (u_i-u^m)$
+		- or $f(S,u)\approx f(\mu,u^m)+F_x(S-\mu)+F_u(u-u^m)$
+	- and $h(S_i)\approx h(\mu_b)+\frac{\partial h}{\partial S}\bigg\vert_{\mu_b}(S_i-\mu_b)$
+		- $h(S)\approx h(\mu)+H(S-\mu)$
+- dimensions
+	- state vector $S$ has dimension $n$
+	- proprioceptive measurement $u$ has dimension $m$
+	- exteroceptive measurement $z$ has dimension $p$
+	- $F_x$ … $n\times n$
+	- $F_u$ … $n\times m$
+	- $H$ … $p\times n$
+- action (prediction) step in the EKF
 	- $\mu_a=f(\mu_b,u^m)$
 	- $P_a=F_xP_bF_x^T+F_uQF_u^T$
-	- $Q$ … covariance of the noise of the measurement
-- example: wheel
-	- $x_i=x_{i-1}+R\alpha_i$
-	- $f(S,u)=S+Ru$
-	- $\mu_a=\mu_b+R\alpha^m$
-	- $F_x=1$
-	- $F_u=R$
-	- $P_a=\sigma^2_a=\sigma^2_b+R^2\sigma_q^2$
-- example: differential drive
-	- we have
-		- $\delta\rho=\frac{s^R+s^L}2$
-		- $\delta\theta=\frac{s^R-s^L}{b}$
-		- $f(S,u)=\begin{bmatrix}x+\delta\rho\cos\theta\\ y+\delta\rho\sin\theta \\ \theta+\delta\theta\end{bmatrix}$
-		- so $f(S,u)=\begin{bmatrix}x+\frac{s^R+s^L}2\cos\theta\\ y+\frac{s^R+s^L}2\sin\theta \\ \theta+\frac{s^R-s^L}{b}\end{bmatrix}$
-	- $F_x$ … Jacobian of $f$ w.r.t. $(x,y,\theta)$
-	- $F_u$ … Jacobian of $f$ w.r.t. $(s^R,s^L)$
-	- $Q$ … covariance for $(s^R,s^L)$
-- after an exteroceptive measurement
-	- $\mu_a=\mu_b+P_bH^T[HP_bH^T+R]^{-1}(z^m-h(\mu_b))$
+		- $Q$ … covariance of the noise of the measurement
+	- example: wheel
+		- $x_i=x_{i-1}+R\alpha_i$
+		- $\mu_a=\mu_b+R\alpha^m$
+		- $F_x=1$
+		- $F_u=R$
+		- $P_a=\sigma^2_a=\sigma^2_b+R^2\sigma_q^2$
+	- example: differential drive
+		- we have
+			- $\delta\rho=\frac{s^R+s^L}2$
+			- $\delta\theta=\frac{s^R-s^L}{b}$
+			- $f(S,u)=\begin{bmatrix}x+\delta\rho\cos\theta\\ y+\delta\rho\sin\theta \\ \theta+\delta\theta\end{bmatrix}$
+			- so $f(S,u)=\begin{bmatrix}x+\frac{s^R+s^L}2\cos\theta\\ y+\frac{s^R+s^L}2\sin\theta \\ \theta+\frac{s^R-s^L}{b}\end{bmatrix}$
+		- $F_x$ … Jacobian of $f$ w.r.t. $(x,y,\theta)$
+		- $F_u$ … Jacobian of $f$ w.r.t. $(s^R,s^L)$
+		- $Q$ … covariance for $(s^R,s^L)$
+- perception (correction) step in the EKF
+	- $\mu_a=\mu_b+\underbrace{P_bH^T[HP_bH^T+R]^{-1}}_K(z^m-h(\mu_b))$
 	- $P_a=P_b-P_bH^T[HP_bH^T+R]^{-1}HP_b$
-	- $R$ … noise on the vector $z$ (measurement)
-	- $h(\mu_b)$ … predicted observation
-	- $z^m-h(\mu_b)$ … innovation
-- example
-	- $h(x)=\mathrm{atan}(\frac{L_y}{L_x-x})$
-	- $H=\frac{\partial h}{\partial x}\bigg\vert_{\mu_b}$ … a number
-- example: GPS
-	- $S=(x,y,\theta)$
-	- $h(S)=\begin{bmatrix}x\\ y\end{bmatrix}$
-	- $H=\begin{bmatrix}1&0&0\\ 0&1&0\end{bmatrix}$
-	- $R=\begin{bmatrix}\sigma_1^2&0\\ 0&\sigma_2^2\end{bmatrix}$
-		- if we (wrongly) assume the errors are independent
-- example: compass
-	- $h(S)=\theta$
-	- $H=[0,0,1]$
-- example
-	- $h(S)=\begin{bmatrix}\sqrt{x^2+y^2}\\ \mathrm{atan2}(-y,-x)-\theta\end{bmatrix}$
-	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}}&\frac y{\sqrt{x^2+y^2}} & 0\\ *&\dagger &-1\end{bmatrix}$
+	- where
+		- $R$ … covariance of the noise on the vector $z$ (measurement)
+		- $h(\mu_b)$ … predicted observation
+		- $z^m-h(\mu_b)$ … innovation
+		- $K$ … Kalman gain
+	- example: GPS
+		- $S=(x,y,\theta)$
+		- $h(S)=\begin{bmatrix}x\\ y\end{bmatrix}$
+		- $H=\begin{bmatrix}1&0&0\\ 0&1&0\end{bmatrix}$
+		- $R=\begin{bmatrix}\sigma_1^2&0\\ 0&\sigma_2^2\end{bmatrix}$
+			- if we (wrongly) assume the errors are independent
+	- example
+		- $h(S)=\begin{bmatrix}\sqrt{x^2+y^2}\\ \mathrm{atan2}(-y,-x)-\theta\end{bmatrix}$
+		- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}}&\frac y{\sqrt{x^2+y^2}} & 0\\ *&\dagger &-1\end{bmatrix}$
 - how to implement EKF
 	1. define the state
 	2. determine the expressions of $f,h$
@@ -469,15 +471,12 @@
 		- real shift of the right wheel = $s^R\cdot \delta^R$
 		- real distance of the wheels = $b\cdot\delta^b$
 	- $u=(s^R,s^L)$
-	- we define $f(S,u)$ using the following expressions (without the lower indices)
-		- $x_i=x_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \cos\theta_{i-1}$
-		- $y_i=y_{i-1}+\frac{s^R\delta^R_{i-1}+s^L\delta_{i-1}^L}2 \sin\theta_{i-1}$
-		- $\theta_i=\theta_{i-1}+\frac{s^R\delta^R_{i-1}-s^L\delta_{i-1}^L}{b\delta^b_{i-1}}$
-		- for $\delta^R,\delta^L,\delta^b$ it holds that $\delta_i=\delta_{i-1}$
+	- we define $f(S,u)=\begin{bmatrix}x+\frac{s^R\delta^R+s^L\delta^L}2 \cos\theta\\ y+\frac{s^R\delta^R+s^L\delta^L}2 \sin\theta\\ \theta+\frac{s^R\delta^R-s^L\delta^L}{b\delta^b} \\ \delta^R\\\delta^L\\\delta^b\end{bmatrix}$
 	- we define $h(S)=\sqrt{x^2+y^2}$
-	- $F_x=\begin{bmatrix} 1 & 0 & -\delta\rho\sin\theta & \frac{s^R}2\cos\theta & \frac{s^L}2\cos\theta & 0 \\ 0 & 1 & \delta\rho\cos\theta & \frac{s^R}2\sin\theta & \frac{s^L}2\sin\theta & 0 \\ 0 & 0 & 1 & \frac{s^R}{b\delta^b} & \frac{-s^L}{b\delta^b} & ? \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0&0&0&0&1&0 \\ 0&0&0&0&0&1 \end{bmatrix}$
+	- $F_x=\begin{bmatrix} 1 & 0 & -\delta\rho\sin\theta & \frac{s^R}2\cos\theta & \frac{s^L}2\cos\theta & 0 \\ 0 & 1 & \delta\rho\cos\theta & \frac{s^R}2\sin\theta & \frac{s^L}2\sin\theta & 0 \\ 0 & 0 & 1 & \frac{s^R}{b\delta^b} & \frac{-s^L}{b\delta^b} & -\frac{s^R\delta^R-s^L\delta^L}{b\cdot{\delta^b}^2} \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0&0&0&0&1&0 \\ 0&0&0&0&0&1 \end{bmatrix}$
 		- where $\delta\rho=\frac{s^R\delta^R+s^L\delta^L}2$
-		- we can write $F_x$ as four blocks: $F_x^R,F^C$, then $O,I$
+		- we can write $F_x$ as four blocks
+			- $F_x=\begin{bmatrix}F^R_x & F^{RC}_x\\ O&I\end{bmatrix}$
 	- we also compute $F_u$ (six rows, two columns)
 		- two blocks: $F_u^R$ (robot) and $O$
 	- $H=\begin{bmatrix}\frac x{\sqrt{x^2+y^2}} & \frac y{\sqrt{x^2+y^2}} & 0 & 0&0&0\end{bmatrix}$
@@ -496,13 +495,11 @@
 	- we start with $P^{RC}=O$ (zero matrix), we'll show that after some time we get non-zero matrix
 		- $P_a=F_xP_bF_x^T+F_uQF_u^T$
 		- for the second term, we get three zero blocks so it does not influence $P^{RC}$
-		- for the first term, we get $F_xP_bF_x^T=\begin{bmatrix} F_x^RP^RF_x^{RT}+F^CP^CF^{CT} & F^CP^C \\ P^CF^{CT} & P^C\end{bmatrix}$
+		- for the first term, we get $F_xP_bF_x^T=\begin{bmatrix} F_x^RP_b^RF_x^{RT}+F_x^{RC}P_b^CF_x^{RCT} & F_x^{RC}P_b^C \\ P_b^CF_x^{RCT} & P_b^C\end{bmatrix}$
 		- so we get a non-zero correlation
 		- to make sure we are calibrating, we should prove that the update of $P$ reduces $P^C$ over time
-- cooperative localization
-	- …
 - SLAM
-	- …
+	- … *work in progress*
 
 ### Observability
 
