@@ -466,11 +466,11 @@
 - example: self-calibration for differential drive
 	- we cannot measure the distance of the wheels and the radii of the wheels precisely
 	- also, there's a noise on the sensor
-	- $S=(x,y,\theta,\delta^R,\delta^L,\delta^b)$
+	- $S=(x,y,\theta,\delta^R,\delta^L,\delta^b)^T$
 		- $\delta$ … calibration parameters
 		- real shift of the right wheel = $s^R\cdot \delta^R$
 		- real distance of the wheels = $b\cdot\delta^b$
-	- $u=(s^R,s^L)$
+	- $u=(s^R,s^L)^T$
 	- we define $f(S,u)=\begin{bmatrix}x+\frac{s^R\delta^R+s^L\delta^L}2 \cos\theta\\ y+\frac{s^R\delta^R+s^L\delta^L}2 \sin\theta\\ \theta+\frac{s^R\delta^R-s^L\delta^L}{b\delta^b} \\ \delta^R\\\delta^L\\\delta^b\end{bmatrix}$
 	- we define $h(S)=\sqrt{x^2+y^2}$
 	- $F_x=\begin{bmatrix} 1 & 0 & -\delta\rho\sin\theta & \frac{s^R}2\cos\theta & \frac{s^L}2\cos\theta & 0 \\ 0 & 1 & \delta\rho\cos\theta & \frac{s^R}2\sin\theta & \frac{s^L}2\sin\theta & 0 \\ 0 & 0 & 1 & \frac{s^R}{b\delta^b} & \frac{-s^L}{b\delta^b} & -\frac{s^R\delta^R-s^L\delta^L}{b\cdot{\delta^b}^2} \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0&0&0&0&1&0 \\ 0&0&0&0&0&1 \end{bmatrix}$
@@ -499,7 +499,28 @@
 		- so we get a non-zero correlation
 		- to make sure we are calibrating, we should prove that the update of $P$ reduces $P^C$ over time
 - SLAM
-	- … *work in progress*
+	- $S=\begin{bmatrix}x\\ y\\ \theta\\ x^1\\ y^1\\ \vdots\\ x^N\\ y^N\end{bmatrix}$ (pose & $N$ landmarks)
+	- $u=\begin{bmatrix}s^R\\ s^L\end{bmatrix}$
+	- $f(S,u)=\begin{bmatrix}x+\frac{s^R+s^L}2\cos\theta \\ y+\frac{s^R+s^L}2\sin\theta\\ \theta+\frac{s^R-s^L}B\\ x^1\\ y^1\\\vdots\\ x^N\\ y^N\end{bmatrix}$
+	- $h(S)=\sqrt{(x-x^k)^2+(y-y^k)^2}$
+		- range (distance) from observed landmark $k$
+	- $F_x=\begin{bmatrix}F_x^R& 0_{3\times 2N}\\ 0_{2N\times 3} &I_{2N}\end{bmatrix}$
+		- $F_x^R=\begin{bmatrix}1&0&-\frac{s^R+s^L}2\sin\theta \\ 0&1& \frac{s^R+s^L}2\cos\theta\\ 0&0&1\end{bmatrix}$
+	- $F_u=\begin{bmatrix}F_u^R\\ 0_{2N\times 2}\end{bmatrix}$
+		- $F_u^R=\begin{bmatrix}\frac12\cos\theta &\frac12\cos\theta\\\frac12\sin\theta&\frac12\sin\theta\\ 1/B& -1/B\end{bmatrix}$
+	- $H=[H^R,0,\dots,H^k,\dots,0]$
+		- $H^R=[\frac{x-x^k}h,\frac{y-y^k}h,0]$
+		- $H^k=[-\frac{x-x^k}h,-\frac{y-y^k}h]$
+		- and $h=\sqrt{(x-x^k)^2+(y-y^k)^2}$
+	- $Q$ … 2×2 matrix (usually diagonal)
+	- $R=\sigma_R^2$ … single range sensor
+	- computational complexity analysis
+		- prediction (mean) … $O(1)$
+		- prediction (cov.) … $O(1)$ proprio, $O(N)$ extero
+		- correction (mean) … $O(N)$
+		- correction (cov.) … $O(N^2)$
+			- dominant cost comes from the outer product $(P_bH^T)(HP_b)$
+			- (there's the scalar inverse in between)
 
 ### Observability
 
@@ -507,12 +528,12 @@
 	- if the hallway is uniform, I will be lost along the X axis for sure (I cannot estimate X)
 	- all the initial state that differ only in the X coordinate are indistinguishable
 - let's assume we are always in 2D
-- $S=(x,y,\theta)$
+	- $S=(x,y,\theta)$
+	- we consider $u(t),z(t)$ for $t\in[0,T]$
 - exteroceptive sensors
 	- distance from the origin
 	- bearing of the origin in the local frame
 	- bearing of the robot in the global frame
-- $u(t),z(t)$ for $t\in[0,T]$
 - suppose we know distance from the origin $z(0)$ and we know the bearing of the origin in the local frame, but we don't know the bearing of the robot in the global frame
 	- so $x$ is not observable
 		- the initial state of the robot could be anywhere on the circle with the radius $z(0)$
@@ -533,11 +554,11 @@
 		- inverse function theorem
 		- we can find such $x_1,\dots,x_n$ if $\det J\neq 0$
 	- $z(t)=h(S(t))$
-	- so $z(0)=h(S(0))$
-	- there's a theorem that we can transform $z(t)$ and $u(t)$ into functions dependent on the initial state
-	- we need continuous description of state
-	- we have $s_i=f(s_{i-1},u_i)$ and $z_i=h(s_i)$
-	- we need something like $\dot s=f(s,u)$
+		- so $z(0)=h(S(0))$
+		- there's a theorem that we can transform $z(t)$ and $u(t)$ into functions dependent on the initial state
+	- we need a continuous description of the state
+		- we have $s_i=f(s_{i-1},u_i)$ and $z_i=h(s_i)$
+		- we need something like $\dot s=f(s,u)$
 	- we had $x_i=x_{i-1}+\delta\rho\cos\theta_{i-1}$
 		- $x_i-x_{i-1}=\delta\rho\cos\theta_{i-1}$
 		- so we get $\dot x=v\cos\theta$
@@ -546,5 +567,51 @@
 	- then $u=(v,\omega)$ … linear speed, angular speed
 	- $\dot S=f_0(S)+u_1f_1(S)+\dots+u_mf_m(S)$
 	- $\dot{\begin{bmatrix}x\\ y\\ \theta\end{bmatrix}}=\underbrace{\begin{bmatrix}0\\0\\0\end{bmatrix}}_{f_0(S)}+v\underbrace{\begin{bmatrix}\cos\theta \\ \sin\theta \\ 0\end{bmatrix}}_{f_1(S)}+\omega \underbrace{\begin{bmatrix}0\\0\\1\end{bmatrix}}_{f_2(S)}$
-	- Lie derivatives
-- …
+	- Lie derivatives of $h(S)$ w.r.t. $f_0(S),f_1(S),\dots,f_m(S)$
+		- $L^0h(S)=h(S)$
+		- $L^1_{f_0}h(S)=\nabla h(S)\cdot f_0(S)$
+		- $L^1_{f_i}h(S)=\nabla h(S)\cdot f_i(S)$
+		- $L^2_{f_if_j}h(S)=\nabla L^1_{f_i}h(S)\cdot f_j(S)$
+		- Lie derivative is a scalar (dot product of two vectors)
+	- $\mathcal O^0=[\nabla h(S)]_{1\times n}$
+	- for $k\in\set{1,2,\dots}$
+		- $\mathcal O^k=\begin{bmatrix}\mathcal O^{k-1}\\\nabla L_{f_0,\dots,f_0,f_0}h(S)\\\nabla L_{f_0,\dots,f_0,f_1}h(S)\\\vdots\\\nabla L_{f_m,\dots,f_m,f_m}h(S)\end{bmatrix}$
+	- $\forall k:r_k=\mathrm{rank}(\mathcal O^k)$
+		- if $r_k=n$ (dimension of $S$) $\implies$ observable
+		- else ($r_k\lt n$)
+			- $r_k=r_{k-1}\implies$ stop, unobservable
+			- $r_k\gt r_{k-1}\implies$ increment $k$ and try again
+- application
+	- for our example ($n=3,\,m=2$) and no exteroceptive output $h(S)$
+		- $r=0$
+		- unobservable, odometry alone cannot provide localization
+	- for our example and $h(S)=\frac{x^2+y^2}2$
+		- $\mathcal O^0=[x,y,0]$
+		- $r_0=1$
+		- $L_{f^0}^1 h(S)=[x,y,0]\begin{bmatrix}0\\0\\0\end{bmatrix}=0$
+		- $L_{f^1}^1 h(S)=[x,y,0]\begin{bmatrix}\cos\theta\\\sin\theta\\0\end{bmatrix}=x\cos\theta+y\sin\theta$
+		- $L_{f^2}^1 h(S)=[x,y,0]\begin{bmatrix}0\\0\\1\end{bmatrix}=0$
+		- $\mathcal O^1=\begin{bmatrix}x&y&0\\\cos\theta & \sin\theta & -x\sin\theta+y\cos\theta\end{bmatrix}$
+		- $r_1=2$
+		- $L^2_{f_1f_0}h(S)=[\cos\theta,\sin\theta,-x\sin\theta+y\cos\theta]\cdot[0,0,0]^T=0$
+		- $L^2_{f_1f_1}=\cos^2\theta+\sin^2\theta=1$
+		- $L^2_{f_0f_2}=-x\sin\theta+y\cos\theta$
+		- $\mathcal O^2=\begin{bmatrix}x&y&0\\\cos\theta & \sin\theta & -x\sin\theta+y\cos\theta\\ -\sin\theta&\cos\theta&-x\cos\theta-y\sin\theta\end{bmatrix}$
+		- $r_2=2$ (third column is a linear combination of the first two)
+		- → unobservable
+
+## Formulae
+
+- vector function $f(x_1,\dots,x_n)=\begin{bmatrix}f_1(x_1,\dots,x_n)\\\vdots\\ f_m(x_1,\dots,x_n)\end{bmatrix}$
+	- Jacobian $J_f=\begin{bmatrix}{\dfrac {\partial f_{1}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{1}}{\partial x_{n}}}\\\vdots &\ddots &\vdots \\{\dfrac {\partial f_{m}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{m}}{\partial x_{n}}}\end{bmatrix}$
+- trigonometry
+	- $\sin^2 x+\cos^2 x=1$
+	- $\sin(a\pm b)=\sin a\cos b\pm\cos a\sin b$
+	- $\cos(a\pm b)=\cos a\cos b\mp\sin a\sin b$
+- differentiation
+	- $(fg)'=f'g+fg'$
+	- $\left(\frac fg\right)'=\frac{f'g-fg'}{g^2}$
+	- $[f(g(x))]'=f'(g(x))\cdot g'(x)$
+- determinant
+	- $\begin{vmatrix}a&b\\c&d\end{vmatrix}=ad-bc$
+	- $\begin{vmatrix}a&b&c\\d&e&f\\g&h&i\end{vmatrix}=aei+bfg+cdh-ceg-bdi-afh.$
