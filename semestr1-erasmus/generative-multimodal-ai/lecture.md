@@ -634,3 +634,70 @@
 	- Dreambooth
 		- problem: if I finetune the model using photos of my dog standing, I will only get results with my dog standing (not sitting)
 		- so I use specific loss that ensures the generated diversity is similar to the diversity of real dog poses
+
+---
+
+- multimodal learning
+	- many research questions
+	- many other modalities than just video and audio
+		- text, lidar, thermal, events, …
+	- interactions between modalities
+- sensor fusion – using information from diverse sensors to make predictions
+	- types
+		- camera + depth sensor → RGB-D object detection
+		- RGB + thermal
+		- RGB + optical flow (object moving in the video)
+	- we have aligned inputs; when to perform fusion?
+		- early fusion – concat, then pass to the model
+		- late fusion – two models, jointly predict
+			- easier to train (we don't need that much paired data)
+			- can be run in parallel
+		- middle fusion – two models (with shared weights), then fuse features and pass to third model
+		- another approach: learn when to perform fusion (siamese network)
+	- using ViT with two modalities
+		- either pass shorter sequence of pairs → early fusion
+		- or pass two sequences (so the entire sequence is longer) → late fusion
+	- RGB + lidar detection
+		- advantages
+			- effective in low light and some adverse weather
+			- robust in low-texture areas
+			- penetrates dense foliage (vegetation) – for satellite imagery
+			- long range
+		- lidar returns a point cloud (points detected in 3D)
+		- approaches
+			- first find object in image, then use lidar points
+			- or we can use late fusion
+- multimodal translation (from one modality to another)
+	- image captioning – we condition text on some visual observation
+		- first RNNs with LSTM, then Transformer (attention-based approaches)
+- hybrid tasks
+	- visual question answering
+		- projecting the image and the question in the same vector space
+		- attention layers – which part of the image should I look at?
+	- lips reading
+		- seq2seq with attention – which time should I look at to predict the next word? (predicting alignment between text and audio/video frames)
+- multimodal alignment (identifying and modeling correspondances)
+	- ImageNet
+		- hard to scale up
+		- vision is not only about classes
+		- limited robustness to distribution shifts
+		- adaptation to other tasks (new classes) requires further training
+	- zero-shot classification: CLIP
+		- frame the problem as an image-caption matching problem
+		- captions
+			- easier to get than classes
+			- contain semantic, geometric, and stylistic information
+			- multi-object images
+		- contrastive pre-training
+			- captions encoded using transformer
+			- images encoded by ViT or ResNet
+			- for each image, probability (softmax) of every possible caption (and vice versa)
+				- loss function – maximize likelihood of predicting correct text for the image and correct image for the text
+		- can be then used for zero-shot classification
+			- user-defined classes can be expressed as captions: “a photo of a {object}.“
+		- can be also used as a search engine
+			- you compute the similarity between the provided caption and the images in your database
+		- can be used to build on top of (prompt engineering – “software 3.0”)
+	- Imagebind
+		- based on contrastive loss
+		- connecting modalities with were not connected before

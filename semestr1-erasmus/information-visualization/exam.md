@@ -7,7 +7,7 @@
 	- SciVis – datasets have a given spatialisation
 	- DataVis – web-based, communication
 	- challenges: diversity, scale
-- visual information-seeking mantra
+- visual information-seeking mantra (Ben Shneiderman)
 	- overview first
 	- zoom and filter
 	- details on demand
@@ -37,19 +37,23 @@
 	- “what comparisons can I make?”
 	- “how can I aggregate the data?”
 	- nominal … only equality (=)
-		- aggregation … mode (we show the most frequent one) or top-k
+		- aggregation: mode (we show the most frequent one) or top-k
 			- if we have a taxonomy (hierarchy), we can group the data
+		- examples: city of birth, university, handedness
 	- ordered … ordering and equality (<, =)
-		- aggregation … median, quantiles, histogram (count per bucket)
+		- aggregation: median, quantiles, histogram (count per bucket)
+		- examples: education level, feedback scale
 	- quantitative … “how much smaller is it?”
 		- → intervals … $v-v'$
+			- examples: shoe size, pH scale
 		- → ratios … $v/v'$
 			- only if there is a meaningful zero on the scale
-		- aggregation … mean, std dev, skew
+			- examples: duration, cost
+		- aggregation: mean, std dev, skew
 - properties of visual channels
 	- association $(\equiv)$
 		- does the visual channel play well with the other visual channels?
-		- size does not provide association – the other visual variables are more difficult to see for smaller sizes
+		- size and value don't provide association (they impact perception of other visual variables) – the other visual variables are more difficult to see for smaller sizes / lighter marks
 	- selection $(\neq)$
 		- can you focus on a specific subset in this visual channel?
 		- color provides selection
