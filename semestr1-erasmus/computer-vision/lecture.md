@@ -534,3 +534,40 @@
 		- output gate: output of the cell
 - existing tasks are solved (to some extent)
 	- new tasks need to be created → ARC-AGI datasets
+
+## Paper Session 2
+
+- ViT
+- DINO
+	- emerging properties in self-supervised vision transformers
+	- ViT limitations
+		- supervised labels are coarse (one image – one label)
+		- no explicit pressure to learn object boundaries, parts vs. background, spatial grouping
+	- idea: use self-supervised pre-training
+		- knowledge **di**stillation with **no** labels
+	- different crops
+		- teacher gets only global
+		- student gets all crops
+		- → enforce local-to-global correspondences
+	- to avoid mode collapse – centering and sharpening applied to the teacher's output
+		- we are forcing the teacher to “be creative” when predicting distribution
+		- sharpening prevents the distribution from being flat
+		- centering prevents the distribution to always peak at the same place (by computing a running average)
+	- setup
+		- MLP on top of `[class]` encoding (like in ViT) → distribution
+		- goal: minimize cross-entropy between student and teacher
+- hi-res stereo datasets with subpixel ground truth
+	- capturing objects with stereo camera
+	- how to create such datasets
+	- two rounds of calibration (using checkerboard)
+	- code images to get depth
+	- ambient images
+	- imperfection – useful for evaluation (real-world images are not perfect)
+- pose reconstruction
+	- SMPL body model – shape & pose
+	- two approaches
+		- regression – predicts shape & pose based on the image
+		- optimization – optimizes shape & pose based on camera parameters and ground truth of 2D joints (and initial shape & pose)
+	- SPIN combines both
+		- initializes optimization with regression outputs
+		- uses optimization to supervise regression
