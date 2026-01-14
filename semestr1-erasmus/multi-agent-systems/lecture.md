@@ -604,3 +604,19 @@
 - consolidating individual beliefs
 - judgement aggregation problem
 	- we cannot just use majority vote to consolidate interdependent statements (it may lead to inconsistency even if the individual agents are consistent)
+
+## Creating Models
+
+0. define the research question
+	- then, we can create a model and its implementation (i.e. simulator)
+1. define the agents
+	- agents: attributes, actions, interaction, architecture/complexity
+2. use data to initialize attributes
+	- based on the desired level or realism
+3. define the environment
+	- time and space scale
+	- map type
+4. implement the simulator
+	- input parameters, output indicators & visualizations
+	- which scenarios to explore?
+	- which platform to use?

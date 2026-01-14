@@ -40,7 +40,7 @@
 - reactive agent vs. cognitive agent
 	- cognitive agent can reason about the environment
 	- reactive agent can only move randomly and perform some reactive actions
-- practical reasoning
+- practical reasoning (Bratman)
 	- action-oriented reasoning = process of deciding what to do (not what to believe or what is true)
 	- human practical reasoning
 		- deliberation – what state of affairs I want to achieve? (output = intentions)
@@ -124,7 +124,7 @@
 	- how to handle interaction between layers?
 		- horizontal layers – each layer produces output, they are merged
 		- vertical layers – layers pass inputs in one direction and outputs in the other
-	- Ferguson – TouringMachines
+	- Ferguson – Touring Machines
 		- three control layers: reactive, planning, modelling
 
 ## Game Theory
@@ -180,20 +180,21 @@
 
 ## Communication
 
-- Shannon's model
+- Shannon's communication model
 	- source
-	- transmitter
-	- channel
-	- receiver
+	- transmitter (message → signal)
+	- channel (transmits signals)
+	- receiver (signal → message)
 	- destination
-- Berlo's model
+- Berlo's communication model
 	- sender
 	- message
 	- channel
 	- receiver
 - types
 	- point to point × broadcast
-	- broker
+		- when broadcasting, sender does not (might not) know the receiver
+	- broker – ensures that the message is delivered to everyone interested (reduces broadcast to point-to-point)
 	- propagation in environment
 - message meaning
 	- intentional – sender intends the meaning of the message
@@ -268,7 +269,13 @@
 	- logical programming
 	- LLMs
 - simulating communication
-	- with neighbours vs. with acquaintances
+	- with neighbours – turtles move and message neighboring turtles
+	- with acquaintances – every turtle has some links
+- trust
+	- unknown agent → based on reputation or stereotypes
+	- known agent → based on interaction history
+	- approaches: economical (maximizing utility) × social (based on BDI)
+	- social trust theory – Castelfranchi, Falcone
 
 ## Modelling
 
@@ -277,12 +284,19 @@
 	- macro patterns emerge from individual decisions
 - 7 goals of simulation (Axelrod)
 	- prediction – e.g. weather
-	- task performance – we want to mimic a human performing the task
+		- predict potential outputs resulting from known complex inputs and assumptions about mechanisms
+	- task performance
+		- we want to mimic a human performing the task (human's perception, decision making, social interaction)
 	- training – e.g. flight simulator
-	- entertainment – imaginary virtual world, for amusement
-	- education – users can learn what happens if they do *this* or *that* in the simulation
-	- proof – prove existence/conjecture
-	- discovery – discover new knowledge
+		- train people by providing a reasonably accurate and dynamic interactive representation of a given environment
+	- entertainment – e.g. video games, movies
+		- imaginary virtual world, for amusement
+	- education
+		- users can learn what happens if they do *this* or *that* in the simulation
+	- proof – e.g. Conway's game of life, Shelling's segregation model
+		- prove existence/conjecture
+	- discovery
+		- discover new knowledge, principle, relationships
 - social simulation
 	- model should be valid (faithful to reality)
 - how to build a model
@@ -293,7 +307,10 @@
 		- find relevant literature/insights describing the modelled behaviour
 		- define rules of the system
 		- formulate what is important (and what is not) – start simple
-	- who are the agents? what is the environment?
+	- who are the agents?
+		- attributes, actions, architecture, decision making, base theory (psychology etc.)
+	- what is the environment?
+		- space, time
 	- simulator
 		- inputs
 		- outputs
@@ -346,3 +363,313 @@
 		- book: The Cognitive Structure of Emotions
 		- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
 	- biases – confirmation bias, …
+
+---
+
+### Modelling COVID-19
+
+- initially, too many unknowns
+- mathematical models
+	- people in 3 compartments
+		- susceptibles
+		- infected
+		- recovered
+	- parameters
+		- $\mu$ … birth/death rate (supposed equal)
+		- $\beta$ … contamination rate
+		- $\gamma$ … recovery rate
+- agent-based models
+	- agents can be heterogenous (individual attributes, individual choices)
+	- more detailed, better explainibility
+	- slower, more complex
+	- need individual behaviour data
+- data collection
+	- place of death
+		- people dying in hospitals (in cities), residence address not always available
+		- leads to overestimating the gravity of the situation
+	- mortality = deaths / cases
+		- how to count the deaths? (what if covid was probably not the real cause of death?)
+		- how to count the cases? (there are asymptomatic cases…)
+- CovPrehension project
+	- modelling the spread
+		- simplified, 1 contact leads to infection
+		- we can calibrate the model based on the reproduction rate
+		- we can introduce physical distancing – but in reality it's not always feasible
+		- some people cannot / don't want to respect distancing
+	- one model not enough to make important political decisions
+	- collective immunity
+	- who should be tested first?
+		- testing symptomatic people is not enough to estimate the number of infected people
+	- designing models
+		- make your hypotheses clear
+		- choose useful attributes, keep agents simple
+		- choose a limited number of parameters, should have a visible impact on the output
+		- output indicators should be measurable from the model and useful to answer the question
+
+## Agent Control
+
+- basic types
+	- procedural – limited
+	- learned – needs data, prone to biases
+	- control by planning – goal oriented behavior, BDI architecture
+- difficulties of planning
+	- environment – dynamic, partially observable, continuous
+	- perception errors
+	- goals – …
+	- actions
+	- other agents
+- classical planning problem
+	- many simplifying assumptions
+	- …
+- model of the problem – we need a formal description of all the following elements
+	- initial state
+	- list of goals
+	- set of actions – with their preconditions and effects
+- one approach: situation calculus
+	- basic elements
+		- actions
+		- fluents – describe the state of the world
+		- situations – sequence of (past) actions
+	- domain then consists of
+		- world state descriptions (fluents)
+		- actions (one precondition axiom per action + effect axioms)
+		- successor state axioms (one per fluent; how fluents change over time)
+	- how situations work
+		- let's say we are in situation $S$
+		- then $S'=\mathrm{Do}(\mathrm{action}(\dots),S)$ is the situation after performing *action*
+		- so the situations store the history
+	- action preconditions and effects
+		- *Poss*
+		- block world example of precondition: Poss(move(x,y,z),S) <-> clear(x,S) & on(x,y,S) & clear(z,S)
+	- frame problem
+		- successor state axioms solve it
+- definition: plan
+	- set of plan steps
+	- set of ordering constraints (timing of steps) – what needs to happen before what; total or partial order
+	- set of variables
+	- set of causal links between steps
+- several types of plans: linear, non-linear, hierarchical
+- examples: recipe, itinerary, hanoi towers
+- planning algorithms
+	- properties: soundness (produces only correct solutions), completeness (produces all existing solutions), optimality (finds the best solution first), speed
+	- we can use graph search algorithms: DFS (possible endless loop if tree-search used on a graph), BFS, A\*
+		- *expand*, *insert*
+		- forward chaining – what can we do at this point?
+		- backward chaining – what can lead us to our goal?
+	- linear planning
+		- means-end analysis – tries to reduce the difference between the current state and the goal
+		- STRIPS – implements means-end analysis
+		- Sussman anomaly – if we divide the goal (conjuction) into subgoals, we may get suboptimal plans
+		- linear plan = sequence of actions
+		- linear planning – summary
+			- state space
+			- operators – transitions between states
+			- test function (is goal reached?)
+			- path cost (how many steps)
+			- progressive × regressive (forward or backward chaining)
+		- advantages
+			- reduced search space – goals solved one at a time
+				- advantageous if goals are independent (but they may often conflict!)
+			- sound – only finds correct plans
+		- disadvantages
+			- may produce suboptimal solutions
+			- incomplete
+	- non-linear planning
+		- considers all goals at the same time
+		- more complex
+		- may be parallelized
+
+## Working Together
+
+- coordination of multiple agents
+	- local decision
+	- global goal
+	- anticipate other agents' behavior
+- multiplication and specialization of agents increase effectiveness (redundancy, economy of scale), but also introduce some challenges (communication, making rational choices, planning, cooperation, coordination, negotiation)
+- coordination
+	- additional information processing we need to perform when multiple agents pursue goals (if there was only a single agent, it would not perform these processing steps)
+	- managing dependencies between agents
+	- purpose of coordination … increase effectiveness with increasing number of agents
+- reflex agents – reactive coordination
+	- no planning, no direct communication with other agents
+	- methods for reactive coordination: stimergy (pheromones, radioactive crumbs), force fields, behavior rules (boids)
+- cognitive coordination
+	- planning, communication (e.g. ContractNet), organization (e.g. form coalitions)
+	- self-interested vs. benevolent agents
+		- problem-solving in benevolent system … cooperative distributed problem solving
+		- self-interested agents → game theory
+	- are the goals compatible, resources sufficient, and skills (of individual robots) sufficient?
+		- compatible goals & sufficient resources & sufficient skills → disinterest, independance
+		- compatible goals (but missing skills or resources or both) → cooperation
+		- incompatible goals → antagonism
+	- coodination mechanisms
+		- centralized × decentralized
+		- static (rule-based) × dynamic
+		- implicit (altering the environment to gradually solve the problem) × explicit (what to do and when)
+- coordinated distributed problem solving (CDPS)
+	- divide and conquer
+	- sub-problems are easier to solve, can be solve in parallel
+	- for steps: decomposition, task allocation, local solving, conflict solving
+	- a good decomposition allows agents to work in parallel
+	- positive × negative interaction
+		- positive interaction – action helps achieving several necessary facts
+		- negative interaction – achieving a fact deletes other necessary facts
+	- homogeneous (all have the same skills) × heterogeneous agents
+		- task allocation for homogeneous agents is easier
+	- local solving – each agent generates its sub-plan
+	- conflict solving – sharing information, synchronizing actions and resource access
+		- it's easier to solve conflicts between sub-plans than to design a global plan based on global constraints
+	- task allocation protocols
+		- agents can form temporary alliances – coalitions
+		- ”who can I work with?“
+		- if agents don't know skills of others → ContractNet
+		- if agents know skills of others and can reason about them → dependence-based coalitions (DBC)
+			- goal-dependence
+				- agent $i$ depends on agent $j$ for a given goal $g$ w.r.t. a set of plans $P$ if…
+					- $i$ has $g$ in its set of goals and has no feasible plan achieving $g$
+					- but there exists a plan $p$ achieving $g$
+					- and $j$ has an action $a$ in its set of actions, s.t. $a\in p$
+					- and $i$ does not have such action
+				- OR-dependence – any of these agents can help me
+				- AND-dependence – I need all these agents to help me in order to achieve my goal
+			- principles of DBC: non-benevolence, sincerity, self-knowledge, consistency
+			- each agent has its beliefs about others
+			- diagram in slides
+				- plans $p111,p112,p18$
+				- agent 1 can perform $a1$, does not need help
+				- $p111$ … AND-dependence
+				- $a2$ … OR-dependence
+			- situations for agent $i$ and goal $g$
+				- NG … agent $i$ does not have goal $g$
+				- NP … has $g$ but no plan
+				- AUT … has $g$ and autonomous plan
+				- DEP … has $g$ and every plan is action-dependent
+			- situations for agents $i,j$ and a goal $g$ (according to $i$'s plans and $j$'s plans that $i$ knows about)
+				- independence – $i$ does not need $j$ to achieve $g$
+				- unilateral dependence – $i$ needs $j$ for $g$ and $j$ does not need $i$ (for any goals)
+				- mutual dependence – $i$ needs $j$ and $j$ needs $i$ to achieve $g$
+				- locally believed mutual dependence – $i$ believes there's a mutual dependence and also believes that $j$ does not believe so
+				- mutually believed mutual dependence – $i$ believes that both $i,j$ believe there's a mutual dependence
+			- situations for $i,j$ and $g,g'$
+				- reciprocal dependence – $i$ needs $j$ for $g$ and $j$ needs $i$ for $g'$
+				- locally believed reciprocal dependence
+				- mutually believed reciprocal dependence
+			- algorithm
+			- preferred situations
+			- choice of partner
+			- social reasoning
+- multi-agent planning
+	- distributed STRIPS
+
+## Social Choice
+
+- general problem
+	- set of options
+	- set of agents expressing opinions on that options
+	- how to select an option?
+- 3 fields
+	- fair allocation of resources
+	- voting theory
+	- judgement aggregation
+
+### Fair Division
+
+- example: Pleiades satellites constellation
+- the division (allocation) problem
+	- inputs: finite set of agents with preferences/demands (numerical or ordinal), common limited resource (divisible or indivisible), set of constraints, optimization criterion
+	- output: allocation
+- central principle – every agent knows how they value the resource, they should make the division themselves (there should be no central bottleneck)
+- the resource can be heterogeneous and divisible (example: cake)
+- utility function
+	- $u:2^X\to [0,1]$
+	- normalized, so that $u(\emptyset)=0$ and $u(X)=1$
+	- usually additive so $u(A)+u(B)=u(A+B)$ for $A\cap B=\emptyset$
+- Pareto dominance
+- Pareto efficiency – quite weak criterion (giving the cake to one agent is efficient but not necessarily fair)
+- what is fair?
+	- no objective value of each item
+	- two ways to define a good division
+		- maximizing social welfare (collective utility)
+		- maximizing individual criteria
+	- collective utility (social welfare) function can be defined in different ways
+		- utilitartian … maximizing total utility
+		- egalitarian … maximizing the minimum utility
+		- Nash collective utility function … maximizing the product of utilities
+	- individual fairness criteria
+		- envy-free
+			- there is no other agent whose bundle (share) would the agent want more
+			- does not always exist
+		- exact
+			- all agents agree about the value of all shares
+		- proportional
+			- if each agent gets at least their due share according to their own value function
+			- if they have strictly more → super proportional
+		- equitable
+			- agents feel the same hapiness
+			- hard to verify
+- price of fairness – fair division may be less efficient than some other division (according to economic welfare)
+- allocation approaches
+	- centralized allocation
+	- distributed allocation
+		- start with random allocation
+		- let the agents negotiate
+	- sequential allocation
+		- agents take turns
+		- problem: find a good sequence
+		- knowing preferences of other agents can be used to manipulate the result
+- example: cut & choose method
+	- first agent cuts cake into equal parts (subjectively)
+	- second agent chooses which part they prefer
+	- is proportional and envy-free
+	- adaptations for more agents
+
+### Voting Theory
+
+- formal framework
+	- $n$ voters, finite set $X$ of $m$ alternatives
+	- each voter expresses a preference = linear order over $X$
+	- …
+- voters need to express strict preferences
+- some nonstandard methods don't fit into this framework
+- rules
+	- plurality rule – wins the one who ranks first the most
+	- Borda rule – voters assign points in order (e.g. 4, 3, 2, 1, 0 for $m=5$)
+	- plurality rule with run-off (two rounds)
+- we want to incentivize voters to be truthful
+- single transferable vote (STV)
+	- generalization of the plurality with runoff
+	- collect preferences, eliminate loser (with the least top votes), recalculate preferences (without the loser), eliminate the next loser, …
+	- if someone gets over 50 % in the process, this is the winner
+	- used in some countries
+	- no-show paradox
+		- it may be better to abstain than to vote for your favorite candidate
+- participation criterion
+	- addition of ballot $A\succ B$ should not worsen the position of $A$
+- positional scoring rule (PSR)
+- Condorcet principle
+	- the total winner should win in every pairwise majority contest
+- PSR violates Condorcet principle
+	- Condorcet principle is incompatible with participation criterion
+- utilitarian & egalitarian rules
+
+### Judgement Aggregation
+
+- consolidating individual beliefs
+- judgement aggregation problem
+	- we cannot just use majority vote to consolidate interdependent statements (it may lead to inconsistency even if the individual agents are consistent)
+
+## Creating Models
+
+0. define the research question
+	- then, we can create a model and its implementation (i.e. simulator)
+1. define the agents
+	- agents: attributes, actions, interaction, architecture/complexity
+2. use data to initialize attributes
+	- based on the desired level or realism
+3. define the environment
+	- time and space scale
+	- map type
+4. implement the simulator
+	- input parameters, output indicators & visualizations
+	- which scenarios to explore?
+	- which platform to use?
