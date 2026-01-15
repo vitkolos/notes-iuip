@@ -150,8 +150,9 @@
 		- cooperate $(C)$, defect $(D)$
 	- the environment is…
 		- sensitive – if each combination of actions leads to a different result
-		- insensitive
+		- insensitive – no agent has any influence on the result
 		- controlled – if one player can influence the result
+	- utility functions – map results to utilities
 - representation
 	- extensive form – decision tree
 	- strategic form – matrix
@@ -261,7 +262,7 @@
 		- modify → accept, refuse, or modify
 	- contract net
 		- “I need help for a task”
-		- 5 stages
+		- 5 stages: recognition (of my own problem), announcement, bidding, awarding, expediting
 		- bidding, contracts
 	- dependence based coalition (DBC), social reasoning
 - programming communication
@@ -364,25 +365,23 @@
 		- example: distress … agent believes that $\varphi$, but desires $\neg\varphi$
 	- biases – confirmation bias, …
 
----
+## Modelling COVID-19
 
-### Modelling COVID-19
-
-- initially, too many unknowns
-- mathematical models
-	- people in 3 compartments
-		- susceptibles
-		- infected
-		- recovered
-	- parameters
-		- $\mu$ … birth/death rate (supposed equal)
-		- $\beta$ … contamination rate
-		- $\gamma$ … recovery rate
-- agent-based models
-	- agents can be heterogenous (individual attributes, individual choices)
-	- more detailed, better explainibility
-	- slower, more complex
-	- need individual behaviour data
+- types of models
+	- mathematical models
+		- people in 3 compartments
+			- susceptibles
+			- infected
+			- recovered
+		- parameters
+			- $\mu$ … birth/death rate (supposed equal)
+			- $\beta$ … contamination rate
+			- $\gamma$ … recovery rate
+	- agent-based models
+		- agents can be heterogenous (individual attributes, individual choices)
+		- more detailed, better explainibility
+		- slower, more complex
+		- need individual behaviour data
 - data collection
 	- place of death
 		- people dying in hospitals (in cities), residence address not always available
@@ -400,11 +399,11 @@
 	- collective immunity
 	- who should be tested first?
 		- testing symptomatic people is not enough to estimate the number of infected people
-	- designing models
-		- make your hypotheses clear
-		- choose useful attributes, keep agents simple
-		- choose a limited number of parameters, should have a visible impact on the output
-		- output indicators should be measurable from the model and useful to answer the question
+- designing models
+	- make your hypotheses clear
+	- choose useful attributes, keep agents simple
+	- choose a limited number of parameters, should have a visible impact on the output
+	- output indicators should be measurable from the model and useful to answer the question
 
 ## Agent Control
 
@@ -415,17 +414,24 @@
 - difficulties of planning
 	- environment – dynamic, partially observable, continuous
 	- perception errors
-	- goals – …
-	- actions
-	- other agents
+	- goals – reach a state (partial satisfaction?) / maximize a utility
+	- actions – duration, uncertainty, concurrency
+	- other agents – dynamism, conflict, cooperation
 - classical planning problem
 	- many simplifying assumptions
-	- …
+	- unique (known) initial state
+	- actions
+		- instantaneous
+		- deterministic (→ accurate prediction of next state)
+		- one at a time
+	- static environment, no other agents
+	- → goal-oriented behaviour
 - model of the problem – we need a formal description of all the following elements
 	- initial state
 	- list of goals
 	- set of actions – with their preconditions and effects
 - one approach: situation calculus
+	- John McCarthy
 	- basic elements
 		- actions
 		- fluents – describe the state of the world
@@ -448,8 +454,8 @@
 	- set of ordering constraints (timing of steps) – what needs to happen before what; total or partial order
 	- set of variables
 	- set of causal links between steps
-- several types of plans: linear, non-linear, hierarchical
-- examples: recipe, itinerary, hanoi towers
+	- several types of plans: linear, non-linear, hierarchical
+	- examples: recipe, itinerary, hanoi towers
 - planning algorithms
 	- properties: soundness (produces only correct solutions), completeness (produces all existing solutions), optimality (finds the best solution first), speed
 	- we can use graph search algorithms: DFS (possible endless loop if tree-search used on a graph), BFS, A\*
@@ -457,8 +463,8 @@
 		- forward chaining – what can we do at this point?
 		- backward chaining – what can lead us to our goal?
 	- linear planning
-		- means-end analysis – tries to reduce the difference between the current state and the goal
-		- STRIPS – implements means-end analysis
+		- means-end analysis (Newell) – tries to reduce the difference between the current state and the goal
+		- STRIPS (Fikes, Nilsson) – implements means-end analysis
 		- Sussman anomaly – if we divide the goal (conjuction) into subgoals, we may get suboptimal plans
 		- linear plan = sequence of actions
 		- linear planning – summary
@@ -479,14 +485,13 @@
 		- more complex
 		- may be parallelized
 
-## Working Together
+## Coordination
 
 - coordination of multiple agents
-	- local decision
-	- global goal
-	- anticipate other agents' behavior
-- multiplication and specialization of agents increase effectiveness (redundancy, economy of scale), but also introduce some challenges (communication, making rational choices, planning, cooperation, coordination, negotiation)
-- coordination
+	- local decision, global goal, anticipate other agents' behavior
+	- multiplication and specialization of agents
+		- increase effectiveness (redundancy, economy of scale)
+		- but also introduce some challenges (communication, making rational choices, planning, cooperation, coordination, negotiation)
 	- additional information processing we need to perform when multiple agents pursue goals (if there was only a single agent, it would not perform these processing steps)
 	- managing dependencies between agents
 	- purpose of coordination … increase effectiveness with increasing number of agents
@@ -509,7 +514,7 @@
 - coordinated distributed problem solving (CDPS)
 	- divide and conquer
 	- sub-problems are easier to solve, can be solve in parallel
-	- for steps: decomposition, task allocation, local solving, conflict solving
+	- four steps: decomposition, task allocation, local solving, conflict solving
 	- a good decomposition allows agents to work in parallel
 	- positive × negative interaction
 		- positive interaction – action helps achieving several necessary facts
@@ -519,45 +524,49 @@
 	- local solving – each agent generates its sub-plan
 	- conflict solving – sharing information, synchronizing actions and resource access
 		- it's easier to solve conflicts between sub-plans than to design a global plan based on global constraints
-	- task allocation protocols
-		- agents can form temporary alliances – coalitions
-		- ”who can I work with?“
-		- if agents don't know skills of others → ContractNet
-		- if agents know skills of others and can reason about them → dependence-based coalitions (DBC)
-			- goal-dependence
-				- agent $i$ depends on agent $j$ for a given goal $g$ w.r.t. a set of plans $P$ if…
-					- $i$ has $g$ in its set of goals and has no feasible plan achieving $g$
-					- but there exists a plan $p$ achieving $g$
-					- and $j$ has an action $a$ in its set of actions, s.t. $a\in p$
-					- and $i$ does not have such action
-				- OR-dependence – any of these agents can help me
-				- AND-dependence – I need all these agents to help me in order to achieve my goal
-			- principles of DBC: non-benevolence, sincerity, self-knowledge, consistency
-			- each agent has its beliefs about others
-			- diagram in slides
-				- plans $p111,p112,p18$
-				- agent 1 can perform $a1$, does not need help
-				- $p111$ … AND-dependence
-				- $a2$ … OR-dependence
-			- situations for agent $i$ and goal $g$
-				- NG … agent $i$ does not have goal $g$
-				- NP … has $g$ but no plan
-				- AUT … has $g$ and autonomous plan
-				- DEP … has $g$ and every plan is action-dependent
-			- situations for agents $i,j$ and a goal $g$ (according to $i$'s plans and $j$'s plans that $i$ knows about)
-				- independence – $i$ does not need $j$ to achieve $g$
-				- unilateral dependence – $i$ needs $j$ for $g$ and $j$ does not need $i$ (for any goals)
-				- mutual dependence – $i$ needs $j$ and $j$ needs $i$ to achieve $g$
-				- locally believed mutual dependence – $i$ believes there's a mutual dependence and also believes that $j$ does not believe so
-				- mutually believed mutual dependence – $i$ believes that both $i,j$ believe there's a mutual dependence
-			- situations for $i,j$ and $g,g'$
-				- reciprocal dependence – $i$ needs $j$ for $g$ and $j$ needs $i$ for $g'$
-				- locally believed reciprocal dependence
-				- mutually believed reciprocal dependence
-			- algorithm
-			- preferred situations
-			- choice of partner
-			- social reasoning
+- task allocation protocols
+	- agents can form temporary alliances – coalitions
+	- ”who can I work with?“
+	- if agents don't know skills of others → ContractNet
+	- if agents know skills of others and can reason about them → dependence-based coalitions (DBC)
+- dependence-based coalitions
+	- goal-dependence
+		- agent $i$ depends on agent $j$ for a given goal $g$ w.r.t. a set of plans $P$ if…
+			- $i$ has $g$ in its set of goals and has no feasible plan achieving $g$
+			- but there exists a plan $p$ achieving $g$
+			- and $j$ has an action $a$ in its set of actions, s.t. $a\in p$
+			- and $i$ does not have such action
+		- OR-dependence – any of these agents can help me
+		- AND-dependence – I need all these agents to help me in order to achieve my goal
+	- principles of DBC: non-benevolence (agents can refuse to cooperate with others), sincerity, self-knowledge, consistency (agents don't maintain contradictory beliefs about others)
+	- diagram in slides
+		- plans $p111,p112,p18$
+		- agent 1 can perform $a1$, does not need help
+		- $p111$ … AND-dependence
+		- $a2$ … OR-dependence
+	- situations for agent $i$ and goal $g$
+		- NG … agent $i$ does not have goal $g$
+		- NP … has $g$ but no plan
+		- AUT … has $g$ and autonomous plan
+		- DEP … has $g$ and every plan is action-dependent
+	- situations for agents $i,j$ and a goal $g$ (according to $i$'s plans and $j$'s plans that $i$ knows about)
+		- independence – $i$ does not need $j$ to achieve $g$
+		- unilateral dependence – $i$ needs $j$ for $g$ and $j$ does not need $i$ (for any goals)
+		- mutual dependence – $i$ needs $j$ and $j$ needs $i$ to achieve $g$
+		- locally believed mutual dependence – $i$ believes there's a mutual dependence and also believes that $j$ does not believe so
+		- mutually believed mutual dependence – $i$ believes that both $i,j$ believe there's a mutual dependence
+	- situations for $i,j$ and $g,g'$
+		- reciprocal dependence – $i$ needs $j$ for $g$ and $j$ needs $i$ for $g'$
+		- locally believed reciprocal dependence
+		- mutually believed reciprocal dependence
+	- choice of partner
+		- it's better to choose a partner with a mutual dependence than a reciprocal dependence (no reciprocation problem)
+		- it's better to choose a partner with a mutually believed dependence than with a locally believed dependence (no problem of convincing the partner)
+	- social reasoning (steps)
+		- agent chooses a goal to achieve
+		- agent chooses a plan to execute
+		- agent checks its goal situation
+		- agent executes the plan (if autonomous) or chooses a partner to form a coalition
 - multi-agent planning
 	- distributed STRIPS
 
@@ -567,25 +576,19 @@
 	- set of options
 	- set of agents expressing opinions on that options
 	- how to select an option?
-- 3 fields
-	- fair allocation of resources
-	- voting theory
-	- judgement aggregation
-
-### Fair Division
-
-- example: Pleiades satellites constellation
-- the division (allocation) problem
-	- inputs: finite set of agents with preferences/demands (numerical or ordinal), common limited resource (divisible or indivisible), set of constraints, optimization criterion
-	- output: allocation
-- central principle – every agent knows how they value the resource, they should make the division themselves (there should be no central bottleneck)
-- the resource can be heterogeneous and divisible (example: cake)
-- utility function
-	- $u:2^X\to [0,1]$
-	- normalized, so that $u(\emptyset)=0$ and $u(X)=1$
-	- usually additive so $u(A)+u(B)=u(A+B)$ for $A\cap B=\emptyset$
-- Pareto dominance
-- Pareto efficiency – quite weak criterion (giving the cake to one agent is efficient but not necessarily fair)
+- fair allocation (division) of resources
+	- example: Pleiades satellites constellation
+	- the division (allocation) problem
+		- inputs: finite set of agents with preferences/demands (numerical or ordinal), common limited resource (divisible or indivisible), set of constraints, optimization criterion
+		- output: allocation
+	- central principle – every agent knows how they value the resource, they should make the division themselves (there should be no central bottleneck)
+	- the resource can be heterogeneous and divisible (example: cake)
+	- utility function
+		- $u:2^X\to [0,1]$
+		- normalized, so that $u(\emptyset)=0$ and $u(X)=1$
+		- usually additive so $u(A)+u(B)=u(A+B)$ for $A\cap B=\emptyset$
+	- Pareto dominance
+	- Pareto efficiency – quite weak criterion (giving the cake to one agent is efficient but not necessarily fair)
 - what is fair?
 	- no objective value of each item
 	- two ways to define a good division
@@ -607,7 +610,7 @@
 		- equitable
 			- agents feel the same hapiness
 			- hard to verify
-- price of fairness – fair division may be less efficient than some other division (according to economic welfare)
+	- price of fairness – fair division may be less efficient than some other division (according to economic welfare)
 - allocation approaches
 	- centralized allocation
 	- distributed allocation
@@ -617,25 +620,26 @@
 		- agents take turns
 		- problem: find a good sequence
 		- knowing preferences of other agents can be used to manipulate the result
-- example: cut & choose method
-	- first agent cuts cake into equal parts (subjectively)
-	- second agent chooses which part they prefer
-	- is proportional and envy-free
-	- adaptations for more agents
-
-### Voting Theory
-
-- formal framework
-	- $n$ voters, finite set $X$ of $m$ alternatives
-	- each voter expresses a preference = linear order over $X$
-	- …
-- voters need to express strict preferences
-- some nonstandard methods don't fit into this framework
-- rules
-	- plurality rule – wins the one who ranks first the most
-	- Borda rule – voters assign points in order (e.g. 4, 3, 2, 1, 0 for $m=5$)
-	- plurality rule with run-off (two rounds)
-- we want to incentivize voters to be truthful
+	- example: cut & choose method
+		- first agent cuts cake into equal parts (subjectively)
+		- second agent chooses which part they prefer
+		- is proportional and envy-free
+		- adaptations for more agents
+- voting theory
+	- formal framework
+		- $n$ voters, finite set $X$ of $m$ alternatives
+		- each voter expresses a preference = linear order over $X$
+		- profile $R$ fixes one preference for each voter
+		- voting rule / social choice function is a function $F$ mapping any given profile to a non-empty set of winning alternatives
+			- $F:L(X)^n\to 2^X\setminus\set{\emptyset}$
+		- $F$ is *resolute* if there is always a unique winner … $\forall R:|F(R)|=1$
+	- voters need to express strict preferences
+	- some nonstandard methods don't fit into this framework
+	- rules
+		- plurality rule – wins the one who ranks first the most
+		- Borda rule – voters assign points in order (e.g. 4, 3, 2, 1, 0 for $m=5$)
+		- plurality rule with run-off (two rounds)
+	- we want to incentivize voters to be truthful
 - single transferable vote (STV)
 	- generalization of the plurality with runoff
 	- collect preferences, eliminate loser (with the least top votes), recalculate preferences (without the loser), eliminate the next loser, …
@@ -643,20 +647,22 @@
 	- used in some countries
 	- no-show paradox
 		- it may be better to abstain than to vote for your favorite candidate
-- participation criterion
-	- addition of ballot $A\succ B$ should not worsen the position of $A$
+		- → participation criterion
+			- addition of ballot $A\succ B$ should not worsen the position of $A$
 - positional scoring rule (PSR)
-- Condorcet principle
-	- the total winner should win in every pairwise majority contest
-- PSR violates Condorcet principle
-	- Condorcet principle is incompatible with participation criterion
-- utilitarian & egalitarian rules
-
-### Judgement Aggregation
-
-- consolidating individual beliefs
+	- generalization of Borda rule
+	- voters assign scores to candidates
+	- Condorcet principle
+		- the total winner should win in every pairwise majority contest
+	- PSR violates Condorcet principle
+		- Condorcet principle is incompatible with participation criterion
+- utilitarian vs. egalitarian rule
+	- utilitarian rule – pick the alternative maximizing the sum of the utilities of all individuals
+	- egalitarian rule – pick the alternative maximizing the minimum utility of all individuals
 - judgement aggregation problem
-	- we cannot just use majority vote to consolidate interdependent statements (it may lead to inconsistency even if the individual agents are consistent)
+	- consolidating individual beliefs
+	- doctrinal paradox
+		- we cannot just use majority vote to consolidate interdependent statements (it may lead to inconsistency even if the individual agents are consistent)
 
 ## Creating Models
 
