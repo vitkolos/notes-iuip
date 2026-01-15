@@ -701,3 +701,67 @@
 	- Imagebind
 		- based on contrastive loss
 		- connecting modalities with were not connected before
+- mask image model vs. language model
+	- mask image model – BERT, bidirectional
+	- language model – GPT, unidirectional
+- training LLM
+	- pre-training → instruction fine-tuning → reinforcement learning with human feedback
+	- having several copies of LLMs fine-tuned for different tasks is expensive
+	- alternative approach: prefix-tuning
+		- freeze the weights
+		- train new prefix embeddings (added at the beginning of the sequence) that optimize the behavior of the network for the specific task
+		- similar to prompt engineering (“You are an AI agent, be kind to the user.“)
+			- but here, we use gradient descent to find tokens which work the best (they don't have to correspond to existing words)
+	- bidirectional vs. causal (unidirectional) attention
+		- bidirectional models cannot be used to generate
+		- unidirectional uses masked self-attention
+- multimodal LLMs
+	- VisualBERT
+		- image (split using bounding boxes by an object detector) + caption
+		- masking words in the caption
+		- objective 1: predict masked words
+		- objective 2: predict if the image matches the caption or not
+		- downstream task: visual question answering
+	- unidirectional MLLM
+		- encoder gets image and beginning of the sentence
+			- image is first split into patches and processed by convolution
+			- bidirectional attention
+		- decoder continues the sentence
+	- decoder-only
+		- vision encoder trained using the task of next token prediction
+		- encoded representations of the image
+		- used as prefix for LLM (or even as a part of the input – anywhere)
+		- LLM frozen – why?
+			- cost of training
+			- contains a lot of useful knowledge we don't want to lose
+		- it combines perception of vision encoder and reasoning capacity of LLM
+		- alternative approach: use CLIP instead of encoder training
+			- the LLM then uses words directly
+	- Flamingo
+		- images are removed from the text and replaced by placeholders
+		- then, images are provided using gated cross-attention
+			- skip connections make sure that the model preserves its pre-trained abilities even after modification (at the beginning of the fine-tuning phase – with the initial parameters for the new blocks in the architecture)
+			- the text cross-attend only at the last image
+				- but the self-attention layer still ensures everyone sees everything
+	- Socratic Models
+		- idea: convert all modality into text
+		- then perform reasoning in text form
+		- but there are things hard to describe with text
+	- training conversational agent for visual question answering
+		- hard to get data
+		- convert image to text
+		- Llava
+	- Visual LLM
+		- Qwen
+		- uses vision encoder
+		- we need positional embeddings
+			- rotary position embedding (RoPE)
+			- multiple rotations happening at once (vector of dimension $n$ split into $n/2$ parts and each part is rotated differently)
+		- for videos, we use M-RoPE
+			- rotary embedding decomposed into temporal, width, and height component
+		- best open-source model
+		- speech synthesis in an autoregressive manner
+- image-to-text vs. text-to-image
+	- generating text – autoregressive approach (predicting next token based on the previous ones)
+	- generating images – diffusion
+	- how to unify the two tasks?
