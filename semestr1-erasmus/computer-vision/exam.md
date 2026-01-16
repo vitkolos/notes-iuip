@@ -1,0 +1,570 @@
+# Exam
+
+- image processing vs. computer vision
+	- processing: reasoning focused on the image, pixels, pixel groups
+	- vision: focuses on the knowledge the image brings from a real scene
+- difficult problem
+	- the goal of computer vision is not to mimic human vision but to build systems that extract information
+	- computer vision is an inverse of the synthesis problem
+		- projection is fundamentally ambiguous – we are losing information (depth, size, occlusions)
+		- in general it's an ill-posed problem: no unique solution for a given observation, ambiguous solutions, incomplete data (example: scale of the observed scene, toy car instead of normal car)
+		- need of injecting a priori knowledge and regularization (example: penalize non-smooth solutions)
+	- from noisy observations, we estimate the parameters of a model
+	- a priori knowledge: physics, geometry, semantics
+	- example: by counting visible wheels of the car, we can tell the position of the camera
+	- desirable characteristics
+		- robustness – be able to identify observation noise/errors (have plan B in case of error)
+		- speed
+		- precision
+		- generality – the algorithm should be generic; the pool of situations that it can handle should be large enough
+- main vision problems
+	- calibration – where is the camera, which model, …
+	- segmentation – which parts of the image belong together
+	- detection – what is interesting/salient in the image
+	- reconstruction – where are the objects (position, shape, 3D surface)
+	- tracking – which motion is present in the image, how do objects move
+	- recognition – what do we see, semantics
+- image – 2D signal (depicts a 3D scene), matrix of values that represent a signal, has semantic information
+- light
+	- plays a fundamental role in 3D perception
+	- no light → no image
+	- shadow, diffuse reflection (in many directions), specular reflection (mirror-like, in one direction)
+	- wavelength, spectrums
+		- solar spectrum: almost continuous spectrum, some wavelengths are stronger
+		- white light: continuous spectrum (energy evenly distributed)
+		- sodium vapor lamp: only yellow → red car appears dark
+	- what happens when a light ray hits the surface
+		- absorption (black surface)
+		- reflection, refraction (mirror, reflector)
+		- diffusion (milk)
+		- fluorescence
+		- transmission and emission (human skin)
+	- most surfaces can be approximated by simple models
+	- first simplified hypothesis
+		- no fluorescent surfaces
+		- “cold” objects (they don't emit light)
+		- all light emitted from a surface point is formed solely by the light arriving there
+	- standard model: BRDF
+		- bi-directional reflectance distribution function
+		- models the ratio of energy for each wavelength $\lambda$
+			- incoming from direction $\hat v_i$
+			- emitted towards direction $\hat v_r$
+		- reciprocity (we can swap the light source and the camera)
+		- isotropy (no favorite direction) – does not always hold
+		- energy corresponds to an integral (we can use a discrete sum)
+		- Lambert assumption
+			- diffuse surface: uniform in all directions (paper, milk, matt paint)
+			- the BRDF is a constant function $f_d(\hat v_i,\hat v_r,\hat n,\lambda)=f_d(\lambda)$
+		- specular (reflective) material, central lobe on $\hat s_i$
+			- Phong … $f_s(\theta_s,\lambda)=k_s(\lambda)\cos ^{k_e}\theta_s$
+			- Torrence-Sparrow
+		- di-chromatic = diffuse + specular
+- pipeline in a digital camera
+	- to get RAW
+		- optics → aperture → shutter → sensor → gain (ISO) → A/D
+	- to get JPEG from RAW
+		- demosaic → sharpen → white balance → gamma/curve → compress
+- optical role: isolate the light rays (from one particular part of the scene)
+- pinhole cameras
+	- Rayleigh: ideal diameter $d=1.9\sqrt{f\lambda}$ ($f$ focal distance, $\lambda$ wavelength)
+	- image distorted by the shape of the pinhole
+- we can model a complicated system of lenses using just one lens
+- perfect lens: hypothesis
+	- a point in the scene corresponds to a point in an image
+	- all image points are in the same plane
+	- this is not true, there are artifacts
+- chromatic artifacts (fringing)
+	- diffraction – wavelength dependent
+	- all colors are not focused to the same point
+- vignetting … border of the image is darker
+- geometric distortion (for wide-angle cameras)
+- CCD sensor, CMOS sensor
+- rolling shutter
+	- lines of the sensor are discharged sequentially → moving objects can be distorted
+	- usually in cheap CMOS
+- color spaces
+	- RGB … additive
+	- CMY … subtractive
+- color perception
+	- retina (sítnice) – there is fovea
+	- rods – achromatic perception of lights, pigmentation (rhodopsin) is sensitive to all visible spectrum (peak on green)
+		- on peripheral retina
+	- cones – color perception
+		- on the fovea
+	- mantis shrimp has the most complex visual system ever discovered
+- color perception in a camera
+	- deviation/dispersion prism
+		- 3 CCD sensors
+		- precise alignment, high quality filter
+		- expensive
+	- Bayer filter
+		- individual (plastic) filter for each pixel (RGGB, RGCB)
+		- to get colors in each pixel, we interpolate (integrate over spectrums)
+- sensor artifacts
+	- noise: salt and pepper, thermic noise (as the camera heats up)
+	- aliasing (low-frequency artifacts emerge from high-frequency signal)
+- gamma correction – adjusting brightness to match human perception
+	- otherwise, most of the linear scale would be bright
+- JPEG compression artifacts
+- color models
+	- RGB – additive model, mixing wavelengths
+	- CMY – subtractive model, mixing pigments (“subtracting” wavelengths)
+	- HSV or HSB – hue (“intrinsic color”), saturation, value
+		- useful for artists
+	- YUV, YIQ – 1 luma component + 2 chroma components
+		- for TV broadcasting, luminance can be used for black & white TV
+	- application: robotic detection
+		- we can detect an object based on its color (ignoring luminance or value)
+
+## Filters, Contours, Segmentation
+
+- characterization of an image
+- contours, regions (between the contours) – duality
+- noise filtering
+	- “how to distinguish between information and noise”
+	- most simple and adopted model: Gaussian noise
+	- convolution with a low-band Gaussian filter
+		- theorem: derivative of convolution = convolution of derivative
+	- edge notion is binary – we need a threshold
+	- average over neighboring pixels … mean filter
+		- but Gaussian filter works better – the neighboring pixels have less effect
+- edges … fundamental for human perception
+	- how to detect them?
+		- smoothing → maximum (using first derivative) or zero-crossing (second derivative)
+	- edges' properties
+		- contrast
+		- orientation
+	- edge descriptors
+		- normal – unit vector, direction of maximal (intensity) change
+			- direction – perp. to normal
+		- position
+		- intensity
+	- image is not a continuous function – we approximate it using Taylor expansion (just using a plane)
+	- finite differences
+	- gradient operator: Sobel
+		- modern neural networks tend to learn this filter to process data :)
+		- approximates horizontal ($\frac{\partial I}{\partial x}$) and vertical ($\frac{\partial I}{\partial y}$) gradients
+	- scaling of the filtering kernel influences the detected contours
+	- another operator: Laplace
+	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
+		- reverse Mexican hat
+	- contour extraction (Canny)
+		- we only take one pixel with the highest value in the direction of the gradient
+- line detection – Hough transform
+	- how to express a line
+		- $ax+by+c=0$
+		- or we can use polar coordinates: $(r,\theta)$
+			- $r$ … distance from the origin
+			- $\theta$ … slope (kind of)
+	- let's vote!
+		- each observation adds one point to each line going through it – to the pair $(r,\theta)$
+		- we have a restricted set of parameters → it works
+- segmentation
+	- Gestalt theory
+	- region – group of pixels with similar properties
+	- we need a similarity measure
+		- distance to the mean of the region
+		- Mahalanobis distance
+	- similarity in color space
+		- k-means
+		- Gaussian mixture models
+			- probability of a point belonging to a cluster
+			- probability to observe a point is a mixture of Gaussians
+			- expectation maximization is used to solve it
+				- E: knowing the current estimates of blobs, we compute the probabilities of the points belonging to them
+				- M: we recompute the blob parameters to maximize likelihood
+			- some advantages
+			- still problems: we still need to choose $k$; it is sensitive to initialization; the generative model (shape of the blobs) need to be chosen
+	- superpixels
+		- we need to group based on both color and spatial proximity
+		- segmentation using a graph partitioning strategy
+			- one pixel → one vertex
+			- edges to other pixels
+			- remove the edges of low similarity
+				- based on distance, intensity, color, …
+	- Grabcut – interactive method
+	- Meta AI: Segment Anything
+		- trained using superpixels
+	- deep clustering
+		- they trained encoder and decoder
+		- k-means in the latent (embedding) space
+
+## Interest Points
+
+- motivation
+	- 2D tracking (motion)
+	- find correspondances
+	- recognition
+- segmentation is usually avoided – it is a source of errors
+	- finding interest points is more robust
+- desired properties
+- Moravec's detector
+	- small window
+- Harris detector
+	- Taylor expansion
+	- bilinear form
+	- eigenvalues
+		- hard to compute → we use $R$ instead
+- we don't want too many interest points, different strategies
+- Harris detector properties
+	- rotation invariance
+	- invariance to intensity shift, partial invariance to intensity scaling
+	- no invariance to scale changes
+		- we consider circular regions of different sizes on a point
+		- but how to choose them?
+		- LoG, we can also use difference of Gaussians which is similar (but more efficient to compute)
+		- image pyramid
+- how to match detected points?
+	- we need descriptors – should be invariant and discriminant
+	- Harris: use eigen values? not so discriminant
+	- windowed approaches – not so invariant
+	- multi-scale oriented patches (MOPS)
+	- scale invariant feature transform (SIFT)
+	- matching repetitive patterns – possible approaches
+		- two-way matching (are we the best match for our best match?)
+		- for each match, we get a confidence score
+- matching – fast techniques
+
+## Deep Learning
+
+- non-linear trasformations
+- we compose simple functions and create complex functions
+- CNNs
+- https://chriswolfvision.medium.com/what-is-translation-equivariance-and-why-do-we-use-convolutions-to-get-it-6f18139d4c59
+- pooling to enforce invariances
+	- we want translation equivariance (detect the object wherever it is on the image)
+- AlexNet
+- http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+- exercise in slides
+- methodology – in general
+	- state the problem you want to solve
+		- classification, regression, segmentation
+		- state input and output
+		- narrow down the application domain
+	- choose a “vanilla” architecture
+	- choose the losses
+	- evaluate properly (cross validation, train/validation sets)
+	- be aware of (and explore) the biases in the datasets
+	- push the boundaries
+- paper session
+	- plenoptic function, early vision
+		- systematic framework capturing visual information
+		- plenoptic function – 3D movie, wavelength
+			- output – intensity
+		- extraction of information … derivatives
+		- “periodic table”
+		- “blobs” – convolutional filters for extracting information
+	- focused plenoptic camera
+	- depth estimation
+		- we want
+			- simultaneous detection and depth estimation
+			- local method to detect rays
+			- method invariant to object size and depth
+			- …
+		- ray gaussian kernel
+		- lisad
+			- operator activation
+		- ray $\neq$ light
+			- we stack pictures taken from different angles
+			- on the cut, there are “rays” → we can get depth (thanks to parallax)
+				- if we move, the objects in the foreground shift
+				- the objects in the background not that much
+		- baseline
+	- spray-on optics
+		- drop extraction and simulation
+			- + remove distortion
+		- match the images
+		- what is the final resolution?
+		- manual droplet segmentation
+		- better image quality with more droplets
+	- takeaways
+		- coach: suggest improvements
+		- advocate: don't be too generic
+		- using videos
+		- how to get real data? ground truth?
+			- usually, we need both synthetic and real data
+
+## 3D Vision – Geometry 1
+
+- definitions & notation
+	- point $p\in\mathbb R^3$
+	- matrix $M\in\mathbb R^{m\times n}$ ($m$ rows, $n$ columns)
+	- line … $ax+by+c=0$
+		- $(a,b,c)(x,y,1)^T=0$ … dot product
+		- one interpretation of dot product – projection of one vector into the other
+	- cross product of vectors $\in\mathbb R^3$ (!)
+		- computed using determinants of 2×2 matrices (with alternating signs)
+	- determinant
+		- $\mathrm{det}(AB)=\mathrm{det} A\cdot\mathrm{det}B$
+		- determinant zero/nonzero, co-linearity of column vectors
+	- equivalence
+		- $X\sim Y$ if $\exists\lambda\neq 0:\lambda X=Y$
+	- homogeneous coordinates – we add a one at the end of the vector, so instead of $(x,y)$ we get $(x,y,1)$
+	- Cholesky decomposition
+- projective geometry
+	- perspective deformation can be modeled with 2D projective transformation
+	- Euclidean geometry $\subset$ affine geometry $\subset$ projective geometry
+	- infinity is modeled in projective geometry – so even parallel lines intersect (in infinity)
+	- ray
+	- projective space
+		- we divide by the last coordinate
+		- if the last coordinate is zero, the rays don't intersect the plane (are in infinity)
+		- another intuition – using a sphere/dome
+	- projective geometry – infinity
+		- $(x,y,1)$
+			- we move in direction $(a,b)$
+		- $(x+\lambda a,y+\lambda b,1)\sim (\frac x\lambda+a,\frac y\lambda +b,\frac 1\lambda)$
+			- for $\lambda\to\infty$, we get $(a,b,0)$
+		- all lines with the direction $(a,b)$ meet in infinity – at point $(a,b,0)$
+	- projective transformations
+		- preserve incidence relationships – collinearity and concurence
+			- concurrence … if two lines intersect at $p$, they will intersect at $Mp$ after applying the transformation defined by $M$
+	- projective basis
+		- set of $(n+2)$ points of $\mathcal P^n$, no $(n+1)$ of which are linearly dependent
+		- example – canonical basis of $\mathbb R^{n+1}$, plus $(1,1,\dots,1)^T$
+	- change of basis are projective transformations
+	- hyperplanes
+	- duality
+		- two lines define a point, two points define a line
+		- also in some other cases
+	- exercises (solved using cross product)
+	- conics
+	- transformation groups
+		- Euclidean (allows shift and rotation)
+		- isometry (allows resizing)
+		- affine
+		- projective
+			- only 8 DOF, because it is invariant to scaling
+	- exercises
+		- homography defined by 4 point correspondances
+			- to move from 3 variables “up to scale” to 2 variables, we divide by the third variable (if its nonzero) and assume it's 1
+				- we need to consider that it could be zero → similarly, we then divide by the second variable (so the second variable is 1 and the third variable is 0)
+				- so we need to consider several situations
+					- $p_z'\neq 0$
+					- $p_z'=0$
+					- only $p'_x\neq 0$
+		- affine transformation preserve parallelism
+			- parallel lines … $L_1\times L_2=(x,y,0)^T$
+			- $L_1'\times L_2'=H(x,y,0)^T$
+			- if $H$ is affine transformation, it preserves the last 0 (projective transformation might not preserve it)
+- 3D geometry
+	- elementary transformations
+	- parallel projections
+	- perspective projections
+		- into the optical centre
+		- perspective projection matrix using Thales
+	- exercises
+		- you have a projection matrix $P$
+		- you move the camera or rotate it (you apply $T$), how does the new projection matrix look like?
+		- $P'=TPT^{-1}$
+		- exercises 3 and 4 as a preparation for the exam
+	- parallel projection (ortographic)
+		- as if $f\to+\infty$ (for the derived $P'$ from the exercise 1)
+- camera models
+	- transformations
+		- $M\sim(K\cdot R\quad K\cdot T)$
+	- exercises
+		- we need 5.5 correspondences to estimate $M$
+
+## Geometry 2
+
+- panoramic mosaics
+	- we assume all the images are taken from the same viewpoint
+	- we apply homography
+		- we need four correspondances to estimate it
+- two view geometry
+	- usually, the two rays don't cross (due to the noise)
+	- so we find the closest point to the 2 viewing lines
+	- epipolar geometry
+		- a point in the first image has to be on a certain line in the second image
+	- fundamental matrix
+		- every correspondence gives us only one equation (equal to 0)
+		- so we need 8 correspondences
+	- essential matrix
+- robust estimation
+	- RANSAC … random sample consensus
+	- we randomly select a set of observations, fit our model, and count outliers
+	- many variants
+
+## Shape Modeling
+
+- 3D perception
+- 3D video can be observed from any viewpoint (so 3D cinema is not really 3D)
+- 4D modeling challenges
+- multi-view platforms
+- shape representation models
+	- point clouds
+		- usually correspond to the output of sensing devices
+		- we don't know what is inside/outside, we don't have surfaces (but there are algorithm we can use to get surfaces)
+	- voxels
+		- 3D occupancy grid
+		- complexity proportional to the size of the box
+		- we usually want to first find the shape and modify the size of the box accordingly
+	- 3D meshes
+		- similar to point cloud but we have connectivity (often triangles)
+		- we can easily attach textures
+		- discretization attached to the shape (so simpler shapes can be discretized only using a few triangles)
+	- image based
+		- no explicit 3D model
+		- we generate new image based on existing images
+		- the set of images has to be calibrated (position and orientation data need to be stored), so that we can properly generate the new ones
+	- implicit
+		- the object is described by a function $f:\mathbb R^3\to\mathbb R$
+		- points with a constant value define surfaces (level-sets)
+		- explicit meshes can be extracted (using marching cubes algorithm)
+		- no explicit correspondences between different shapes
+		- used in ML
+- silhouette
+	- extraction
+		- chroma keying (blue or green background)
+			- problem: white clothes, sweat, … tend to reflect green
+		- background subtraction (static background)
+			- problems: color ambiguities between background and foreground objects, luminosity changes, …
+	- from silhouettes to shapes
+		- visual hull
+			- the observed object is contained
+			- some points are touching
+		- voxel carving algorithm
+			- we start with each voxel full (equal to 1)
+			- we project every voxel into every camera
+				- we set it to zero if the pixel is outside of the silhouette for the given camera
+				- note: usually, the cameras are not orthographic, they have an optical centre
+			- notes
+				- camera images have origin in the top left corner
+				- pixel with coordinates $(32,10)$ … column 32, row 10
+				- in a matrix, it's vice versa
+		- convex shapes are difficult to carve
+			- we can put camera inside the shape – but it is impractical (wiring, safety, etc.), also not general
+- depth camera
+	- we can use a structured light projector, calibration model is the same as for a camera
+- multi view stereo (with color)
+	- we construct depth map using photoconsistency
+	- challenge: occlusion (there is some other object visible from a different angle – it's blocking the view of a certain camera)
+
+## Deep Learning 2
+
+- artificial neuron, MLP
+- CNNs, pooling, normalization
+- CNN architectures: Lenet, AlexNet, VGG
+	- GoogleNet Inception
+		- very deep
+		- problem: gradient vanishing
+		- solution: intermediate losses are used
+	- ResNet
+		- solution: skip connections
+	- U-Net
+- object detection
+	- two-stage detection: 1) is there something? (where?) 2) what is it?
+		- R-CNN (region CNN) – extract regions, classify
+			- problems: too many regions (slow), extracting regions is not learning-based
+		- Fast R-CNN
+		- Faster R-CNN
+		- Mask R-CNN
+			- predicts a binary mask for each detected object
+	- one-stage detection
+		- Yolo (you only look once)
+		- class probabilities, bounding box prediction (with confidence)
+		- v4 uses mosaic augmentation (combining several annotated images into a mosaic and using it for training, makes the model more robust)
+- generative models
+	- many applications
+	- autoencoder
+		- learns a representation (encodings) of unlabeled data
+		- dimensionality reduction (ignoring insignificant data)
+		- usual technique for dimensionality reduction: PCA
+			- limitation: we cannot do non-linear reparametrization (like switching from Cartesian to polar coordinates)
+		- encoder → code → decoder
+		- code size is very important
+			- too big → overfit, lack of interest
+			- too small → loss of information
+		- denoising AE
+			- add noise to input image
+			- pass through network
+			- measure reconstruction loss against original image
+		- for PCA, we can interpolate (we can safely take a point between too points and it's meaningful)
+		- generally, AEs can lead to an irregular latent space (with no meaningful interpolation → close points in the latent space are not similar when decoded)
+		- we want to regularize the latent space to enable generation → **variational AE**
+			- so an input is encoded as a distribution (not as a point) in the latent space
+			- regularization using KL-divergence
+				- closed form for two normal distributions
+			- the decoder then decodes a sample from the distribution
+			- the loss consists of the distance of the decoded image from the original and the KL divergence of the encoded distribution from the $N(0, I)$ distribution
+			- how to sample to allow back propagation?
+				- reparametrization trick
+				- instead of sampling $z$ from $N(\mu_x,\sigma_x)$, we always sample $\zeta$ from $N(0,I)$ and then compute $z=\sigma_x\zeta+\mu_x$
+					- so we can differentiate $z$ (and backpropagate)
+			- limitation: images are blurry
+	- generative adversarial network
+		- generator, training set, discriminator
+		- trying to match the real distribution
+		- goal: fool the discriminator
+	- GANs get sharper images than VAEs
+		- VAEs use mean square error, producing sharp edges is not worth the risk
+		- GAN discriminator can easily spot blurry images
+	- diffusion models
+		- slowly destroy structure in data distribution by adding noise
+		- parameter $\beta_t$ (for time $t$) that governs the noise distribution (Gaussian)
+			- its schedule affects the learning
+		- the model tries to remove the noise
+			- only step by step to improve stability
+		- trained using U-Net (with adjustments)
+		- can be conditioned with other inputs (other images, text, style, …)
+			- then $\epsilon$ gets another parameter
+		- ways to make diffusion faster
+	- diffusion vs. GANs
+		- training stability
+			- GAN's optimum is a saddle point (min max)
+			- diffusion is more stable
+		- diversity
+			- GANs have a risk of mode collapse (generating just one type of output)
+			- diffusion models the distribution
+		- cost & memory
+			- GANs – fast, medium memory
+			- diffusion – slow, high memory
+		- conditional generation – diffusion outperforms GANs
+- recurrent neural networks
+	- for sequences, persistence
+	- problem of long-term dependencies
+	- long short-term memory
+		- we are updating the state with multiplication and addition
+		- forget gate: is this worth remembering (multiplying by a number $\in[0,1]$)
+		- input gate: what new information are we storing in the cell state
+		- output gate: output of the cell
+- existing tasks are solved (to some extent)
+	- new tasks need to be created → ARC-AGI datasets
+
+## Paper Session 2
+
+- ViT
+- DINO
+	- emerging properties in self-supervised vision transformers
+	- ViT limitations
+		- supervised labels are coarse (one image – one label)
+		- no explicit pressure to learn object boundaries, parts vs. background, spatial grouping
+	- idea: use self-supervised pre-training
+		- knowledge **di**stillation with **no** labels
+	- different crops
+		- teacher gets only global
+		- student gets all crops
+		- → enforce local-to-global correspondences
+	- to avoid mode collapse – centering and sharpening applied to the teacher's output
+		- we are forcing the teacher to “be creative” when predicting distribution
+		- sharpening prevents the distribution from being flat
+		- centering prevents the distribution to always peak at the same place (by computing a running average)
+	- setup
+		- MLP on top of `[class]` encoding (like in ViT) → distribution
+		- goal: minimize cross-entropy between student and teacher
+- hi-res stereo datasets with subpixel ground truth
+	- capturing objects with stereo camera
+	- how to create such datasets
+	- two rounds of calibration (using checkerboard)
+	- code images to get depth
+	- ambient images
+	- imperfection – useful for evaluation (real-world images are not perfect)
+- pose reconstruction
+	- SMPL body model – shape & pose
+	- two approaches
+		- regression – predicts shape & pose based on the image
+		- optimization – optimizes shape & pose based on camera parameters and ground truth of 2D joints (and initial shape & pose)
+	- SPIN combines both
+		- initializes optimization with regression outputs
+		- uses optimization to supervise regression
