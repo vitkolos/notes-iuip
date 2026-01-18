@@ -261,52 +261,6 @@
 		- nearest neighbour
 			- k-dimensional tree, best bin first (BBF)
 
-## Deep Learning
-
-- non-linear transformations applied to the input data
-- we compose simple functions and create complex functions
-- CNNs
-	- convolutions with learned kernels
-	- pooling to enforce invariances
-		- we want translation equivariance (detect the object wherever it is on the image)
-	- one layer usually consists of 1) convolution, 2) non-linearity, 3) spatial pooling, 4) normalization
-- AlexNet
-	- 8 layers in total
-		- convolution & pooling – layers 1, 2, 5
-		- convolution only – 3, 4
-		- fully connected – 6, 7
-		- output layer (with softmax) – 8
-	- learned on ImageNet (1000 categories, 1.2M training images, 150k test images)
-- The Bitter Lesson (essay) – instead of trying to build our domain knowledge into AI, we should build better models so they can learn it themselves
-- training: gradient descent, backpropagation, parallelism on GPU
-- encoder/decoder (autoencoder) architecture – useful for segmentation, getting 3D based on 2D
-- McCulloch-Pitts neuron – $n$ binary inputs, one binary output (result of $\sum_i x_i\geq\theta$ for a threshold $\theta$)
-- Frank Rosenblatt Perceptron
-	- $wx+b\gt 0$
-	- update: $w_i\leftarrow w_i+\alpha(t_j-y(x_j))x_{j,i}$
-	- problem: non linear separable set (algorithm does not terminate), e.g. XOR
-		- MLP solves that
-- activation functions: linear, logistic (sigmoid), tanh, ReLU, GELU
-	- without non-linearity, the network could be written only using 2 layers (without hidden layers)
-	- continuous function can be approximated with a linear combination of translated/scaled ReLU functions
-- gradient descent
-	- $w\leftarrow w-\alpha\nabla E(w)$
-	- SGD – only use subset to compute loss
-	- backpropagation – previous computations can be reused (are needed because of chain rule)
-- initialization of weights using small random values
-- families of NNs: MLP, CNNs, autoencoders & VAEs, generative adversarial networks (GANs), RNNs & long short temporal memory (LSTMs), graph neural networks (GNNs), transformers
-- bias–variance tradeoff (undefitting × overfitting)
-- methodology – in general
-	- state the problem you want to solve
-		- classification, regression, segmentation
-		- state input and output
-		- narrow down the application domain
-	- choose a “vanilla” architecture
-	- choose the losses
-	- evaluate properly (cross validation, train/validation sets)
-	- be aware of (and explore) the biases in the datasets
-	- push the boundaries
-
 ## Paper Session 1
 
 - plenoptic function, early vision
@@ -342,6 +296,8 @@
 	- better image quality with more droplets
 - how to get real data? ground truth?
 	- usually, we need both synthetic and real data
+
+---
 
 ## 3D Vision – Geometry 1
 
@@ -500,11 +456,65 @@
 	- we construct depth map using photoconsistency
 	- challenge: occlusion (there is some other object visible from a different angle – it's blocking the view of a certain camera)
 
+---
+
+## Deep Learning
+
+- non-linear transformations applied to the input data
+- we compose simple functions and create complex functions
+- CNNs
+	- convolutions with learned kernels
+	- pooling to enforce invariances
+		- we want translation equivariance (detect the object wherever it is on the image)
+	- one layer usually consists of 1) convolution, 2) non-linearity, 3) spatial pooling, 4) normalization
+- AlexNet
+	- 8 layers in total
+		- convolution & pooling – layers 1, 2, 5
+		- convolution only – 3, 4
+		- fully connected – 6, 7
+		- output layer (with softmax) – 8
+	- learned on ImageNet (1000 categories, 1.2M training images, 150k test images)
+- The Bitter Lesson (essay) – instead of trying to build our domain knowledge into AI, we should build better models so they can learn it themselves
+- training: gradient descent, backpropagation, parallelism on GPU
+- encoder/decoder (autoencoder) architecture – useful for segmentation, getting 3D based on 2D
+- McCulloch-Pitts neuron – $n$ binary inputs, one binary output (result of $\sum_i x_i\geq\theta$ for a threshold $\theta$)
+- Frank Rosenblatt Perceptron
+	- $wx+b\gt 0$
+	- update: $w_i\leftarrow w_i+\alpha(t_j-y(x_j))x_{j,i}$
+	- problem: non linear separable set (algorithm does not terminate), e.g. XOR
+		- MLP solves that
+- activation functions: linear, logistic (sigmoid), tanh, ReLU, GELU
+	- without non-linearity, the network could be written only using 2 layers (without hidden layers)
+	- continuous function can be approximated with a linear combination of translated/scaled ReLU functions
+- gradient descent
+	- $w\leftarrow w-\alpha\nabla E(w)$
+	- SGD – only use subset to compute loss
+	- backpropagation – previous computations can be reused (are needed because of chain rule)
+- initialization of weights using small random values
+- families of NNs: MLP, CNNs, autoencoders & VAEs, generative adversarial networks (GANs), RNNs & long short temporal memory (LSTMs), graph neural networks (GNNs), transformers
+- bias–variance tradeoff (undefitting × overfitting)
+- methodology – in general
+	- state the problem you want to solve
+		- classification, regression, segmentation
+		- state input and output
+		- narrow down the application domain
+	- choose a “vanilla” architecture
+	- choose the losses
+	- evaluate properly (cross validation, train/validation sets)
+	- be aware of (and explore) the biases in the datasets
+	- push the boundaries
+
 ## Deep Learning 2
 
-- artificial neuron, MLP
 - CNNs, pooling, normalization
-- CNN architectures: Lenet, AlexNet, VGG
+	- 32×32×3 image & 5×5×3 filter → 28×28×1 output
+	- striding, padding, dilation (spaces between convoluted pixels)
+	- max and average pooling are most common
+	- normalization – idea: output of the linear combinations must follow a standard Gaussian distribution (zero mean, unit variance)
+- CNN architectures
+	- LeNet – images of size 32×32
+	- AlexNet – 224×224
+	- VGG – only small 3×3 filters, more layers than AlexNet
 	- GoogleNet Inception
 		- very deep
 		- problem: gradient vanishing
@@ -512,26 +522,26 @@
 	- ResNet
 		- solution: skip connections
 	- U-Net
+		- convolution/deconvolution architecture for segmentation
+		- skip connections from intermediate representations to deconvolutions (across the U shape)
 - object detection
 	- two-stage detection: 1) is there something? (where?) 2) what is it?
 		- R-CNN (region CNN) – extract regions, classify
 			- problems: too many regions (slow), extracting regions is not learning-based
-		- Fast R-CNN
-		- Faster R-CNN
-		- Mask R-CNN
-			- predicts a binary mask for each detected object
+		- Fast R-CNN – first compute convolutions for the entire image, then look at regions (convolutions don't have to be computed separately for each region)
+		- Faster R-CNN – learns to predict the regions of interest
+		- Mask R-CNN – predicts a binary mask for each detected object
 	- one-stage detection
 		- Yolo (you only look once)
 		- class probabilities, bounding box prediction (with confidence)
 		- v4 uses mosaic augmentation (combining several annotated images into a mosaic and using it for training, makes the model more robust)
 - generative models
-	- many applications
 	- autoencoder
 		- learns a representation (encodings) of unlabeled data
 		- dimensionality reduction (ignoring insignificant data)
 		- usual technique for dimensionality reduction: PCA
 			- limitation: we cannot do non-linear reparametrization (like switching from Cartesian to polar coordinates)
-		- encoder → code → decoder
+		- encoder → code (“bottleneck”) → decoder
 		- code size is very important
 			- too big → overfit, lack of interest
 			- too small → loss of information
@@ -547,7 +557,7 @@
 				- closed form for two normal distributions
 			- the decoder then decodes a sample from the distribution
 			- the loss consists of the distance of the decoded image from the original and the KL divergence of the encoded distribution from the $N(0, I)$ distribution
-			- how to sample to allow back propagation?
+			- how to sample to allow backpropagation?
 				- reparametrization trick
 				- instead of sampling $z$ from $N(\mu_x,\sigma_x)$, we always sample $\zeta$ from $N(0,I)$ and then compute $z=\sigma_x\zeta+\mu_x$
 					- so we can differentiate $z$ (and backpropagate)
@@ -568,7 +578,8 @@
 		- trained using U-Net (with adjustments)
 		- can be conditioned with other inputs (other images, text, style, …)
 			- then $\epsilon$ gets another parameter
-		- ways to make diffusion faster
+			- Stable Diffusion uses CLIP to transform text into embeddings for conditioning
+		- ways to make diffusion faster – distillation, one step diffusion
 	- diffusion vs. GANs
 		- training stability
 			- GAN's optimum is a saddle point (min max)
@@ -588,12 +599,22 @@
 		- forget gate: is this worth remembering (multiplying by a number $\in[0,1]$)
 		- input gate: what new information are we storing in the cell state
 		- output gate: output of the cell
+	- variants: peephole connections (let gate layers look at the cell state), grouping forget and keep gates, GRU (gated recurrent unit)
+	- types: one to one, one to many, many to one, many to many (2×)
+	- problems
+		- GRU still forgets stuff (especially with long sequences)
+		- processing is sequential, hard to parallelize on GPUs
+	- → Transformer architecture
 - existing tasks are solved (to some extent)
 	- new tasks need to be created → ARC-AGI datasets
 
 ## Paper Session 2
 
 - ViT
+	- self-attention can be as expressive as convolutional layer
+	- image split into patches
+	- encoder-only Transformer, learned position embeddings (capture relative distances of patches)
+	- needs enough data to learn patterns (in CNNs, there is inductive bias)
 - DINO
 	- emerging properties in self-supervised vision transformers
 	- ViT limitations
