@@ -311,30 +311,31 @@
 
 - plenoptic function, early vision
 	- systematic framework capturing visual information
-	- plenoptic function – 3D movie, wavelength
+	- plenoptic function
+		- $P(x,y,t,\lambda,V_x,V_y,V_z)$
 		- output – intensity
+		- $t$ time, $\lambda$ wavelength, $V$ viewing point
+		- humans – only two samples along $V_x$ axis (both for a single value of $V_y$ and $V_z$)
 	- extraction of information … derivatives
 	- “periodic table”
 	- “blobs” – convolutional filters for extracting information
 - focused plenoptic camera
+	- angular–spatial resolution tradeoff
+	- hi-res rendering algorithm
 - depth estimation
 	- we want
 		- simultaneous detection and depth estimation
 		- local method to detect rays
 		- method invariant to object size and depth
-		- …
 	- ray gaussian kernel
-	- lisad
-		- operator activation
+	- lisad – operator activation
 	- ray $\neq$ light
 		- we stack pictures taken from different angles
 		- on the cut, there are “rays” → we can get depth (thanks to parallax)
 			- if we move, the objects in the foreground shift
 			- the objects in the background not that much
-	- baseline
 - spray-on optics
-	- drop extraction and simulation
-		- + remove distortion
+	- drop extraction and simulation + remove distortion
 	- match the images
 	- what is the final resolution?
 	- manual droplet segmentation
