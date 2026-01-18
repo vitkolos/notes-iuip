@@ -118,44 +118,51 @@
 
 ## Filters, Contours, Segmentation
 
-- characterization of an image
-- contours, regions (between the contours) – duality
+- characterization of an image (what is interesting?)
+	- salient (key) points – areas of strong contrast (0D)
+	- lines, salient contours – contrast boundaries (1D)
+	- regions – groups of pixels with similar properties (2D)
+	- duality – contours & regions (between the contours)
+
 - noise filtering
 	- “how to distinguish between information and noise”
-	- most simple and adopted model: Gaussian noise
-	- convolution with a low-band Gaussian filter
+	- most simple and adopted model: Gaussian noise (thermal)
+		- additive noise, independently sampled in each pixel from a Gaussian distribution
+	- convolution with a low-band Gaussian filter – to remove the high frequencies (likely noise) and make derivative easier to compute
+	- convolution
+		- $(m*f)(x)=\int_u m(u)f(x-u)\,du$
+		- $(m*f)(x,y)=\int_u\int_v m(u,v) f(x-u,y-v)\,du\,dv$
 		- theorem: derivative of convolution = convolution of derivative
-	- edge notion is binary – we need a threshold
 	- average over neighboring pixels … mean filter
 		- but Gaussian filter works better – the neighboring pixels have less effect
-- edges … fundamental for human perception
-	- how to detect them?
-		- smoothing → maximum (using first derivative) or zero-crossing (second derivative)
-	- edges' properties
-		- contrast
-		- orientation
-	- edge descriptors
-		- normal – unit vector, direction of maximal (intensity) change
-			- direction – perp. to normal
-		- position
-		- intensity
+- edge
+	- some kind of discontinuity (surface, depth, color, illumination, …)
+	- properties: contrast, orientation
+	- descriptors: normal (unit vector, direction of maximal change), direction (perp. to normal), position, intensity
+- detecting edges
+	- first apply smoothing, then find color change (peak of first derivative or zero-crossing of second derivative)
+	- edge notion is binary – we need a threshold
 	- image is not a continuous function – we approximate it using Taylor expansion (just using a plane)
-	- finite differences
+	- finite differences (used to approximate derivative)
 	- gradient operator: Sobel
 		- modern neural networks tend to learn this filter to process data :)
 		- approximates horizontal ($\frac{\partial I}{\partial x}$) and vertical ($\frac{\partial I}{\partial y}$) gradients
+		- it's a particular case of composition of $3×3$ Gaussian filter $\begin{pmatrix}1&2&1\\2&4&2\\1&2&1\end{pmatrix}$and finite differences
 	- scaling of the filtering kernel influences the detected contours
-	- another operator: Laplace
+	- another operator: Laplace $\begin{pmatrix}0&1&0\\1&-4&1\\0&1&0\end{pmatrix}$
 	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
 		- reverse Mexican hat
 	- contour extraction (Canny)
 		- we only take one pixel with the highest value in the direction of the gradient
+		- we still need to use a reasonable scale and threshold
 - line detection – Hough transform
 	- how to express a line
 		- $ax+by+c=0$
 		- or we can use polar coordinates: $(r,\theta)$
+			- $r=x\cos\theta+y\sin\theta$
 			- $r$ … distance from the origin
 			- $\theta$ … slope (kind of)
+			- we consider a line segment perpendicular to the line – $r$ is its length, $\theta$ is its slope
 	- let's vote!
 		- each observation adds one point to each line going through it – to the pair $(r,\theta)$
 		- we have a restricted set of parameters → it works
@@ -164,8 +171,9 @@
 	- region – group of pixels with similar properties
 	- we need a similarity measure
 		- distance to the mean of the region
-		- Mahalanobis distance
+		- Mahalanobis distance (distance weighted with the variance of the characteristics)
 	- similarity in color space
+		- clustering by aggregation × subdivision
 		- k-means
 		- Gaussian mixture models
 			- probability of a point belonging to a cluster
@@ -173,21 +181,26 @@
 			- expectation maximization is used to solve it
 				- E: knowing the current estimates of blobs, we compute the probabilities of the points belonging to them
 				- M: we recompute the blob parameters to maximize likelihood
-			- some advantages
-			- still problems: we still need to choose $k$; it is sensitive to initialization; the generative model (shape of the blobs) need to be chosen
+			- advantages: allows non-spherical clusters, can better handle outliers (we can add an outlier cluster)
+			- problems: we still need to choose $k$; it is sensitive to initialization; the generative model (shape of the blobs) need to be chosen
 	- superpixels
 		- we need to group based on both color and spatial proximity
+		- SLIC algorithm … k-means in 5D (color + 2D coordinates)
 		- segmentation using a graph partitioning strategy
 			- one pixel → one vertex
 			- edges to other pixels
 			- remove the edges of low similarity
 				- based on distance, intensity, color, …
-	- Grabcut – interactive method
-	- Meta AI: Segment Anything
+			- subgraphs represent different groups
+			- algorithm Graph cut
+			- high memory and computation requirements, biases in the cuts (regions with similar sizes are preferred)
+	- Grabcut – interactive method (user selects and refines the segmentation)
+	- Meta AI: Segment Anything Model (SAM)
 		- trained using superpixels
 	- deep clustering
 		- they trained encoder and decoder
 		- k-means in the latent (embedding) space
+	- Dino (segmentation emerges from self-supervised learning)
 
 ## Interest Points
 
