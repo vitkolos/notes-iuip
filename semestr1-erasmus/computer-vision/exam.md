@@ -123,7 +123,6 @@
 	- lines, salient contours – contrast boundaries (1D)
 	- regions – groups of pixels with similar properties (2D)
 	- duality – contours & regions (between the contours)
-
 - noise filtering
 	- “how to distinguish between information and noise”
 	- most simple and adopted model: Gaussian noise (thermal)
@@ -204,39 +203,63 @@
 
 ## Interest Points
 
-- motivation
-	- 2D tracking (motion)
-	- find correspondances
-	- recognition
-- segmentation is usually avoided – it is a source of errors
-	- finding interest points is more robust
-- desired properties
+- motivation: 2D tracking (motion), find correspondances (in the 3D world), recognition
+- segmentation is usually avoided (it is a source of errors – finding interest points is more robust)
+- challenges: scale change, rotation, viewpoint change, change in appearance (lighting, colorimetry)
+- usual pipeline: detect points, describe points, find correspondances
+- desired properties of a detector
+	- use *local* (not global) characteristics – more robust to occlusions
+	- invariance to translation, rotation, scale, lightning
+	- robust to noise, bad conditions, compression
+	- discriminative – allow to identify objects
+	- quantity – we need enough points
+	- precision – accurate location of the object in the image
+	- efficiency – fast computation
 - Moravec's detector
-	- small window
-- Harris detector
+	- small window (does shifting it lead to a change of intensity?)
+	- if a shift of the window in any direction results in an intensity change, we have found a corner
+- Harris detector – “differentiable Moravec”
 	- Taylor expansion
 	- bilinear form
 	- eigenvalues
+		- minimum eigenvalue – slowest change direction
+		- maximum eigenvalue – fastest change direction
 		- hard to compute → we use $R$ instead
-- we don't want too many interest points, different strategies
-- Harris detector properties
-	- rotation invariance
-	- invariance to intensity shift, partial invariance to intensity scaling
-	- no invariance to scale changes
-		- we consider circular regions of different sizes on a point
-		- but how to choose them?
-		- LoG, we can also use difference of Gaussians which is similar (but more efficient to compute)
-		- image pyramid
+			- $R=\det M-\alpha(\mathrm{trace}\ M)^2$
+			- $R\gt 0\implies$ corner
+			- $R\lt 0\implies$ contour
+			- small $|R|\implies$ homogeneous region
+	- algorithm
+		- compute derivatives of the image (using Sobel…)
+		- compute $R$ in each point
+		- find points with a high $R$ (over certain threshold)
+		- keep the local maxima of $R$
+	- we don't want too many interest points, various strategies (keep top $k$ points per image; ensure that every $n$ pixels radius has its top interest point)
+	- properties
+		- rotation invariance
+		- invariance to intensity shift, partial invariance to intensity scaling
+		- no invariance to scale changes
+			- we consider circular regions of different sizes on a point
+			- but how to choose them?
+- scale invariant detector
+	- image pyramid (consider several smaller versions of the same image)
+	- scale invariant function which serves as a basis for the detection algorithm – LoG, we can also use difference of Gaussians (DoG) which is similar (but more efficient to compute)
+	- Harris-Laplacian detector – find the local max. of…
+		1. Harris detector in image space (coordinates)
+		2. LoG in the scale space
+	- SIFT (Lowe) – find the local max. of DoG in image space *and* scale space
 - how to match detected points?
 	- we need descriptors – should be invariant and discriminant
-	- Harris: use eigen values? not so discriminant
-	- windowed approaches – not so invariant
-	- multi-scale oriented patches (MOPS)
-	- scale invariant feature transform (SIFT)
-	- matching repetitive patterns – possible approaches
+		- Harris: use eigen values? not so discriminant
+		- windowed approaches – not so invariant
+		- multi-scale oriented patches (MOPS) – oriented patch of size 8×8 (orientation from the image gradient)
+		- scale invariant feature transform (SIFT) – histogram of local gradient directions (the maximum defines the principal direction)
+	- matching approaches
 		- two-way matching (are we the best match for our best match?)
-		- for each match, we get a confidence score
-- matching – fast techniques
+		- exhaustive search is slow
+		- hashing is faster (compute a hash value for the descriptor)
+		- nearest neighbour
+			- k-dimensional tree, best bin first (BBF)
 
 ## Deep Learning
 
