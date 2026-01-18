@@ -263,15 +263,39 @@
 
 ## Deep Learning
 
-- non-linear trasformations
+- non-linear transformations applied to the input data
 - we compose simple functions and create complex functions
 - CNNs
-- https://chriswolfvision.medium.com/what-is-translation-equivariance-and-why-do-we-use-convolutions-to-get-it-6f18139d4c59
-- pooling to enforce invariances
-	- we want translation equivariance (detect the object wherever it is on the image)
+	- convolutions with learned kernels
+	- pooling to enforce invariances
+		- we want translation equivariance (detect the object wherever it is on the image)
+	- one layer usually consists of 1) convolution, 2) non-linearity, 3) spatial pooling, 4) normalization
 - AlexNet
-- http://www.incompleteideas.net/IncIdeas/BitterLesson.html
-- exercise in slides
+	- 8 layers in total
+		- convolution & pooling – layers 1, 2, 5
+		- convolution only – 3, 4
+		- fully connected – 6, 7
+		- output layer (with softmax) – 8
+	- learned on ImageNet (1000 categories, 1.2M training images, 150k test images)
+- The Bitter Lesson (essay) – instead of trying to build our domain knowledge into AI, we should build better models so they can learn it themselves
+- training: gradient descent, backpropagation, parallelism on GPU
+- encoder/decoder (autoencoder) architecture – useful for segmentation, getting 3D based on 2D
+- McCulloch-Pitts neuron – $n$ binary inputs, one binary output (result of $\sum_i x_i\geq\theta$ for a threshold $\theta$)
+- Frank Rosenblatt Perceptron
+	- $wx+b\gt 0$
+	- update: $w_i\leftarrow w_i+\alpha(t_j-y(x_j))x_{j,i}$
+	- problem: non linear separable set (algorithm does not terminate), e.g. XOR
+		- MLP solves that
+- activation functions: linear, logistic (sigmoid), tanh, ReLU, GELU
+	- without non-linearity, the network could be written only using 2 layers (without hidden layers)
+	- continuous function can be approximated with a linear combination of translated/scaled ReLU functions
+- gradient descent
+	- $w\leftarrow w-\alpha\nabla E(w)$
+	- SGD – only use subset to compute loss
+	- backpropagation – previous computations can be reused (are needed because of chain rule)
+- initialization of weights using small random values
+- families of NNs: MLP, CNNs, autoencoders & VAEs, generative adversarial networks (GANs), RNNs & long short temporal memory (LSTMs), graph neural networks (GNNs), transformers
+- bias–variance tradeoff (undefitting × overfitting)
 - methodology – in general
 	- state the problem you want to solve
 		- classification, regression, segmentation
@@ -282,43 +306,41 @@
 	- evaluate properly (cross validation, train/validation sets)
 	- be aware of (and explore) the biases in the datasets
 	- push the boundaries
-- paper session
-	- plenoptic function, early vision
-		- systematic framework capturing visual information
-		- plenoptic function – 3D movie, wavelength
-			- output – intensity
-		- extraction of information … derivatives
-		- “periodic table”
-		- “blobs” – convolutional filters for extracting information
-	- focused plenoptic camera
-	- depth estimation
-		- we want
-			- simultaneous detection and depth estimation
-			- local method to detect rays
-			- method invariant to object size and depth
-			- …
-		- ray gaussian kernel
-		- lisad
-			- operator activation
-		- ray $\neq$ light
-			- we stack pictures taken from different angles
-			- on the cut, there are “rays” → we can get depth (thanks to parallax)
-				- if we move, the objects in the foreground shift
-				- the objects in the background not that much
-		- baseline
-	- spray-on optics
-		- drop extraction and simulation
-			- + remove distortion
-		- match the images
-		- what is the final resolution?
-		- manual droplet segmentation
-		- better image quality with more droplets
-	- takeaways
-		- coach: suggest improvements
-		- advocate: don't be too generic
-		- using videos
-		- how to get real data? ground truth?
-			- usually, we need both synthetic and real data
+
+## Paper Session 1
+
+- plenoptic function, early vision
+	- systematic framework capturing visual information
+	- plenoptic function – 3D movie, wavelength
+		- output – intensity
+	- extraction of information … derivatives
+	- “periodic table”
+	- “blobs” – convolutional filters for extracting information
+- focused plenoptic camera
+- depth estimation
+	- we want
+		- simultaneous detection and depth estimation
+		- local method to detect rays
+		- method invariant to object size and depth
+		- …
+	- ray gaussian kernel
+	- lisad
+		- operator activation
+	- ray $\neq$ light
+		- we stack pictures taken from different angles
+		- on the cut, there are “rays” → we can get depth (thanks to parallax)
+			- if we move, the objects in the foreground shift
+			- the objects in the background not that much
+	- baseline
+- spray-on optics
+	- drop extraction and simulation
+		- + remove distortion
+	- match the images
+	- what is the final resolution?
+	- manual droplet segmentation
+	- better image quality with more droplets
+- how to get real data? ground truth?
+	- usually, we need both synthetic and real data
 
 ## 3D Vision – Geometry 1
 
