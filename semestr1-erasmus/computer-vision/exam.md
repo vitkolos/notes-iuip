@@ -347,45 +347,89 @@
 	- duality
 		- two lines define a point, two points define a line
 		- also in some other cases
-	- exercises (solved using cross product)
-		- …
+	- exercises
+		- find intersection $X$ of lines $L_1,L_2$
+			- both lines must contain $X$ → $L_1X=0$ and $L_2X=0$
+			- use cross product $X=L_1×L_2$
+		- find line $L$ going through $X_1,X_2$ → similar reasoning (cross product)
 	- conics – projective transformations of the circle (“infinity line” touching the parabola and intersecting the hyperbola)
-	- transformation groups
+	- transformation groups ![](attachments/transf-groups.png)
 		- Euclidean (allows shift and rotation)
 		- isometry (allows resizing)
 		- affine
-		- projective
-			- only 8 DOF, because it is invariant to scaling
+		- projective – only 8 DOF, because it is invariant to scaling
 	- exercises
 		- homography defined by 4 point correspondances
+			- homography … projective transformation matrix
 			- to move from 3 variables “up to scale” to 2 variables, we divide by the third variable (if its nonzero) and assume it's 1
 				- we need to consider that it could be zero → similarly, we then divide by the second variable (so the second variable is 1 and the third variable is 0)
 				- so we need to consider several situations
 					- $p_z'\neq 0$
 					- $p_z'=0$
 					- only $p'_x\neq 0$
+			- then we just write $P'\sim HP$ which corresponds to $(u,v,1)^T=\alpha H\cdot (x,y,1)^T$
+				- $u=\alpha(h_1x+h_2y+h_3)$
+				- $v=\alpha(h_4x+h_5y+h_6)$
+				- $1=\alpha(h_7x+h_8y+h_9)$
+			- this can be rewritten as
+				- $u(h_7x+h_8y+h_9)=(h_1x+h_2y+h_3)$
+				- $v(h_7x+h_8y+h_9)=(h_4x+h_5y+h_6)$
+			- and rearranged as two linear equations with 9 variables “up to scale” (so 8 variables)
+			- so we need 4 correspondances to get 8 equations
+			- refer to [CMU slides](https://www.cs.cmu.edu/~16385/lectures/lecture9.pdf#page=47) for the entire procedure
+		- for a homography $H$ transforming points, the associated transformation for lines is $H^{-T}$
+			- $\ell^Tx=0$
+			- $\ell^TH^{-1}Hx=0$
+			- $(H^{-T}\ell)^THx=0$
 		- affine transformation preserve parallelism
 			- parallel lines … $L_1\times L_2=(x,y,0)^T$
 			- $L_1'\times L_2'=H(x,y,0)^T$
 			- if $H$ is affine transformation, it preserves the last 0 (projective transformation might not preserve it)
 - 3D geometry
 	- elementary transformations
-	- parallel projections
+		- translation $T=\begin{bmatrix}1&0&0&T_x\\0&1&0&T_y\\0&0&1&T_z\\0&0&0&1\end{bmatrix}$
+		- rotations $R=R_z\cdot R_y\cdot R_x$
+			- $\det R=1$
+			- $R^{-1}=R^T$
+			- $R_{x}=\begin{bmatrix}1&0&0&0\\0&\cos\theta &-\sin\theta &0\\0&\sin\theta &\cos\theta&0\\0&0&0&1\end{bmatrix}$
+			- $R_{y}=\begin{bmatrix}\cos\theta &0&\sin\theta &0\\0&1&0&0\\-\sin\theta &0&\cos\theta&0\\0&0&0&1\end{bmatrix}$
+			- $R_{z}=\begin{bmatrix}\cos\theta &-\sin\theta &0&0\\\sin\theta &\cos\theta&0&0\\0&0&1&0\\0&0&0&1\end{bmatrix}$
 	- perspective projections
 		- into the optical centre
-		- perspective projection matrix using Thales
-	- exercises
+		- focal length $f$ … distance between the projection centre and the image plane
+		- image point $(x,y,z{=}f)$, world point $(X,Y,Z)$, optical axis $z$
+			- here, we consider that the origin of the axes and the projection centre are the same point
+		- perspective projection matrix $\begin{bmatrix}1&0&0&0\\0&1&0&0\\0&0&1&0\\0&0&1/f&0\end{bmatrix}$ to get an image point from a world point
+			- can be deduced using intercept theorem (triangle similarity)
+			- so $x=fX/Z$ (and $y=fY/Z$)
+		- parallel lines intersect at infinity – this location defines a *vanishing point* in the image
+			- for lines in a plane, vanishing points define a *horizon line*
+	- parallel projections (ortographic)
+		- projection is perpendicular to the image plane
+		- we simply remove one coordinate (set to zero)
+		- as if $f\to+\infty$
+	- exercise
 		- you have a projection matrix $P$
 		- you move the camera or rotate it (you apply $T$), how does the new projection matrix look like?
 		- $P'=TPT^{-1}$
-		- exercises 3 and 4 as a preparation for the exam
-	- parallel projection (ortographic)
-		- as if $f\to+\infty$ (for the derived $P'$ from the exercise 1)
 - camera models
-	- transformations
-		- $M\sim(K\cdot R\quad K\cdot T)$
-	- exercises
-		- we need 5.5 correspondences to estimate $M$
+	- most used camera model – pinhole model (perspective projection)
+	- full transformation composed of
+		- rigid transformation: world coordinates → camera coordinates
+			- both 3D, only rotation & translation
+		- perspective projection into the retinal plane (2D)
+			- see matrix above
+		- 2D transformation: retinal coordinates → image pixel coordinates
+			- shift & scale
+	- these transformations can be written as matrix multiplication
+		- leftmost is the last one (retinal → image)
+		- the third row is useless – we can remove it
+		- also the perspective projection can be removed
+		- so we get global transformation matrix $M\sim(K\cdot R\quad K\cdot T)$
+			- $K$ … 3×3 intrinsic parameter matrix (shift & scale)
+			- $R,T$ … 3×4 extrinsic parameter matrix (camera location)
+		- a camera can be therefore described by 11 parameters (3×4 projective matrix)
+		- we need 5.5 correspondences (3D to 2D) to estimate $M$
 
 ## Geometry 2
 
