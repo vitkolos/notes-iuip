@@ -307,23 +307,27 @@
 	- line … $ax+by+c=0$
 		- $(a,b,c)(x,y,1)^T=0$ … dot product
 		- one interpretation of dot product – projection of one vector into the other
-	- cross product of vectors $\in\mathbb R^3$ (!)
+	- cross product of vectors $\in\mathbb R^3$
 		- computed using determinants of 2×2 matrices (with alternating signs)
+		- $x×y=(x_2y_3-x_3y_2,\, x_3y_1-x_1y_3,\,x_1y_2-x_2y_1)$
 	- determinant
 		- $\mathrm{det}(AB)=\mathrm{det} A\cdot\mathrm{det}B$
 		- determinant zero/nonzero, co-linearity of column vectors
 	- equivalence
 		- $X\sim Y$ if $\exists\lambda\neq 0:\lambda X=Y$
-	- homogeneous coordinates – we add a one at the end of the vector, so instead of $(x,y)$ we get $(x,y,1)$
+	- homogeneous coordinates – we add a *one* at the end of the vector, so instead of $(x,y)$ we get $(x,y,1)$
 	- Cholesky decomposition
 - projective geometry
 	- perspective deformation can be modeled with 2D projective transformation
 	- Euclidean geometry $\subset$ affine geometry $\subset$ projective geometry
 	- infinity is modeled in projective geometry – so even parallel lines intersect (in infinity)
-	- ray
+	- ray (point) – set $\mathcal R_v$ of all vectors $kv$ with direction $v$
+		- where $v\in\mathbb R^{n+1}\setminus\set{o},\ k\in\mathbb R^*$
 	- projective space
+		- vectors in $\mathbb R^{n+1}$ → projective space $\mathcal P^n$
+		- two vectors $X,Y$ represent the same point if $X\sim Y$
 		- we divide by the last coordinate
-		- if the last coordinate is zero, the rays don't intersect the plane (are in infinity)
+		- if the last coordinate is zero, the rays don't intersect the plane (the points are in infinity)
 		- another intuition – using a sphere/dome
 	- projective geometry – infinity
 		- $(x,y,1)$
@@ -337,13 +341,15 @@
 	- projective basis
 		- set of $(n+2)$ points of $\mathcal P^n$, no $(n+1)$ of which are linearly dependent
 		- example – canonical basis of $\mathbb R^{n+1}$, plus $(1,1,\dots,1)^T$
-	- change of basis are projective transformations
-	- hyperplanes
+	- change of basis is a projective transformation
+		- projection matrix $M$ is determined up to a scale factor
+	- hyperplanes – $m$ linearly independent points form a projective space of dimension $m-1$
 	- duality
 		- two lines define a point, two points define a line
 		- also in some other cases
 	- exercises (solved using cross product)
-	- conics
+		- …
+	- conics – projective transformations of the circle (“infinity line” touching the parabola and intersecting the hyperbola)
 	- transformation groups
 		- Euclidean (allows shift and rotation)
 		- isometry (allows resizing)
@@ -458,7 +464,7 @@
 
 ---
 
-## Deep Learning
+## Deep Learning 1
 
 - non-linear transformations applied to the input data
 - we compose simple functions and create complex functions
