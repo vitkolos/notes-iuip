@@ -139,7 +139,12 @@
 	- properties: contrast, orientation
 	- descriptors: normal (unit vector, direction of maximal change), direction (perp. to normal), position, intensity
 - detecting edges
-	- first apply smoothing, then find color change (peak of first derivative or zero-crossing of second derivative)
+	- first apply smoothing, then find color change
+		- peak of first derivative → Sobel
+			- preserves edge strength, detects its direction
+		- or zero-crossing of second derivative → LoG
+			- precisely locates edges (but binary)
+			- very sensitive to noise
 	- edge notion is binary – we need a threshold
 	- image is not a continuous function – we approximate it using Taylor expansion (just using a plane)
 	- finite differences (used to approximate derivative)
@@ -149,9 +154,11 @@
 		- it's a particular case of composition of $3×3$ Gaussian filter $\begin{pmatrix}1&2&1\\2&4&2\\1&2&1\end{pmatrix}$and finite differences
 	- scaling of the filtering kernel influences the detected contours
 	- another operator: Laplace $\begin{pmatrix}0&1&0\\1&-4&1\\0&1&0\end{pmatrix}$
-	- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
-		- reverse Mexican hat
+		- uses second derivative
+		- Laplacian of Gaussian (LoG) … we apply Laplacian on the Gaussian and then convolute it with the image
+			- reverse Mexican hat
 	- contour extraction (Canny)
+		- based on Sobel
 		- we only take one pixel with the highest value in the direction of the gradient
 		- we still need to use a reasonable scale and threshold
 - line detection – Hough transform
@@ -740,7 +747,7 @@
 	- setup
 		- MLP on top of `[class]` encoding (like in ViT) → distribution
 		- goal: minimize cross-entropy between student and teacher
-- hi-res stereo datasets with subpixel ground truth
+- hi-res stereo datasets with subpixel ground truth (Middlebury)
 	- capturing objects with stereo camera
 	- how to create such datasets
 	- two rounds of calibration (using checkerboard)
@@ -755,3 +762,34 @@
 	- SPIN combines both
 		- initializes optimization with regression outputs
 		- uses optimization to supervise regression
+
+## Practical Units
+
+### Augmented Reality
+
+- detection – detecting, refining, and drawing the projected image points of the checkerboard from a captured image
+	1. implement simple checkerboard spot detection with **findChessboardCorners** on grayscale version of the input image
+	2. draw the checkerboard points on the color input image with **drawChessboardCorners**.
+	3. the points from question 1 can be improved in precision by refining based on a local window around the initial detections (before drawing the checkerboard points, add the refinement step using **cornerSubPix**)
+- calibration, positioning
+	1. calibrate the camera using **calibrateCamera** (3D to 2D matches at every detection that will be given to this function)
+	2. find the camera extrinsics using **solvePnPRansac**
+	3. use **projectPoints** to find the 2D reprojections of the 3D points using the estimated intrinsics and extrinsics to check that the result is correct
+- drawing using reprojected points
+	- the coordinates of a 3D cube are provided which you can use as initial augmentation object, but you can draw whatever you wish (use **circle**, **line**, **drawContours** for this purpose)
+
+### 3D Shape Modeling
+
+- at the beginning of the file the calibration matrices for the $12$ silhouette cameras are stored in the array $calib$ – each matrix corresponds to a $3\times 4$ linear transformation from 3D to 2D
+- then the voxel 3D coordinate arrays $X, Y, Z$ and the associated occupancy grid, that shall be filled with $0$ or $1$, are defined
+- grid resolution can be modified with the parameter resolution (if you program is too slow, you can reduce the resolution)
+- training MLP to capture implicit representation
+	- input: $x,y,z$
+	- output: occupancy (0 or 1)
+	- training based on the voxel representation
+
+### Segmentation – HourGlass vs. U-Net
+
+- HourGlass – autoencoder with convolutions and deconvolutions, has bottleneck
+- U-Net was invented to address precision problems of the original hourglass network
+	- provides skip connections from intermediate representations
