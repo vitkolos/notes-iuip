@@ -297,7 +297,7 @@
 - how to get real data? ground truth?
 	- usually, we need both synthetic and real data
 
-## 3D Vision – Geometry 1
+## 3D Vision
 
 - definitions & notation
 	- point $p\in\mathbb R^3$
@@ -429,7 +429,7 @@
 		- a camera can be therefore described by 11 parameters (3×4 projective matrix)
 		- we need 5.5 correspondences (3D to 2D) to estimate $M$
 
-## Geometry 2
+## Applied 3D Vision
 
 - panoramic mosaics
 	- we assume all the images are taken from the same viewpoint
@@ -489,32 +489,49 @@
 
 ## Shape Modeling
 
-- 3D perception
+- motion capture systems using markers
+	- markers provide sparse motion information
+	- no information on complete shapes or their appearances
+- relief perception – two nearby viewpoints
+	- hologram – relief image
 - 3D video can be observed from any viewpoint (so 3D cinema is not really 3D)
-- 4D modeling challenges
+- 4D modeling issues
+	- acquisition issues – cameras with different modalities
+	- shapes and appearances – need to be learned over time
+	- recovering robust motion information, modeling and analyzing motions/gaits
 - multi-view platforms
+	- input: multi-view videos
+	- output: 4D representations
 - shape representation models
 	- point clouds
 		- usually correspond to the output of sensing devices
-		- we don't know what is inside/outside, we don't have surfaces (but there are algorithm we can use to get surfaces)
+		- we don't know what is inside/outside, we don't have surfaces (but there are algorithms we can use to get surfaces)
 	- voxels
 		- 3D occupancy grid
 		- complexity proportional to the size of the box
 		- we usually want to first find the shape and modify the size of the box accordingly
+		- we can use *marching cubes* to get a surface model
 	- 3D meshes
 		- similar to point cloud but we have connectivity (often triangles)
 		- we can easily attach textures
 		- discretization attached to the shape (so simpler shapes can be discretized only using a few triangles)
+		- Irregular Data Grid – mesh is a graph with nodes (vertices), edges (between neighboring vertices), and faces (often triangles)
 	- image based
 		- no explicit 3D model
 		- we generate new image based on existing images
 		- the set of images has to be calibrated (position and orientation data need to be stored), so that we can properly generate the new ones
+		- appearance implicitly handled by the model
+		- discretization attached to images
+		- parallax occlusions difficult to handle without going to 3D
 	- implicit
 		- the object is described by a function $f:\mathbb R^3\to\mathbb R$
 		- points with a constant value define surfaces (level-sets)
 		- explicit meshes can be extracted (using marching cubes algorithm)
 		- no explicit correspondences between different shapes
-		- used in ML
+		- used in ML (functions can be learned by MLPs)
+- traditional generative 3D-4D modeling pipeline (without prior model)
+	- image acquisition → primitive extraction & calibration → shape construction → shape tracking → 3D-4D model
+	- appearance of the model is based on the initial image and the constructed shape
 - silhouette
 	- extraction
 		- chroma keying (blue or green background)
@@ -533,18 +550,22 @@
 			- notes
 				- camera images have origin in the top left corner
 				- pixel with coordinates $(32,10)$ … column 32, row 10
-				- in a matrix, it's vice versa
+					- in a matrix, it's vice versa
 		- convex shapes are difficult to carve
 			- we can put camera inside the shape – but it is impractical (wiring, safety, etc.), also not general
-- depth camera
-	- we can use a structured light projector, calibration model is the same as for a camera
-- multi view stereo (with color)
-	- we construct depth map using photoconsistency
-	- challenge: occlusion (there is some other object visible from a different angle – it's blocking the view of a certain camera)
+- getting 3D points
+	- active system: depth camera
+		- we can use a structured light projector (projects “stripes” so that we can detect depth), calibration model is the same as for a camera
+		- time of flight cameras – measure light travel from source to 3D scene and back
+		- stereovision cameras – 3D point matched in 2 images
+	- passive system: multi view stereo (with color)
+		- more than 2 cameras
+		- we construct depth map using photoconsistency
+		- challenge: occlusion (there is some other object visible from a different angle – it's blocking the view of a certain camera)
+	- some platforms are using both systems
+	- active systems have inherently more limitations than passive ones
 
----
-
-## Deep Learning 1
+## Deep Learning
 
 - non-linear transformations applied to the input data
 - we compose simple functions and create complex functions
@@ -590,7 +611,7 @@
 	- be aware of (and explore) the biases in the datasets
 	- push the boundaries
 
-## Deep Learning 2
+## Deep Learning Architectures
 
 - CNNs, pooling, normalization
 	- 32×32×3 image & 5×5×3 filter → 28×28×1 output
