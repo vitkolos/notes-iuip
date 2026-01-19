@@ -297,8 +297,6 @@
 - how to get real data? ground truth?
 	- usually, we need both synthetic and real data
 
----
-
 ## 3D Vision – Geometry 1
 
 - definitions & notation
@@ -367,13 +365,13 @@
 					- $p_z'\neq 0$
 					- $p_z'=0$
 					- only $p'_x\neq 0$
-			- then we just write $P'\sim HP$ which corresponds to $(u,v,1)^T=\alpha H\cdot (x,y,1)^T$
-				- $u=\alpha(h_1x+h_2y+h_3)$
-				- $v=\alpha(h_4x+h_5y+h_6)$
-				- $1=\alpha(h_7x+h_8y+h_9)$
+			- then we just write $P'\sim HP$ which corresponds to $\gamma(u,v,1)^T=H\cdot (x,y,1)^T$
+				- $\gamma u=h_1x+h_2y+h_3$
+				- $\gamma v=h_4x+h_5y+h_6$
+				- $\gamma=h_7x+h_8y+h_9$
 			- this can be rewritten as
-				- $u(h_7x+h_8y+h_9)=(h_1x+h_2y+h_3)$
-				- $v(h_7x+h_8y+h_9)=(h_4x+h_5y+h_6)$
+				- $u(h_7x+h_8y+h_9)=h_1x+h_2y+h_3$
+				- $v(h_7x+h_8y+h_9)=h_4x+h_5y+h_6$
 			- and rearranged as two linear equations with 9 variables “up to scale” (so 8 variables)
 			- so we need 4 correspondances to get 8 equations
 			- refer to [CMU slides](https://www.cs.cmu.edu/~16385/lectures/lecture9.pdf#page=47) for the entire procedure
@@ -437,19 +435,57 @@
 	- we assume all the images are taken from the same viewpoint
 	- we apply homography
 		- we need four correspondances to estimate it
+		- we can use least squares if we have more than four
+	- we can remap all the images onto one image plane by combining transformations (so we don't need correspondances for every pair of planes)
+	- photometric mapping needs to be applied to make colors consistent
+	- there may be some artifacts as a result of geometric errors
 - two view geometry
-	- usually, the two rays don't cross (due to the noise)
-	- so we find the closest point to the 2 viewing lines
+	- in theory: if we have 2 image projections of the same 3D point, we can estimate its position by triangulation
+	- in practice: the two rays usually don't cross (due to the noise)
+		- algebraic approach: use least squares to solve an overdetermined system of equations
+		- geometric approach: find the closest point to the 2 viewing lines
+			- $(X,Y,Z)^T=C_i+\lambda_iD_i+\frac d2D_j×D_i$
+			- $(X,Y,Z)^T=C_j+\lambda_jD_j-\frac d2D_j×D_i$
+			- so $C_i-C_j+\lambda_i D_i-\lambda_jD_j+d(D_j\times D_i)=0$
+				- $C_i,C_j$ … cameras (image centers)
+				- $D_i,D_j$ … directions of the rays
+				- $d$ … distance between the rays
+				- 3 unknowns $\lambda_i,\lambda_j,d$
 	- epipolar geometry
 		- a point in the first image has to be on a certain line in the second image
-	- fundamental matrix
-		- every correspondence gives us only one equation (equal to 0)
-		- so we need 8 correspondences
-	- essential matrix
+		- this epipolar constraint is symmetric
+		- epipolar line (seen by the second camera) is the projection of the viewing ray (of the first camera)
+			- so all the epipolar lines go through a point (the epipole) – the projection of the other image center (= first camera)
+			- we can also estimate the projection of the point in infinity
+		- using these two points (epipole and “infinity”), we get the epipolar line $L\sim F_{ji}p_i$
+			- $p_i$ … a point in the first image
+			- $F_{ji}$ … fundamental matrix
+		- the epipolar constraint between two corresponding points is then $p_j^TF_{ji}p_i=0$
+			- $F^T_{ji}=F_{ij}$ … fundamental matrix defining epipolar lines in image $i$ for points in image $j$
+		- fundamental matrix
+			- captures all the geometric information between two images
+			- is singular
+				- maps points to lines (is one-to-many)
+				- has a kernel $F_{ij}e_j=0$
+				- in practice has rank 2
+			- every correspondence gives us only one equation (equal to 0)
+			- so we need 8 correspondences
+			- but without any additional constraint, the estimated matrix will not be singular
+		- essential matrix – takes calibration $K_i,K_j$ into account
+			- $E_{ji}\sim K_jF_{ji}K_i$
 - robust estimation
 	- RANSAC … random sample consensus
-	- we randomly select a set of observations, fit our model, and count outliers
-	- many variants
+	- we randomly select a set of observations, fit our model, and count outliers (points with distance $\gt$ threshold)
+		- we run $n$ iterations and keep the best model (with the least outliers)
+	- probability estimation
+		- $w$ … proportion of good data
+		- $n$ … sample size
+		- $k$ … number of draws
+		- $w^n$ … probability to get $n$ good points
+		- $(1-w^n)^k$ … probability that $k$ draws are not good
+		- we want the probability to get a good sample to be higher than $p$
+			- $1-p=(1-w^n)^k$
+			- $k\gt \ln(1-p)/\ln(1-w^n)$
 
 ## Shape Modeling
 
