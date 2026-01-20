@@ -91,9 +91,13 @@
 ## Probabilistic models with latent variables: VAE, GAN
 
 - probabilistic models – aim to learn a parametric distribution $p_\theta(x)$ that approximates the complex data distribution $p_\mathrm{data}(x)$
+	- once learned, we can (ideally) sample new data
+	- we can jointly learn them with other probabilistic models using maximum likelihood
 - Kullback-Leibler divergence
 	- non-negative, asymmetric (it's not a distance)
-	- we minimize it in ML
+	- $D_{\mathrm{KL}}(p(x)\|q(x))=-\mathbb E_{p(x)}[\log\frac{q(x)}{p(x)}]$
+	- we minimize the KL divergence between the data distribution and the learned distribution
+		- this leads to the maximum likelihood estimation of parameters (data distribution is constant)
 - latent variables
 	- not observed directly
 	- we try to get a more compact representation based on the observation
@@ -101,49 +105,67 @@
 		- speech enhancement: noisy speech (observation) → clean speech (latent variable)
 		- person tracking: detections (observation) → person positions (latent variable)
 		- representation learning: raw data (observation) → representation (latent variable)
-	- we don't wanna put *log* in front of an integral
 	- notation
 		- observed variable … $x$
 		- latent variable … $z$
+	- $p_\theta(x)=\int p_\theta(x,z)\ dz=\int p_\theta(x|z)p_\theta(z)\ dz$
+	- to get samples, first draw $\hat z\sim p_\theta(z)$, then draw $\hat x\sim p_\theta(x|\hat z)$
 - simple example: clustering
 	- basic approach: K-means algorithm
-	- point-to-cluster assignment … latent variable
+	- point-to-cluster assignment … latent variable (unknown)
 		- must be inferred with the centroids (parameters of the model)
-	- more advanced approach: Gaussian mixture model
-		- EM algorithm
-	- $\mathcal Q$ … expected complete-data log-likelihood
+- more advanced approach: Gaussian mixture model
+	- $p(x_n|z_n=k)=\mathcal N(x_n;\mu_k,\Sigma_k)$
+	- we find parameters using EM algorithm
+		- we maximize $\mathcal Q$ (expected complete-data log-likelihood)
+		- $\mathcal Q(\theta,\theta^{r-1})=\mathbb E_{p(z|x;\theta^{r-1})}\log p(x,z;\theta)$
+	- relationship with log-likelihood
+		- $\log p(x)=\mathbb E_{q(z)}[\log\frac{p(x)p(z|x)}{q(z)}]+D_{KL}(q(z)\|p(z|x))$
+		- fist term – M-step ($\mathcal Q$)
+		- second term – E-step
 	- we set $q(z)=p(z\mid x)$ so $D_{KL}=0$
 - we can also consider continuous latent variables
 	- PPCA (probabilistic principal component analysis)
-	- linear × non-linear model
-	- we want to extract a representation $z$ of each $x$
-- variational autoencoders
+	- $z\in\mathbb R^D,\;x\in\mathbb R^F$ where $D\ll F$
+		- we want to extract a representation $z$ of each $x$
+	- $p(z)=\mathcal N(z;0,I)$
+	- linear model → $p(x|z)=\mathcal N(x;Az+b,\nu I)$
+	- non-linear model → $p_\theta(x|z)=\mathcal N(x;\mu_\theta,\Sigma_\theta(z))$
+- variational autoencoders (VAEs)
 	- encoder + decoder
-		- encoder learns $p(z\mid x)$
-		- decoder learns $p(x\mid z)$
-		- we consider Gaussian prior $p(z)$
+		- encoder learns $p(z|x)$
+		- decoder learns $p(x|z)$
+		- we consider Gaussian prior $p(z)=\mathcal N(z;0,I)$
 		- to infer $z$ from $x$, we can use the encoder
 		- to generate $x$, we can use the prior and the decoder
-	- covariance matrix has to be symmetric and positive
-		- we assume the matrix to be diagonal
-		- instead of estimating the variance directly, we estimate the log-variance (→ variance is positive)
-	- the network outputs $\mu_\theta,\eta_\theta$
-		- $z$ goes in, the outputs have the dimension of $x$
-		- the model learns $p(x\mid z)$
+	- decoder … $p(x|z)$
+		- covariance matrix has to be symmetric and positive
+			- we assume the matrix to be diagonal
+			- trick: instead of estimating the variance $\nu$ directly, we estimate the log-variance $\eta$ (→ variance is positive)
+		- the network outputs $\mu_\theta,\eta_\theta$
+			- $z$ goes in, the outputs have the dimension of $x$
 	- if $p(x\mid z)$ is non-linear (implemented as deep network), the posterior distribution $p(z\mid x)$ cannot be computed analytically, it needs to be approximated
-		- we use another feed-forward network to do that
-		- outputs $\mu_\phi,\nu_\phi$ have the dimension of $z$ (but $x$ goes in)
+		- we use another feed-forward network to do that → encoder
+		- outputs $\mu_\phi,\eta_\phi$ have the dimension of $z$ (but $x$ goes in)
 	- we “chain” the posterior (encoder) and the generative (decoder) model
 	- learning – ELBO (evidence lower-bound)
-		- beware, the first and third formulas on slide 19 are not the same
-		- we cannot compute the expectation in closed form, we need to sample it
-		- sampling is non-differentiable, we cannot backpropagate
+		- formulation from EM: $\log p(x)=\mathbb E_{q(z|x)}[\log\frac{p(x,z)}{q(z|x)}]+D_{KL}(q(z|x)\|p(z|x))$
+		- second term cannot be computed but its positive so $\log p(x;\theta,\phi)\geq\mathbb E_{q_\phi(z|x)}[\log\frac{p(x,z)}{q_\phi(z|x)}]$
+		- $\log p(x;\theta,\phi)\geq\mathbb E_{q_\phi(z|x)}[\log p_\theta(x|z)]-D_{KL}(q_\phi (z|x)\| p(z))$
+			- first term – reconstruction (does the decoder work well?)
+			- second term – regularization (is the latent distribution standard normal?)
+		- $\mathcal L_{ELBO}(\theta,\phi)=\mathbb E_{q(z|x)}[\log\frac{p(x,z)}{q(z|x)}]$
+			- note: we need to maximize this (or we can minimize $-\mathcal L_{ELBO}$ in gradient descent)
+			- we cannot compute the expectation in closed form, we need to sample from $q(z|x)$
+			- sampling is non-differentiable, we cannot backpropagate
 		- reparametrization trick
-			- instead of sampling directly from the posterior, we sample (…)
-		- we need to change the sign (instead of gradient descent, we maximize ELBO)
+			- we cannot sample directly from the posterior like this: $\hat z\sim\mathcal N(\mu,\Sigma)$
+			- so we sample like this: $\bar z=\mu+\Sigma^{1/2}\epsilon$ with $\epsilon\sim\mathcal N(0,I)$
+			- $\bar z$ is differentiable and follows the same distribution as $\hat z$
 		- posterior collapse
+			- it can happen that the VAE stops learning if the posterior $q$ gets too close to the standard prior
 			- KL term dominates the ELBO – we should reduce its weight
-			- also reducing dimensionality helps (?)
+			- also reducing dimensionality $D$ of the latent space helps
 	- exact EM × VAE
 		- there also exist things in the middle (variational EM)
 	- limitation of VAE
@@ -152,14 +174,37 @@
 		- one solution: consider *blocks* of spectrogram as inputs
 	- probabilistic sequential modeling & inference
 		- we can use a RNN
+		- the sampling occurs sequentially and cannot be parallelized
 - generative adversarial network (GAN)
 	- dataset (real samples), generator (fake samples)
-	- discriminator is trying to discriminate between real and generated images
+	- generator $G_\theta$ takes a random noise $z$ as input and generates an image $x=G_\theta(z)$
+	- discriminator $D_\phi$ takes an image $x$ as input and outputs the probability that $x$ is real
 	- generator and discriminator are trained jointly in a minimax game
-	- difficult equilibrium to work with – if the generator is always caught, it does not know how to improve
-	- JS divergence
-	- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
-	- Wasserstein GAN
+		- $\max_\theta\min_\phi\mathcal L_{BCE}(D_\phi;x,G_\theta(z))$
+		- or $\min_\theta\max_\phi\mathbb E_{x\sim p_{BCE}(x)}[\log D_{\phi}(x)]+\mathbb E_{z\sim p_z(z)}[\log(1-D_\phi(G_\theta(z)))]$
+		- this corresponds to minimizing the Jensen-Shannon divergence between $p_{\mathrm{data}}(x)$ and $p_\theta(x)$ with optimal $\phi$
+		- $D_{JS}(p,q)=\frac12 D_{KL}(p\|\frac{p+q}2)+\frac12 D_{KL}(q\|\frac{p+q}2)$
+	- typically, GANs are trained by alternating between updating the discriminator and the generator with different batches of data
+		- update the discriminator $D_\phi$ for a few steps
+		- update the generator $G_\theta$ for a step
+	- problems
+		- very sensitive to the choice of hyperparameters
+		- weak discriminator → generator may produce non-realistic samples
+		- strong discriminator → generator cannot learn (if the generator is always caught, it does not know how to improve) or tends to replicate the training set (overfitting)
+		- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
+	- avoiding mode collapse: Wasserstein GAN
+		- based on Wasserstein distance – “minimum cost of transporting mass from one distribution to another”
+			- $W(p,q)=\inf_{\gamma\in\Gamma(p,q)}\mathbb E_{(x,y)\sim\gamma}[\|x-y\|]$
+			- where $\Gamma$ is the set of all joint distributions
+		- properties of $W$
+			- satisfies the triangle inequality and is sensitive to the geometry of the underlying space
+			- it is useful for comparing distributions that are not well-aligned or have different supports (as opposite to the JS divergence)
+			- it's hard to compute efficiently (due to the infimum) in high-dim spaces
+			- but it can be written as $\max_{\|f\|_L\leq 1}\set{\mathbb E_{x\sim p}[f(x)]-\mathbb E_{y\sim q}[f(y)]}$
+		- WGANs use the Wasserstein distance instead of the JS divergence
+			- they use a critic $C_\phi$ (instead of the discriminator) which is trained to approximate $W$
+			- they use weight clipping to enforce a Lipschitz constraint on the critic
+			- it's not a competition anymore – the critic is trained to approximate the Wasserstein distance, while the generator is trained to minimize it
 
 ## Diffusion
 
@@ -172,14 +217,24 @@
 		- indirect sampling → diffusion
 - basic concepts
 	- Brownian motion – continuous random movement of a particle, with increments that are Gaussian and independent
+	- diffusion process – stochastic system whose evolution is governed by Brownian motion
 	- diffusion (in image generation) – we add noise
 	- the goal of the model (DDPM, denoising diffusion probabilistic model) is to remove the noise
+- forward diffustion process (fixed) – start with data $x_0$, gradually add Gaussian noise in $T$ steps
+	- $q(x_t|x_{t-1})=\mathcal N(x_t;\sqrt{1-\beta_t}x_{t-1},\beta_tI)$
+- reverse denoising process (generative)
+	- learn $p_\theta(x_{t-1}|x_t)$ to denoise
+	- $p_\theta(x_{t-1}|x_t)=\mathcal N(x_{t-1};\mu_\theta(x_t,t),\Sigma_\theta(x_t,t))$
 - training
-	- the model should estimate a noise vector from a given noise level $\sigma\gt 0$ and noisy input $x_\sigma$
-	- in practice, noise level $\sigma$ range from 0.01 to 100
-		- sampled from a noise schedule
-	- we are trying to find an ideal *denoiser* $\epsilon^*$
-		- there is a close-form solution
+	- the model should estimate a noise vector $\epsilon\in\mathbb R^n$ from a given noise level $\sigma\gt 0$ and noisy input $x_\sigma\in\mathbb R^n$ s.t. for some $x_0$ in the data manifold $\mathcal K$ it holds that $x_\sigma\approx x_0+\sigma\epsilon$
+	- a denoiser $\epsilon_\theta:\mathbb R^n\times\mathbb R_+\to\mathbb R^n$ is learned by minimizing $L(\theta):=\mathbb E_{x_0,\sigma,\epsilon}\|\epsilon_\theta(x_0+\sigma\epsilon,\sigma)-\epsilon\|^2$
+		- $x_0$ sampled from training data
+		- $\sigma$ sampled from a training noise schedule
+			- in practice, noise level $\sigma$ range from 0.01 to 100
+		- $\epsilon$ sampled from $\mathcal N(0,I_n)$
+	- we are trying to find an ideal *denoiser* $\epsilon^*$ that minimizes $L(\theta)$
+		- for finite $\mathcal K$, there is a close-form solution
+			- $\epsilon^*(x_\sigma,\sigma)=\frac{\sum_{x_0\in\mathcal K}(x_\sigma-x_0)\exp(-\|x_\sigma-x_0\|^2/2\sigma^2)}{\sigma\sum_{x_0\in\mathcal K}\exp(-\|x_\sigma-x_0\|^2/2\sigma^2)}$
 		- assumption: $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\epsilon\mid x_\sigma,\sigma]$
 		- steps
 			- replace $\epsilon$ by the forward noise relation $x_\sigma=x_0+\sigma\epsilon\implies\epsilon=\frac{x_\sigma-x_0}{\sigma}$
@@ -199,8 +254,13 @@
 	- the learned denoiser $\epsilon_\theta(x_\sigma,\sigma)$ estimates $\hat x_0=x_\sigma-\sigma\epsilon_\theta(x_\sigma,\sigma)$
 	- *for loop*, we denoise the data in several steps
 	- DDIM (denoising diffusion *implicit* model) × DDPM (*probabilistic*)
-		- in DDPM, we need to add noise proportional to uncertainty in the denoising steps
-- flow matching models vs. diffustion models
+		- deterministic (DDIM) update: $x_{t-1}=x_t+(\sigma_{t-1}-\sigma_t)\epsilon_\theta(x_t,\sigma_t)$
+		- probabilistic (DDPM) update: $x_{t-1}=x_t+(\sigma_{t'}-\sigma_t)\epsilon_\theta(x_t,\sigma_t)+\eta w_t$
+		- DDPM is derived from the true reverse diffusion (a stochastic differential equation / SDE)
+			- we need to add noise proportional to uncertainty in the denoising steps
+		- DDIM replaces the SDE with a probability-flow ODE, which has no diffusion term, so the evolution is deterministic
+		- they share the same deterministic mean DDPM differs by the Gaussian noise scaled by uncertainty
+- flow matching models vs. diffusion models
 	- in flow matching models, we are trying to get a function which maps from one distribution to another
 	- so we need less sampling steps
 
