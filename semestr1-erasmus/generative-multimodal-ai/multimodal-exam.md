@@ -1,0 +1,604 @@
+# Exam: Multimodal AI
+
+## Convolution
+
+- fully connected neural network – impractical for images (too many weights)
+- convolution – “filter”
+	- we move a function over the signal and integrate
+	- what to do at the ends? → shrink or pad
+- CNN is learning the filters to transform the images
+- notation
+	- batch size $B$
+	- image size $W×H$
+	- $C$ … number of feature channels (neurons per pixel)
+		- $C_{in}$ … number of feature channels in current layer
+		- $C_{out}$ … number of feature channels in next layer
+		- usually $C_{in}=3$ for the first layer (for a color image)
+	- $K×K$ … convolutional filter kernel size
+- number of weights … $C_{out}×(K×K×C_{in}+1)$ of a convolutional layer
+- advantages
+	- spatial locality (local receptive fields) – every neuron is looking at a small patch of the image
+	- parameter sharing – we don't need that many weights
+	- translation equivariance – we don't need to preprocess the images that much (object detection works no matter the position of the object in the image)
+- motivation for padding (with zeros)
+	- convolutions can only by executed in kernel lies entirely within input domain – that's inconvenient as it couples architecture and input size
+- downsampling approaches
+	- stride – we are sliding the filter with a step size larger than one
+	- pooling – we apply a function (usually max) over a patch
+- if pixel-level outputs are expected, we need to use upsampling afterwards
+- upsampling approaches
+	- nearest neighbor (we just copy the value)
+	- bed of nails (we put the value in the upper-left corner and use zeros elsewhere)
+	- max unpooling (we need to remember where did we take the maximum from, then put it back there and put zeros elsewhere)
+		- requires corresponding pairs of down- and upsampling layers
+		- used in SegNet
+- benchmark: ImageNet Large Scale Visual Recognition Challenge
+- architectures
+	- LeNet – 2 convolution layers, 2 pooling, 2 fully connected
+		- state-of-the-art accuracy on MNIST
+	- AlexNet – 8 layers, ReLUs, dropout, data augmentation
+		- number of feature channels increases with depth, spatial resolution decreases
+	- VGG architecture
+		- uses 3×3 convolutions everywhere
+		- receptive field size
+			- in the original image, the receptive field is 1×1
+			- in the first layer, the receptive field is 3×3
+			- by applying the convolution on the convoluted pixels, we get 5×5 receptive field in the second layer
+			- the formula looks like this: $RF_0=1,\ RF_i=RF_{i-1}+(K-1)$
+	- Inception / GoogLeNet – 22 layers
+		- multiple intermediate classification heads to improve gradient flow
+		- global average pooling (no FC layers), less parameters than VGG
+		- uses 1×1 convolutions (only across channels) to reduce number of features → higher efficiency
+	- ResNet (2016)
+		- residual connections allow for training deeper networks (up to 152 layers)
+		- very simple and regular network structure with 3×3 convolutions
+		- strided convolutions for downsampling
+	- U-Net
+		- max-pooling, up-convolutions and skip-connections
+		- defacto standard for many tasks with image output (e.g. depth, segmentation)
+- RNNs
+	- hidden state
+		- combination of the current input and the previous hidden state
+		- updated at each time step
+		- allows for processing sequences of variable length
+	- usually tanh activation
+	- output of a cell is based on current hidden state
+	- there can be one or multiple outputs
+		- one to many – image captioning (image → sentence)
+		- many to one – action recognition (video → action)
+		- many to many – machine translation (sentence → sentence)
+		- many to many – object tracking (every frame: video → object location)
+		- to determine the length of the output sequence, a stop symbol can be predicted
+	- backpropagation becomes intractable
+		- so truncated backpropagation may be used
+	- we can even have multiple layers
+		- or we can make the cells deeper
+		- often combined with residual connections in vertical direction
+	- problem: vanishing or exploding gradients
+		- RNNs require careful initialization to avoid saturating activation functions
+		- to prevent exploding – gradient clipping
+		- to prevent vanishing – architectural change is required
+		- GRU and LSTM units are used to solve this problem
+			- use gates for filtering information
+			- Gated Recurrent Unit: reset gate, update gate
+			- Long Short-Term Memory: forget, input, output
+- Transformer
+	- CNNs could see more context but only through many stacked layers, which made them inefficient for truly long sequences
+	- RNNs processed sequences one step at a time, making training slow and making it hard to capture relationships across long distances
+	- idea: let every element of a sequence directly “pay attention” to every other element → no recurrence, no deep stacks required
+		- attention … $\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
+
+## Probabilistic models with latent variables: VAE, GAN
+
+- probabilistic models – aim to learn a parametric distribution $p_\theta(x)$ that approximates the complex data distribution $p_\mathrm{data}(x)$
+- Kullback-Leibler divergence
+	- non-negative, asymmetric (it's not a distance)
+	- we minimize it in ML
+- latent variables
+	- not observed directly
+	- we try to get a more compact representation based on the observation
+	- examples
+		- speech enhancement: noisy speech (observation) → clean speech (latent variable)
+		- person tracking: detections (observation) → person positions (latent variable)
+		- representation learning: raw data (observation) → representation (latent variable)
+	- we don't wanna put *log* in front of an integral
+	- notation
+		- observed variable … $x$
+		- latent variable … $z$
+- simple example: clustering
+	- basic approach: K-means algorithm
+	- point-to-cluster assignment … latent variable
+		- must be inferred with the centroids (parameters of the model)
+	- more advanced approach: Gaussian mixture model
+		- EM algorithm
+	- $\mathcal Q$ … expected complete-data log-likelihood
+	- we set $q(z)=p(z\mid x)$ so $D_{KL}=0$
+- we can also consider continuous latent variables
+	- PPCA (probabilistic principal component analysis)
+	- linear × non-linear model
+	- we want to extract a representation $z$ of each $x$
+- variational autoencoders
+	- encoder + decoder
+		- encoder learns $p(z\mid x)$
+		- decoder learns $p(x\mid z)$
+		- we consider Gaussian prior $p(z)$
+		- to infer $z$ from $x$, we can use the encoder
+		- to generate $x$, we can use the prior and the decoder
+	- covariance matrix has to be symmetric and positive
+		- we assume the matrix to be diagonal
+		- instead of estimating the variance directly, we estimate the log-variance (→ variance is positive)
+	- the network outputs $\mu_\theta,\eta_\theta$
+		- $z$ goes in, the outputs have the dimension of $x$
+		- the model learns $p(x\mid z)$
+	- if $p(x\mid z)$ is non-linear (implemented as deep network), the posterior distribution $p(z\mid x)$ cannot be computed analytically, it needs to be approximated
+		- we use another feed-forward network to do that
+		- outputs $\mu_\phi,\nu_\phi$ have the dimension of $z$ (but $x$ goes in)
+	- we “chain” the posterior (encoder) and the generative (decoder) model
+	- learning – ELBO (evidence lower-bound)
+		- beware, the first and third formulas on slide 19 are not the same
+		- we cannot compute the expectation in closed form, we need to sample it
+		- sampling is non-differentiable, we cannot backpropagate
+		- reparametrization trick
+			- instead of sampling directly from the posterior, we sample (…)
+		- we need to change the sign (instead of gradient descent, we maximize ELBO)
+		- posterior collapse
+			- KL term dominates the ELBO – we should reduce its weight
+			- also reducing dimensionality helps (?)
+	- exact EM × VAE
+		- there also exist things in the middle (variational EM)
+	- limitation of VAE
+		- frames modeled independently – we need time/sequential modeling!
+			- for spectrogram, for example
+		- one solution: consider *blocks* of spectrogram as inputs
+	- probabilistic sequential modeling & inference
+		- we can use a RNN
+- generative adversarial network (GAN)
+	- dataset (real samples), generator (fake samples)
+	- discriminator is trying to discriminate between real and generated images
+	- generator and discriminator are trained jointly in a minimax game
+	- difficult equilibrium to work with – if the generator is always caught, it does not know how to improve
+	- JS divergence
+	- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
+	- Wasserstein GAN
+
+## Diffusion
+
+- basic division of generative models
+	- explicit density
+		- tractable density → autoregressive
+		- approximate density → VAE
+	- implicit density
+		- direct sampling → GAN
+		- indirect sampling → diffusion
+- basic concepts
+	- Brownian motion – continuous random movement of a particle, with increments that are Gaussian and independent
+	- diffusion (in image generation) – we add noise
+	- the goal of the model (DDPM, denoising diffusion probabilistic model) is to remove the noise
+- training
+	- the model should estimate a noise vector from a given noise level $\sigma\gt 0$ and noisy input $x_\sigma$
+	- in practice, noise level $\sigma$ range from 0.01 to 100
+		- sampled from a noise schedule
+	- we are trying to find an ideal *denoiser* $\epsilon^*$
+		- there is a close-form solution
+		- assumption: $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\epsilon\mid x_\sigma,\sigma]$
+		- steps
+			- replace $\epsilon$ by the forward noise relation $x_\sigma=x_0+\sigma\epsilon\implies\epsilon=\frac{x_\sigma-x_0}{\sigma}$
+				- so we get $\epsilon^*(x_\sigma,\sigma)=\mathbb E[\frac{x_\sigma-x_0}{\sigma}\mid x_\sigma,\sigma]=\frac1\sigma(x_\sigma-\mathbb E[x_0\mid x_\sigma,\sigma])$
+				- and $\mathbb E[x_0\mid x_\sigma,\sigma]=\sum_{x_0\in\mathcal K} x_0\cdot p(x_0\mid x_\sigma,\sigma)$
+			- posterior $p(x_0\mid x_\sigma,\sigma)$
+				- forward step $p(x_0\mid x_\sigma,\sigma)\propto\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})$
+					- equal up to a constant factor (it gets canceled out in the following formula)
+				- Bayes: $p(x_0\mid x_\sigma,\sigma)=\frac{p(x_\sigma\mid x_0,\sigma)p(x_0)}{\sum_{x'_0\in\mathcal K} p(x_\sigma\mid x'_0,\sigma)p(x'_0)}=\frac{\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+					- because $p(x_0)=\frac1{|\mathcal K|}$
+			- so $\mathbb E[x_0\mid x_\sigma,\sigma]= \frac{\sum_{x_0\in\mathcal K} x_0\cdot\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+			- and $\epsilon^*(x_\sigma,\sigma)=\frac{\sum_{x_0\in\mathcal K} (x_\sigma-x_0)\cdot\exp(-\frac{\|x_\sigma-x_0\|^2}{2\sigma^2})}{\sigma\cdot \sum_{x'_0\in\mathcal K}\exp(-\frac{\|x_\sigma-x'_0\|^2}{2\sigma^2})}$
+- common model architectures
+	- convolutional U-nets
+	- patch-wise transformers
+- reverse denoising process – sampling
+	- the learned denoiser $\epsilon_\theta(x_\sigma,\sigma)$ estimates $\hat x_0=x_\sigma-\sigma\epsilon_\theta(x_\sigma,\sigma)$
+	- *for loop*, we denoise the data in several steps
+	- DDIM (denoising diffusion *implicit* model) × DDPM (*probabilistic*)
+		- in DDPM, we need to add noise proportional to uncertainty in the denoising steps
+- flow matching models vs. diffustion models
+	- in flow matching models, we are trying to get a function which maps from one distribution to another
+	- so we need less sampling steps
+
+## Representation Learning
+
+- types of learning
+	- supervised
+	- unsupervised
+	- semi-supervised – training data + a few desired outputs
+- unsupervised learning
+	- useful if we don't have enough annotations
+	- initial approach: pretraining (e.g. ImageNet) & fine-tuning
+		- to fine-tune, we drop the last weight matrix with dimension $f\times 1000$ and replace it with a matrix with dimension $f\times c$ where $c$ is the desired number of classes ($f$ … number of features)
+	- problems
+		- not optimal for every problem (e.g. video, medical)
+		- humans don't need ImageNet pretraining
+	- solution
+		- replace ImageNet pre-training by an unsupervised training (representation learning)
+- autoencoders
+	- input data $x$ → encoder → features $z$ → decoder → reconstructed input data $\hat x$
+		- $z$ typically has less features than $x$
+		- we minimize $\|x-\hat x\|^2$
+	- the encoder learns the representation
+- pretext task
+	- we don't care about this specific task but it helps the model to learn the representations
+	- e.g. relative patch prediction
+		- but it's not that easy
+			- color distortion helps the model cheat the task
+			- solution: drop two channels, replace by Gaussian noise
+	- another task: solving jigsaw puzzles
+		- to make it easier, we can subset 1000 permutations and only train the classifier on them
+	- other tasks
+		- colorization
+		- rotation prediction
+		- super-resolution
+- self-supervised learning – supervision comes from the data (no need to annotate)
+- contrastive learning
+	- goal: to learn features that are discriminative among instances
+	- but we would need too many classes (one for each instance in the training dataset)
+		- non-parametric softmax & memory bank
+	- SimCLR
+		- we have two images $A,B$, apply two random transformations to each of them
+		- so we get four images $A_1,A_2,B_1,B_2$, we want to maximize agreement between the ones based on the same image (e.g. $A_1,A_2$) and minimize agreement between the ones based on different images (e.g. $A_1,B_1$)
+	- MoCo
+		- instead of end-to-end learning or memory bank, we use momentum encoder
+		- we mix the previous parameters of the network with the current one
+	- Dino
+		- vision transformer (ViT)
+			- linear projection of flattened 16×16 patches + *learned* position embedding
+			- additional classifier token
+		- two networks: student and teacher
+- what is a good representation?
+	- we need robustness
+		- appearance changes due to different sensors – infrared vs. normal camera
+		- use of synthetic data
+		- unseen scenarios (e.g. natural disasters)
+		- biased datasets
+- discrepancy-based methods
+	- source and target distributions, we want them to have similar representations
+	- MMD
+	- alignment layers – batch normalization
+	- adversarial-based methods
+	- adaptation through translation
+- Wasserstein GANs
+	- in our example, the JS divergence is constant → bad
+	- idea: Wasserstein (earth mover's) distance
+		- it is a real distance, not a divergence
+	- in high-dimensional spaces, it is more efficient to compute the dual problem
+	- WGANs have a critic instead of a discriminator
+		- not a competition anymore
+		- the critic is trained to approximate the Wasserstein distance
+		- the generator is trained to minimize this distance
+
+## Evaluation of Generative Models
+
+- objective metrics
+	- Inception Score (IS)
+		- measures *diversity* and *quality* of the data
+		- it uses the Inception classification model
+	- Fréchet Inception Distance
+		- measures the Wasserstein distance
+		- in the feature space
+		- assumes Gaussian distributions
+	- limitations of IS, FID
+		- rely on Inception model trained on ImageNet
+			- trained for classification, might not reflect all the aspects of the image quality
+			- the model might not well reflect the evaluated data
+				- example: spectrograms
+- subjective evaluation
+	- user studies and visual inspection
+	- provide valuable insights
+	- costly
+- hybrid alternative – mean opinion score
+	- crowd-source evaluation technique where human evaluators rate the quality of generated samples on a scale (e.g. 1 to 5)
+	- MOS network trained to predict the score
+
+## Audio
+
+- introduction
+	- we sample the signal using frequency $F_s$
+	- Nyquist-Shannon sampling theorem: we can only reconstruct frequencies $\lt F_s/2$
+	- discrete Fourier transform
+		- but energy for frequencies changes over time
+	- short-time Fourier transform (STFT)
+		- sliding window with a kernel
+		- apply DFT to each segment
+		- the modulus
+	- mel frequency scale
+		- better matches human perception (compared to the linear scale)
+		- mel-frequency cepstral coefficients (MFCC)
+- audio representations based on self-supervised learning
+	- sometimes, part of the representation is not learned (classical audio representations are used)
+	- wav2vec 2.0
+		- masked speech in latent space
+		- architecture similar to STFT, but the transformation is learnt
+	- hidden-unit BERT (HuBERT)
+		- extension of wav2vec 2.0
+		- learns from unlabeled audio
+		- idea: use clustering to generate pseudo-labels for audio segments, then train a model to predict those labels
+	- WavLM
+		- extension of HuBERT
+		- more robust learning objective, more data
+		- relative position bias – attention is affected by the distance between tokens (tokens close to each other should attend more)
+		- gated relative position bias
+	- summary
+		- self-supervised learning (SSL)
+		- architecture: CNN + transformer encoder
+		- loss: contrastive or cross-entropy
+		- use of classical features (like MFCC) when needed
+- end-to-end approaches (audio → audio)
+	- WaveNet
+		- capturing long-range dependencies in an efficient way
+		- unconditioned
+	- SampleRNN
+		- upper tiers summarize longer contexts
+		- lower tiers generate fine-grained details
+	- it's very difficult to capture very long dependencies (like 60 seconds)
+- generating audio from intermediate representations
+	- STFT is invertible but the reconstruction of the audio signal from the spectrogram is not immediate (we used modulus)
+	- we need the phase of the signal
+	- classical approach: Griffin-Lim
+	- learning-based approach: HiFi-GAN
+	- Tacotron
+		- end-to-end TTS model
+		- maps character or phoneme sequences to Mel-spectrograms
+		- no need for hand-crafted linguistic features
+		- typically used together with WaveNet or HiFi-GAN to generate the final waveform from the predicted spectrogram
+	- AnCoGen
+		- masked-modeling-based model
+		- idea: map the spectrogram to attributes (pitch, SNR, reverbation, content, …)
+		- ratio – used for masking
+			- (0,1) → audio non-masked, attributes masked
+			- masking can be partial (e.g. 0.7)
+
+## Image Generation
+
+- variational autoencoders (VAEs)
+	- encoder (predicts distribution in latent space) + decoder (predicts distribution in feature space)
+	- we want the latent space to be close to Gaussian (?)
+		- (that's what KL divergence does?)
+	- dimensions in latent space may correspond to some properties of the objects in the image
+	- we can do linear interpolation – we encode two images, “mix” them (in some ratio), then decode
+- GANs
+	- basics
+		- minimax objective function
+		- gradient ascent on discriminator
+		- gradient descent on generator
+	- Progressive GAN – training layer by layer (we start by training simple small layers, then add larger layers)
+	- BigGAN
+	- style stransfer
+		- we want to take content from one image and style from the other one
+		- we don't want to transfer only color but also brush strokes
+		- architecture: VGG encoder → normalization tricks → decoder
+		- we don't change the structure of the original image, we change statistical properties of its patches (to get different style)
+		- to compute loss, we need another VGG encoder
+	- style-based GAN
+		- traditional approach: latent vector comes from the source image
+		- style-based GAN starts with learned constant tensor, adds noise and style (in each layer) by predicting scale and shift
+			- we swap source images at some point in the process to get the mix of style and content
+- image-to-image translation
+	- we assume we have access to $p(x,y)$ and train model to sample $y\sim p(y\mid x)$
+		- or $x\sim p(x\mid y)$
+	- Pix2Pix
+	- we use GAN, discriminator gets both images (we want the generated images to be both plausible and to correspond to the original image)
+	- U-Net, uses skip connections from the encoder to the decoder (not everything has to be encoded in the latent space)
+	- example: generating image based on segmentation
+		- we can use a trained segmentation model to segment the generated image
+		- then, we can apply metrics used for image segmentation evaluation
+	- smarter discriminator
+		- instead of predicting only one score (on the scale from real to fake), we can predict multiple scores (one for each region of the image)
+		- this doesn't work for too small regions – “is this pixel realistic?” is not a good question (the discriminator cannot see patterns, only colors of individual pixels)
+	- we don't always have $p(x,y)$
+		- example: you may have many images of horses and many images of zebras, but never a pair of corresponding images
+		- CycleGAN
+			- cycle-consistency loss
+			- if we generate zebra based on a horse, we want to be able to generate horse based on the zebra and get the same horse as before
+			- not using U-Net
+		- let's have a shared latent space!
+			- so we have two encoders (one for zebra, one for horse) and two decoders that share the same latent space
+		- geometry-consistency
+			- we check how well the model works for transformed images (we then inverse the transformation and compared with the result for untransformed image)
+- high resolution images
+	- Pix2PixHD
+	- we don't want to use many layers – you lose information
+	- architecture similar to style-based GAN
+	- struggles with uniform surfaces
+- video generation
+	- we need temporal consistency
+	- we could do 3D convolution instead of 2D convolution
+		- but we would need a lot of data
+	- we could consider static background and moving objects
+		- so we generate static background (image) and two videos – foreground and mask (ratio for mixing the foreground and background)
+	- let's generate a trajectory of vectors in latent space we can then pass to a decoder
+		- fixed-length videos only
+		- no control over motion and content
+	- video discriminator
+- diffusion models
+	- we address generation as a denoising problem
+	- similar to GAN, we start with a distribution easy to sample (Gaussian) and get a distribution we want (but we do it in multiple steps)
+	- we estimate mean of the next distribution
+	- we can combine multiple steps of adding noise just into one step
+	- instead of predicting the image, we predict the noise
+		- it's easier as the variance is fixed (we can focus on predicting mean)
+		- also, the image changes over time – the noise does not (?)
+	- we can use simpler loss formula even though there's no theoretical explanation for it
+	- training and sampling algorithms
+		- we want the results to follow a distribution → we add some randomness according to the variance
+	- we want the distribution to be conditional
+		- first approach: classifier guidance
+			- we have a diffusion model $P(x)$
+			- we have a classifier $P(y\mid x)$
+			- we want to be able to sample $P(x\mid y)$
+			- idea: instead of just denoising, we also move in the direction that makes the probability $P(y\mid x)$ higher
+			- but we need to compute the gradient of the classifier (using backpropagation) – high computational cost
+		- second approach: classifier-free guidance
+			- the noise model is trained with $y$ in mind
+			- we also used unconditioned denoiser – balance between quality and fidelity
+	- latent diffusion models
+		- problem: to generate high-resolution images, we need to start from high-resolution noise and it takes many denoising steps (→ computational cost)
+			- we could use distillation
+			- or we can project the images in a discrete *latent space*
+		- let's have an encoder and a decoder
+		- we consider a diffusion model in the latent space
+			- U-Net (encoder decoder with skip connections)
+			- cross-attention to get conditioning from $C$ vector
+	- diffusion transformers (DiT)
+		- conditioning is used to predict scale and shift (similar to StyleGAN)
+	- 2D → 3D latent space
+		- denoiser for video gets very computationally intensive if we want to attend everywhere
+		- instead, we consider separate spatial and temporal layers
+	- why it changes everything
+		- GAN worked only on datasets with limited diversity
+		- fine-grained control with text
+		- we have a general-purpose image prior
+			- we can start with pretrained large models and use transfer learning for specific tasks
+			- one training of a large model costs 600 000 euros
+	- how can we reuse a pretrained diffusion model so that we can condition using spatial data (a sketch…)
+		- how to fit all the information in a single vector
+		- ControlNet – encoder with skip connections to the U-Net
+		- impainting
+			- idea: we add noise to the whole image and let it generate with a conditioning
+			- to make sure that the rest of the image does not change, we can replace the rest of the image with the original image (+ noise) in every step of denoising
+- (other slides skipped)
+- personalized text-to-image
+	- example: I want to generate something based on this specific (real) statue
+	- how can I describe this specific object using embedding vector?
+		- has to be learnt
+	- Dreambooth
+		- problem: if I finetune the model using photos of my dog standing, I will only get results with my dog standing (not sitting)
+		- so I use specific loss that ensures the generated diversity is similar to the diversity of real dog poses
+
+## Multimodal Learning
+
+- multimodal learning
+	- many research questions
+	- many other modalities than just video and audio
+		- text, lidar, thermal, events, …
+	- interactions between modalities
+- sensor fusion – using information from diverse sensors to make predictions
+	- types
+		- camera + depth sensor → RGB-D object detection
+		- RGB + thermal
+		- RGB + optical flow (object moving in the video)
+	- we have aligned inputs; when to perform fusion?
+		- early fusion – concat, then pass to the model
+		- late fusion – two models, jointly predict
+			- easier to train (we don't need that much paired data)
+			- can be run in parallel
+		- middle fusion – two models (with shared weights), then fuse features and pass to third model
+		- another approach: learn when to perform fusion (siamese network)
+	- using ViT with two modalities
+		- either pass shorter sequence of pairs → early fusion
+		- or pass two sequences (so the entire sequence is longer) → late fusion
+	- RGB + lidar detection
+		- advantages
+			- effective in low light and some adverse weather
+			- robust in low-texture areas
+			- penetrates dense foliage (vegetation) – for satellite imagery
+			- long range
+		- lidar returns a point cloud (points detected in 3D)
+		- approaches
+			- first find object in image, then use lidar points
+			- or we can use late fusion
+- multimodal translation (from one modality to another)
+	- image captioning – we condition text on some visual observation
+		- first RNNs with LSTM, then Transformer (attention-based approaches)
+- hybrid tasks
+	- visual question answering
+		- projecting the image and the question in the same vector space
+		- attention layers – which part of the image should I look at?
+	- lips reading
+		- seq2seq with attention – which time should I look at to predict the next word? (predicting alignment between text and audio/video frames)
+- multimodal alignment (identifying and modeling correspondances)
+	- ImageNet
+		- hard to scale up
+		- vision is not only about classes
+		- limited robustness to distribution shifts
+		- adaptation to other tasks (new classes) requires further training
+	- zero-shot classification: CLIP
+		- frame the problem as an image-caption matching problem
+		- captions
+			- easier to get than classes
+			- contain semantic, geometric, and stylistic information
+			- multi-object images
+		- contrastive pre-training
+			- captions encoded using transformer
+			- images encoded by ViT or ResNet
+			- for each image, probability (softmax) of every possible caption (and vice versa)
+				- loss function – maximize likelihood of predicting correct text for the image and correct image for the text
+		- can be then used for zero-shot classification
+			- user-defined classes can be expressed as captions: “a photo of a {object}.“
+		- can be also used as a search engine
+			- you compute the similarity between the provided caption and the images in your database
+		- can be used to build on top of (prompt engineering – “software 3.0”)
+	- Imagebind
+		- based on contrastive loss
+		- connecting modalities with were not connected before
+- mask image model vs. language model
+	- mask image model – BERT, bidirectional
+	- language model – GPT, unidirectional
+- training LLM
+	- pre-training → instruction fine-tuning → reinforcement learning with human feedback
+	- having several copies of LLMs fine-tuned for different tasks is expensive
+	- alternative approach: prefix-tuning
+		- freeze the weights
+		- train new prefix embeddings (added at the beginning of the sequence) that optimize the behavior of the network for the specific task
+		- similar to prompt engineering (“You are an AI agent, be kind to the user.“)
+			- but here, we use gradient descent to find tokens which work the best (they don't have to correspond to existing words)
+	- bidirectional vs. causal (unidirectional) attention
+		- bidirectional models cannot be used to generate
+		- unidirectional uses masked self-attention
+- multimodal LLMs
+	- VisualBERT
+		- image (split using bounding boxes by an object detector) + caption
+		- masking words in the caption
+		- objective 1: predict masked words
+		- objective 2: predict if the image matches the caption or not
+		- downstream task: visual question answering
+	- unidirectional MLLM
+		- encoder gets image and beginning of the sentence
+			- image is first split into patches and processed by convolution
+			- bidirectional attention
+		- decoder continues the sentence
+	- decoder-only
+		- vision encoder trained using the task of next token prediction
+		- encoded representations of the image
+		- used as prefix for LLM (or even as a part of the input – anywhere)
+		- LLM frozen – why?
+			- cost of training
+			- contains a lot of useful knowledge we don't want to lose
+		- it combines perception of vision encoder and reasoning capacity of LLM
+		- alternative approach: use CLIP instead of encoder training
+			- the LLM then uses words directly
+	- Flamingo
+		- images are removed from the text and replaced by placeholders
+		- then, images are provided using gated cross-attention
+			- skip connections make sure that the model preserves its pre-trained abilities even after modification (at the beginning of the fine-tuning phase – with the initial parameters for the new blocks in the architecture)
+			- the text cross-attend only at the last image
+				- but the self-attention layer still ensures everyone sees everything
+	- Socratic Models
+		- idea: convert all modality into text
+		- then perform reasoning in text form
+		- but there are things hard to describe with text
+	- training conversational agent for visual question answering
+		- hard to get data
+		- convert image to text
+		- Llava
+	- Visual LLM
+		- Qwen
+		- uses vision encoder
+		- we need positional embeddings
+			- rotary position embedding (RoPE)
+			- multiple rotations happening at once (vector of dimension $n$ split into $n/2$ parts and each part is rotated differently)
+		- for videos, we use M-RoPE
+			- rotary embedding decomposed into temporal, width, and height component
+		- best open-source model
+		- speech synthesis in an autoregressive manner
+- image-to-text vs. text-to-image
+	- generating text – autoregressive approach (predicting next token based on the previous ones)
+	- generating images – diffusion
+	- how to unify the two tasks?
