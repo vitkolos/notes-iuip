@@ -52,9 +52,18 @@
 		- reciprocity (we can swap the light source and the camera)
 		- isotropy (no favorite direction) – does not always hold
 		- energy corresponds to an integral (we can use a discrete sum)
-		- Lambert assumption
+		- Lambertian assumption
 			- diffuse surface: uniform in all directions (paper, milk, matt paint)
 			- the BRDF is a constant function $f_d(\hat v_i,\hat v_r,\hat n,\lambda)=f_d(\lambda)$
+			- “when a ray hits the surface, it spreads equally in all directions”
+			- do papers use it?
+				- plenoptic function – does not assume, explicitly models angular dimension (intensity may be different)
+				- focused plenoptic camera – using it for matching and processing depth
+				- depth estimation – yes (for the rays)
+				- spray on optics – yes (required by matching of the droplets)
+				- Middlebury – putting the clay on
+				- SPIN
+				- ViT, DINO
 		- specular (reflective) material, central lobe on $\hat s_i$
 			- Phong … $f_s(\theta_s,\lambda)=k_s(\lambda)\cos ^{k_e}\theta_s$
 			- Torrence-Sparrow
@@ -417,6 +426,13 @@
 		- you have a projection matrix $P$
 		- you move the camera or rotate it (you apply $T$), how does the new projection matrix look like?
 		- $P'=TPT^{-1}$
+			- first, we return to the original projection space using $T^{-1}$ (we move the point there)
+			- we apply the projection $P$
+			- then, we come back using $T$
+			- sanity check: consider a zero transformation (e.g. for a parameterized rotation matrix, set $\alpha=0$) → it should hold that $P\sim P'$
+			- note: the (projected) size of the object is proportional to its distance from the optical plane
+				- so if we turn the camera (while keeping the focal length), the object gets smaller or larger
+				- vertigo effect: you move the camera (toward or away from an object) and update the focal length to make the object appear the same size (but the background changes)
 - camera models
 	- most used camera model – pinhole model (perspective projection)
 	- full transformation composed of
@@ -467,9 +483,9 @@
 		- using these two points (epipole and “infinity”), we get the epipolar line $L\sim F_{ji}p_i$
 			- $p_i$ … a point in the first image
 			- $F_{ji}$ … fundamental matrix
-		- the epipolar constraint between two corresponding points is then $p_j^TF_{ji}p_i=0$
+		- the epipolar constraint between two corresponding points is then $p_j^T\underbrace{F_{ji}p_i}_L=0$
 			- $F^T_{ji}=F_{ij}$ … fundamental matrix defining epipolar lines in image $i$ for points in image $j$
-		- fundamental matrix
+		- fundamental matrix … 3×3 matrix
 			- captures all the geometric information between two images
 			- is singular
 				- maps points to lines (is one-to-many)
@@ -517,7 +533,7 @@
 		- 3D occupancy grid
 		- complexity proportional to the size of the box
 		- we usually want to first find the shape and modify the size of the box accordingly
-		- we can use *marching cubes* to get a surface model
+		- we can use *marching cubes* to get a surface model (mesh)
 	- 3D meshes
 		- similar to point cloud but we have connectivity (often triangles)
 		- we can easily attach textures
@@ -544,14 +560,16 @@
 		- chroma keying (blue or green background)
 			- problem: white clothes, sweat, … tend to reflect green
 		- background subtraction (static background)
+			- take a photo without the object, take a photo with an object → what has changed?
 			- problems: color ambiguities between background and foreground objects, luminosity changes, …
+		- we can also use U-Net
 	- from silhouettes to shapes
 		- visual hull
 			- the observed object is contained
 			- some points are touching
 		- voxel carving algorithm
 			- we start with each voxel full (equal to 1)
-			- we project every voxel into every camera
+			- we project every voxel into every camera (using the corresponding projection matrix)
 				- we set it to zero if the pixel is outside of the silhouette for the given camera
 				- note: usually, the cameras are not orthographic, they have an optical centre
 			- notes
@@ -754,6 +772,7 @@
 	- code images to get depth
 	- ambient images
 	- imperfection – useful for evaluation (real-world images are not perfect)
+		- nothing in the world is perfect
 - pose reconstruction
 	- SMPL body model – shape & pose
 	- two approaches
