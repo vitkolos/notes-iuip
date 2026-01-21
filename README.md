@@ -16,7 +16,7 @@ Master of Computer Science – Artificial Intelligence ([some notes are in Engli
 
 - [Information Visualization](semestr1-erasmus/information-visualization/exam.md)
 - [Distributed Systems](semestr1-erasmus/distributed-systems/exam.md)
-- Robotics
-- Multi-Agent Systems
-- Computer Vision
-- Multimodal AI
+- [Robotics](semestr1-erasmus/robotics/exam.md)
+- [Multi-Agent Systems](semestr1-erasmus/multi-agent-systems/exam.md)
+- [Computer Vision](semestr1-erasmus/computer-vision/exam.md)
+- [Multimodal AI](semestr1-erasmus/generative-multimodal-ai/multimodal-exam.md)

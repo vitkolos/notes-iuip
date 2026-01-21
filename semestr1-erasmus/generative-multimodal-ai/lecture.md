@@ -213,6 +213,8 @@
 
 ## Multimodal AI
 
+see [exam preparation](multimodal-exam.md)
+
 - Pia Bideau, PhD
 - fully connected neural network – impractical for images (too many weights)
 - convolution

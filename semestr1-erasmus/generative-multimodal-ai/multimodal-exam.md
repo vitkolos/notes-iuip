@@ -565,57 +565,59 @@
 - neural radiance filters
 	- estimate “shape” of an object based on several photos
 	- can render novel views
-- diffusion models
-	- we address generation as a denoising problem
-	- similar to GAN, we start with a distribution easy to sample (Gaussian) and get a distribution we want (but we do it in multiple steps)
-	- we estimate mean of the next distribution
-	- we can combine multiple steps of adding noise just into one step
-	- instead of predicting the image, we predict the noise
-		- it's easier as the variance is fixed (we can focus on predicting mean)
-		- also, the image changes over time – the noise does not (?)
-	- we can use simpler loss formula even though there's no theoretical explanation for it
-		- $L_t=\mathbb E_{t\sim[1,T],x_0,\epsilon_t}[\|\epsilon_t-\epsilon_\theta(x_t,t)\|^2]$
-	- training and sampling algorithms
-		- we want the results to follow a distribution → we add some randomness according to the variance
-	- we want the distribution to be conditional
-		- first approach: classifier guidance
-			- we have a diffusion model $P(x)$
-			- we have a classifier $P(y\mid x)$
-			- we want to be able to sample $P(x\mid y)$
-			- idea: instead of just denoising, we also move in the direction that makes the probability $P(y\mid x)$ higher
-			- but we need to compute the gradient of the classifier (using backpropagation) – high computational cost
-		- second approach: classifier-free guidance
-			- the noise model is trained with $y$ in mind
-			- we also used unconditioned denoiser – balance between quality and fidelity
-	- latent diffusion models
-		- problem: to generate high-resolution images, we need to start from high-resolution noise and it takes many denoising steps (→ computational cost)
-			- we could use distillation
-			- or we can project the images in a discrete *latent space*
-		- let's have an encoder and a decoder
-		- we consider a diffusion model in the latent space
-			- U-Net used for denoising
-			- cross-attention to apply conditioning (in the U-Net)
-				- conditioning is in a single vector $C$
-	- diffusion transformers (DiT)
-		- conditioning is used to predict scale and shift (similar to StyleGAN)
-	- 2D → 3D latent space
-		- denoiser for video gets very computationally intensive if we want to attend everywhere
-		- instead, we consider separate spatial and temporal layers
-	- why it changes everything
-		- GAN worked only on datasets with limited diversity
-		- fine-grained control with text
-		- we have a general-purpose image prior
-			- we can start with pretrained large models and use transfer learning for specific tasks
-			- one training of a large model costs 600 000 euros
-	- how can we reuse a pretrained diffusion model so that we can condition using spatial data (a sketch…)
-		- how to fit all the information in a single vector $C$
-		- ControlNet – encoder with skip connections to the U-Net
-		- impainting
-			- we want to put a specific object in the image
-			- idea: we add noise to the whole image and let it generate with a conditioning
-			- to make sure that the rest of the image does not change, we can replace the rest of the image with the original image (+ noise) in every step of denoising
-				- we use a mask for that
-	- (other slides skipped)
+
+### Diffusion models
+
+- we address generation as a denoising problem
+- similar to GAN, we start with a distribution easy to sample (Gaussian) and get a distribution we want (but we do it in multiple steps)
+- we estimate mean of the next distribution
+- we can combine multiple steps of adding noise just into one step
+- instead of predicting the image, we predict the noise
+	- it's easier as the variance is fixed (we can focus on predicting mean)
+	- also, the image changes over time – the noise does not (?)
+- we can use simpler loss formula even though there's no theoretical explanation for it
+	- $L_t=\mathbb E_{t\sim[1,T],x_0,\epsilon_t}[\|\epsilon_t-\epsilon_\theta(x_t,t)\|^2]$
+- training and sampling algorithms
+	- we want the results to follow a distribution → we add some randomness according to the variance
+- we want the distribution to be conditional
+	- first approach: classifier guidance
+		- we have a diffusion model $P(x)$
+		- we have a classifier $P(y\mid x)$
+		- we want to be able to sample $P(x\mid y)$
+		- idea: instead of just denoising, we also move in the direction that makes the probability $P(y\mid x)$ higher
+		- but we need to compute the gradient of the classifier (using backpropagation) – high computational cost
+	- second approach: classifier-free guidance
+		- the noise model is trained with $y$ in mind
+		- we also used unconditioned denoiser – balance between quality and fidelity
+- latent diffusion models
+	- problem: to generate high-resolution images, we need to start from high-resolution noise and it takes many denoising steps (→ computational cost)
+		- we could use distillation
+		- or we can project the images in a discrete *latent space*
+	- let's have an encoder and a decoder
+	- we consider a diffusion model in the latent space
+		- U-Net used for denoising
+		- cross-attention to apply conditioning (in the U-Net)
+			- conditioning is in a single vector $C$
+- diffusion transformers (DiT)
+	- conditioning is used to predict scale and shift (similar to StyleGAN)
+- 2D → 3D latent space
+	- denoiser for video gets very computationally intensive if we want to attend everywhere
+	- instead, we consider separate spatial and temporal layers
+- why it changes everything
+	- GAN worked only on datasets with limited diversity
+	- fine-grained control with text
+	- we have a general-purpose image prior
+		- we can start with pretrained large models and use transfer learning for specific tasks
+		- one training of a large model costs 600 000 euros
+- how can we reuse a pretrained diffusion model so that we can condition using spatial data (a sketch…)
+	- how to fit all the information in a single vector $C$
+	- ControlNet – encoder with skip connections to the U-Net
+	- impainting
+		- we want to put a specific object in the image
+		- idea: we add noise to the whole image and let it generate with a conditioning
+		- to make sure that the rest of the image does not change, we can replace the rest of the image with the original image (+ noise) in every step of denoising
+			- we use a mask for that
+- (other slides skipped)
 - personalized text-to-image
 	- example: I want to generate something based on this specific (real) statue
 	- how can I describe this specific object using an embedding vector?
