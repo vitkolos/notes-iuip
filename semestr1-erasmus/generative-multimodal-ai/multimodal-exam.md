@@ -175,6 +175,7 @@
 	- probabilistic sequential modeling & inference
 		- we can use a RNN
 		- the sampling occurs sequentially and cannot be parallelized
+		- → dynamical VAEs (DVAEs)
 - generative adversarial network (GAN)
 	- dataset (real samples), generator (fake samples)
 	- generator $G_\theta$ takes a random noise $z$ as input and generates an image $x=G_\theta(z)$
@@ -192,19 +193,136 @@
 		- weak discriminator → generator may produce non-realistic samples
 		- strong discriminator → generator cannot learn (if the generator is always caught, it does not know how to improve) or tends to replicate the training set (overfitting)
 		- mode collapse – the model does not generate the diversity of the dataset and focuses on one thing instead (e.g. generates just ones from MNIST)
+	- if we consider two different “Dirac distributions” (with 1 at a single point), their JS divergence is constant and does not reflect the distance of the two points → bad
+		- solution: Wasserstein distance
 	- avoiding mode collapse: Wasserstein GAN
 		- based on Wasserstein distance – “minimum cost of transporting mass from one distribution to another”
 			- $W(p,q)=\inf_{\gamma\in\Gamma(p,q)}\mathbb E_{(x,y)\sim\gamma}[\|x-y\|]$
 			- where $\Gamma$ is the set of all joint distributions
 		- properties of $W$
-			- satisfies the triangle inequality and is sensitive to the geometry of the underlying space
+			- it is a real distance, not a divergence – it satisfies the triangle inequality and is sensitive to the geometry of the underlying space
 			- it is useful for comparing distributions that are not well-aligned or have different supports (as opposite to the JS divergence)
 			- it's hard to compute efficiently (due to the infimum) in high-dim spaces
 			- but it can be written as $\max_{\|f\|_L\leq 1}\set{\mathbb E_{x\sim p}[f(x)]-\mathbb E_{y\sim q}[f(y)]}$
 		- WGANs use the Wasserstein distance instead of the JS divergence
 			- they use a critic $C_\phi$ (instead of the discriminator) which is trained to approximate $W$
 			- they use weight clipping to enforce a Lipschitz constraint on the critic
-			- it's not a competition anymore – the critic is trained to approximate the Wasserstein distance, while the generator is trained to minimize it
+			- it's not a competition anymore
+				- the critic is trained to approximate the Wasserstein distance
+				- the generator is trained to minimize it
+
+## Evaluation of Generative Models
+
+- it's important but hard to evaluate the quality of generated samples
+	- we need to know how well the models perform
+	- but they can produce a wide range of outputs → it's hard to define a single evaluation metric capturing all aspects of quality
+	- also, evaluation metrics may not align with human perception of quality
+- objective metrics
+	- precision, recall (for classification)
+	- Inception Score (IS)
+		- measures *diversity* and *quality* of the data
+		- based on the Inception classification model
+		- $IS(G_\theta)=\exp(\mathbb E_{x\sim p_\theta(x)}[D_{KL}(p(y|x)\|\int p(y|x)p(x)dx)])$
+			- $p(y|x)$ is the class distribution predicted by Inception
+		- the higher the better
+	- Fréchet Inception Distance
+		- measures the Wasserstein distance between the distribution of generated images and the distribution of real images in the feature space of a pretrained Inception model
+			- extracts features from (provided) real images and generated images using a pretrained Inception model
+			- FID score is computed based on the means and covariances of the features
+				- $FID(G_\theta)=\|\mu_r-\mu_g\|^2+\mathrm{Tr}(\Sigma_r+\Sigma_g-2\sqrt{\Sigma_r\Sigma_g})$
+		- assumes Gaussian distributions
+	- comparison of IS and FID
+		- FID is more robust to mode collapse
+		- both rely on Inception model trained on ImageNet
+			- trained for classification, might not reflect all the aspects of the image quality
+			- the model might not well reflect the evaluated data
+				- example: spectrograms
+			- both scores depend on the pretrained model we choose
+		- not suitable for non-image data
+		- don't provide insights into the diversity or realism of generated samples
+- subjective evaluation
+	- user studies and visual inspection
+	- provide valuable insights
+	- costly, subjective :)
+	- might need specific user expertise
+- hybrid alternative – mean opinion score
+	- crowd-source evaluation technique where human evaluators rate the quality of generated samples on a scale (e.g. 1 to 5)
+	- MOS network trained to predict the score
+		- so the network is trained to estimate subjective criteria
+		- can be used for non-image data
+
+## Audio
+
+- introduction
+	- we sample the signal using frequency $F_s$
+	- Nyquist-Shannon sampling theorem: we can only reconstruct content corresponding to frequencies $\lt F_s/2$
+	- telephone voice effect – losing high-frequency details
+		- speech signal can contain energy up to 20 kHz
+		- most of energy within 0.3–3 kHz → phone standards sample at 8 kHz
+	- discrete Fourier transform
+		- outputs sequence of numbers describing the magnitude and phase at each frequency bin
+		- computed using FFT
+		- but energy for frequencies changes over time
+	- short-time Fourier transform (STFT)
+		- sliding window with a kernel
+		- apply DFT to each segment
+		- the modulus
+	- mel frequency scale
+		- better matches human perception (compared to the linear scale)
+		- mel-frequency cepstral coefficients (MFCC)
+			- popular audio representations
+		- usual pipeline to get MFCC: raw data → STFT → Mel scale → log → discrete cosine transform
+- audio representations based on self-supervised learning
+	- sometimes, part of the representation is not learned (classical audio representations are used)
+		- using learned representations may be better – they can be taylored to specific data or have more general and reusable representations
+	- wav2vec 2.0
+		- masked speech in latent space (approach similar to masked language modeling)
+		- architecture similar to STFT, but the transformation is learnt
+			- CNN (to get latent representations based on raw waveform) + Transformer encoder (to get contextualized representations)
+		- contrastive loss to train using masked prediction
+			- some latent representations are masked
+			- did the model predict the true latent? – cosine similarity
+	- hidden-unit BERT (HuBERT)
+		- extension of wav2vec 2.0
+		- learns from unlabeled audio, predicts masked portions like BERT
+		- idea: use clustering to generate pseudo-labels for audio segments, then train a model to predict those labels
+			- pseudo-labels initialized using MFCC (and k-means)
+		- fine-tuned for automatic speech recognition (ASR)
+	- WavLM
+		- extension of HuBERT
+		- more robust learning objective, more data
+		- idea: incorporate speech denoising as well as time/channel-wise masking in pre-training to improve robustness and generalization
+		- strong performance on both speech recognition and speaker-related tasks (e.g. speaker verification, diarization = partitioning of audio according to speakers)
+		- gated relative position bias
+			- relative position bias – attention is affected by the distance between tokens (tokens close to each other should attend more)
+			- learnable gate controls the influence of the position bias
+
+---
+
+- end-to-end approaches (audio → audio)
+	- WaveNet
+		- capturing long-range dependencies in an efficient way
+		- unconditioned
+	- SampleRNN
+		- upper tiers summarize longer contexts
+		- lower tiers generate fine-grained details
+	- it's very difficult to capture very long dependencies (like 60 seconds)
+- generating audio from intermediate representations
+	- STFT is invertible but the reconstruction of the audio signal from the spectrogram is not immediate (we used modulus)
+	- we need the phase of the signal
+	- classical approach: Griffin-Lim
+	- learning-based approach: HiFi-GAN
+	- Tacotron
+		- end-to-end TTS model
+		- maps character or phoneme sequences to Mel-spectrograms
+		- no need for hand-crafted linguistic features
+		- typically used together with WaveNet or HiFi-GAN to generate the final waveform from the predicted spectrogram
+	- AnCoGen
+		- masked-modeling-based model
+		- idea: map the spectrogram to attributes (pitch, SNR, reverbation, content, …)
+		- ratio – used for masking
+			- (0,1) → audio non-masked, attributes masked
+			- masking can be partial (e.g. 0.7)
 
 ## Diffusion
 
@@ -267,153 +385,82 @@
 ## Representation Learning
 
 - types of learning
-	- supervised
-	- unsupervised
+	- supervised – training data + desired outputs (labels)
+	- unsupervised – unlabeled data
 	- semi-supervised – training data + a few desired outputs
-- unsupervised learning
-	- useful if we don't have enough annotations
-	- initial approach: pretraining (e.g. ImageNet) & fine-tuning
-		- to fine-tune, we drop the last weight matrix with dimension $f\times 1000$ and replace it with a matrix with dimension $f\times c$ where $c$ is the desired number of classes ($f$ … number of features)
+- unsupervised/representation learning – useful if we don't have enough annotations
+- initial approach: pretraining (e.g. ImageNet) & fine-tuning
+	- to fine-tune, we drop the last weight matrix with dimension $f\times 1000$ and replace it with a matrix with dimension $f\times c$ where $c$ is the desired number of classes ($f$ … number of features)
 	- problems
 		- not optimal for every problem (e.g. video, medical)
 		- humans don't need ImageNet pretraining
 	- solution
 		- replace ImageNet pre-training by an unsupervised training (representation learning)
-- autoencoders
-	- input data $x$ → encoder → features $z$ → decoder → reconstructed input data $\hat x$
-		- $z$ typically has less features than $x$
-		- we minimize $\|x-\hat x\|^2$
-	- the encoder learns the representation
-- pretext task
-	- we don't care about this specific task but it helps the model to learn the representations
-	- e.g. relative patch prediction
-		- but it's not that easy
-			- color distortion helps the model cheat the task
-			- solution: drop two channels, replace by Gaussian noise
-	- another task: solving jigsaw puzzles
-		- to make it easier, we can subset 1000 permutations and only train the classifier on them
-	- other tasks
-		- colorization
-		- rotation prediction
-		- super-resolution
+- generation-based methods
+	- autoencoders
+		- train such features that can be used to reconstruct original data
+		- input data $x$ → encoder → features $z$ → decoder → reconstructed input data $\hat x$
+			- $z$ typically has less features than $x$
+			- we minimize $\|x-\hat x\|^2$
+		- the encoder learns the representation
+	- if we have a large unlabeled dataset and a small annotated dataset, we can use an encoder or a GAN to initialize a supervised model
+	- limitations
+		- features not trained to discriminate
+		- limited performance
+		- additional computation cost (decoder or generator)
+	- solution: self-supervised learning (SSL)
 - self-supervised learning – supervision comes from the data (no need to annotate)
-- contrastive learning
-	- goal: to learn features that are discriminative among instances
-	- but we would need too many classes (one for each instance in the training dataset)
-		- non-parametric softmax & memory bank
-	- SimCLR
-		- we have two images $A,B$, apply two random transformations to each of them
-		- so we get four images $A_1,A_2,B_1,B_2$, we want to maximize agreement between the ones based on the same image (e.g. $A_1,A_2$) and minimize agreement between the ones based on different images (e.g. $A_1,B_1$)
-	- MoCo
-		- instead of end-to-end learning or memory bank, we use momentum encoder
-		- we mix the previous parameters of the network with the current one
-	- Dino
-		- vision transformer (ViT)
-			- linear projection of flattened 16×16 patches + *learned* position embedding
-			- additional classifier token
-		- two networks: student and teacher
-- what is a good representation?
-	- we need robustness
-		- appearance changes due to different sensors – infrared vs. normal camera
-		- use of synthetic data
-		- unseen scenarios (e.g. natural disasters)
-		- biased datasets
-- discrepancy-based methods
+	- pretext task 
+		- we don't care about this specific task but it helps the model to learn the representations
+		- e.g. relative patch prediction
+			- but it's not that easy
+				- color distortion helps the model cheat the task
+				- solution: drop two channels, replace by Gaussian noise
+		- another task: solving jigsaw puzzles
+			- to make it easier, we can subset 1000 permutations and only train the classifier on them
+		- other tasks
+			- colorization
+			- rotation prediction
+			- super-resolution
+	- contrastive learning
+		- goal: to learn features that are discriminative among instances
+		- but we would need too many classes (one for each instance in the training dataset) – we need non-parametric softmax & memory bank
+			- memory bank contains feature representations of all images in the dataset
+		- invariant information clustering – maximizing the mutual information between encoded variables
+		- SimCLR
+			- we have two images $A,B$, apply two random transformations to each of them
+			- so we get four images $A_1,A_2,B_1,B_2$, we want to maximize agreement between the ones based on the same image (e.g. $A_1,A_2$) and minimize agreement between the ones based on different images (e.g. $A_1,B_1$)
+			- agreement defined as cosine similarity (pairwise)
+		- Moco
+			- instead of end-to-end learning or memory bank, we use momentum encoder
+			- we mix the previous parameters of the network with the current one
+		- SimSiam
+		- Dino
+			- vision transformer (ViT)
+				- linear projection of flattened 16×16 patches + *learned* position embedding
+				- additional classifier token
+			- two networks: student and teacher
+			- momentum teacher as Moco
+			- segmentation emerges
+- what is a good representation? – we need robustness (to handle domain shift)
+	- appearance changes due to different sensors – infrared vs. normal camera
+	- use of synthetic data – synthetic datasets may be cheaper to make
+	- unseen scenarios (e.g. natural disasters)
+	- biased datasets
+- unsupervised domain adaptation (DA)
 	- source and target distributions, we want them to have similar representations
-	- MMD
-	- alignment layers – batch normalization
-	- adversarial-based methods
-	- adaptation through translation
-- Wasserstein GANs
-	- in our example, the JS divergence is constant → bad
-	- idea: Wasserstein (earth mover's) distance
-		- it is a real distance, not a divergence
-	- in high-dimensional spaces, it is more efficient to compute the dual problem
-	- WGANs have a critic instead of a discriminator
-		- not a competition anymore
-		- the critic is trained to approximate the Wasserstein distance
-		- the generator is trained to minimize this distance
-
-## Evaluation of Generative Models
-
-- objective metrics
-	- Inception Score (IS)
-		- measures *diversity* and *quality* of the data
-		- it uses the Inception classification model
-	- Fréchet Inception Distance
-		- measures the Wasserstein distance
-		- in the feature space
-		- assumes Gaussian distributions
-	- limitations of IS, FID
-		- rely on Inception model trained on ImageNet
-			- trained for classification, might not reflect all the aspects of the image quality
-			- the model might not well reflect the evaluated data
-				- example: spectrograms
-- subjective evaluation
-	- user studies and visual inspection
-	- provide valuable insights
-	- costly
-- hybrid alternative – mean opinion score
-	- crowd-source evaluation technique where human evaluators rate the quality of generated samples on a scale (e.g. 1 to 5)
-	- MOS network trained to predict the score
-
-## Audio
-
-- introduction
-	- we sample the signal using frequency $F_s$
-	- Nyquist-Shannon sampling theorem: we can only reconstruct frequencies $\lt F_s/2$
-	- discrete Fourier transform
-		- but energy for frequencies changes over time
-	- short-time Fourier transform (STFT)
-		- sliding window with a kernel
-		- apply DFT to each segment
-		- the modulus
-	- mel frequency scale
-		- better matches human perception (compared to the linear scale)
-		- mel-frequency cepstral coefficients (MFCC)
-- audio representations based on self-supervised learning
-	- sometimes, part of the representation is not learned (classical audio representations are used)
-	- wav2vec 2.0
-		- masked speech in latent space
-		- architecture similar to STFT, but the transformation is learnt
-	- hidden-unit BERT (HuBERT)
-		- extension of wav2vec 2.0
-		- learns from unlabeled audio
-		- idea: use clustering to generate pseudo-labels for audio segments, then train a model to predict those labels
-	- WavLM
-		- extension of HuBERT
-		- more robust learning objective, more data
-		- relative position bias – attention is affected by the distance between tokens (tokens close to each other should attend more)
-		- gated relative position bias
-	- summary
-		- self-supervised learning (SSL)
-		- architecture: CNN + transformer encoder
-		- loss: contrastive or cross-entropy
-		- use of classical features (like MFCC) when needed
-- end-to-end approaches (audio → audio)
-	- WaveNet
-		- capturing long-range dependencies in an efficient way
-		- unconditioned
-	- SampleRNN
-		- upper tiers summarize longer contexts
-		- lower tiers generate fine-grained details
-	- it's very difficult to capture very long dependencies (like 60 seconds)
-- generating audio from intermediate representations
-	- STFT is invertible but the reconstruction of the audio signal from the spectrogram is not immediate (we used modulus)
-	- we need the phase of the signal
-	- classical approach: Griffin-Lim
-	- learning-based approach: HiFi-GAN
-	- Tacotron
-		- end-to-end TTS model
-		- maps character or phoneme sequences to Mel-spectrograms
-		- no need for hand-crafted linguistic features
-		- typically used together with WaveNet or HiFi-GAN to generate the final waveform from the predicted spectrogram
-	- AnCoGen
-		- masked-modeling-based model
-		- idea: map the spectrogram to attributes (pitch, SNR, reverbation, content, …)
-		- ratio – used for masking
-			- (0,1) → audio non-masked, attributes masked
-			- masking can be partial (e.g. 0.7)
+	- e.g. we trained the model labeled photos, we want it to handle (unlabeled) cartoon images
+	- approaches
+		- discrepancy-based method
+			- use maximum mean discrepancy (MMD) to align the distributions
+		- alignment layers
+			- idea: learn domain-agnostic representation by adjusting the network architecture
+			- batch normalization
+		- adversarial-based methods
+			- employ an adversarial objective to ensure that the network cannot distinguish between the source and target domains
+		- adaptation through translation
+			- train model which can translate between domains
+- in some contexts, discrete representations may be useful
 
 ## Image Generation
 
