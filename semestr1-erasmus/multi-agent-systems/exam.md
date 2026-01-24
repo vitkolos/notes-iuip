@@ -530,6 +530,7 @@
 	- if agents don't know skills of others → ContractNet
 	- if agents know skills of others and can reason about them → dependence-based coalitions (DBC)
 - dependence-based coalitions
+	- Castelfranchi
 	- goal-dependence
 		- agent $i$ depends on agent $j$ for a given goal $g$ w.r.t. a set of plans $P$ if…
 			- $i$ has $g$ in its set of goals and has no feasible plan achieving $g$
