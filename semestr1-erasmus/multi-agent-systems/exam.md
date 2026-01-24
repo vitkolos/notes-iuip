@@ -503,7 +503,7 @@
 	- self-interested vs. benevolent agents
 		- problem-solving in benevolent system … cooperative distributed problem solving
 		- self-interested agents → game theory
-	- are the goals compatible, resources sufficient, and skills (of individual robots) sufficient?
+	- are the goals compatible, resources sufficient, and skills (of individual robots) sufficient? (as described by Ferber)
 		- compatible goals & sufficient resources & sufficient skills → disinterest, independance
 		- compatible goals (but missing skills or resources or both) → cooperation
 		- incompatible goals → antagonism
