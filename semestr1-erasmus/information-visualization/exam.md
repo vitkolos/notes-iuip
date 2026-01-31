@@ -149,12 +149,12 @@
 ## Networks
 
 - graph, network: definitions, metrics, tasks
-	 - graph = vertices, edges (can be directed)
-	 - network = graph with attributes on the vertices and/or the edges
-	 - graph theory provides metrics
-		 - vertices – degree, centrality
-		 - (sub)graphs – diameter, density, connected components
-		 - we can also compute metrics from the attributes (cost of a path if we have valued edges)
+	- graph = vertices, edges (can be directed)
+	- network = graph with attributes on the vertices and/or the edges
+	- graph theory provides metrics
+		- vertices – degree, centrality
+		- (sub)graphs – diameter, density, connected components
+		- we can also compute metrics from the attributes (cost of a path if we have valued edges)
 	- tasks
 		- vertices – finding neighbors, degree
 		- paths – finding shortest paths, cycles
