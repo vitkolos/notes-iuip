@@ -1,0 +1,63 @@
+# Lecture
+
+- online in-class test: 20.–24. 4.
+- organization
+	- practicals (40 \%)
+		- homework (traditional or trial alternative): 10 points
+		- quizzes: 5×5 = 25 points
+			- in Moodle throughout the semester
+		- project (traditional or trial alternative): 15 points
+			- usually, students propose their own topics
+			- with a presentation
+		- we can even get some bonus point for cooperation during practicals
+	- exam (60 \%)
+		- online in-class test (during lab practical) 15 \%
+		- final exam (written and oral part) 45 \%
+- traditional version: no AI, individual
+	- traditional project – can be in teams
+- trial alternative (for project+homework)
+	- can be solved individually or in small teams involving two or (three) students
+	- AI tools allowed
+		- if used, test at least two and compare their benefits/drawbacks
+	- involves two presentation
+		- traditional one
+		- software-oriented one – instead of the homework!
+	- agreement with the publication of the project is necessary
+
+## Introduction
+
+- data mining from databases
+	- non-trivial process of gaining implicit, previously not known, but potentially useful information from the data
+	- originated in the 90s (there was not enough data before)
+	- knowledge discovery in databases (KDD)
+	- data mining (DM) – business intelligence (BI) and big data
+- foundations
+	- artificial intelligence, machine learning methods
+	- database systems (to store large data sets), information retrieval
+	- statistics – modeling and analysis of dependencies found in the data
+	- \+ how to use the results for decision-making
+- data mining is an interactive and iterative process
+	- data preparation
+		- we build one table containing all the relevant data
+		- selection
+		- preprocessing
+		- transformation
+	- the actual “data mining” – we find *patterns* in the data
+	- interpretation – found knowledge shall be evaluated from the point of view of the end user (manager, customer, etc.)
+- PoV of a manager
+	- there's a topical issue
+	- goal of the data mining process is to obtain as much information as possible that is relevant to solving the problem
+	- example
+		- find groups of customers of a department store to offer special services to
+		- the found groups can be interpreted as segments in the given market area
+	- steps
+		- form a team: data analyst, domain expert, expert on databases, …
+		- specify the problem
+		- obtain all data available
+			- we should also obtain the external data describing the environment of the analyzed processes (time period of the year, advertising, political issues, weather, …)
+		- select the methods
+			- clustering, classification, exploratory data analysis, association rules, decision trees, genetic algorithms, Bayesian networks, neural networks
+			- visualization methods – helpful for presentation
+		- preprocess the data
+		- mine the data
+		- interpret the results
