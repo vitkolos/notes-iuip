@@ -1,0 +1,52 @@
+# Lecture
+
+- rational agent
+	- agent – perceives environment through sensors, acts upon environment through actuators
+	- rational agent maximizes its expected performance measure
+	- in AI 1 we used logical approach; we ignored uncertainty
+		- including interface between agent and environment
+		- we also ignored self-improvement capabilities
+- uncertainty in pure logical approach
+	- belief states
+		- instead of having *state*, we have a belief state (set of all possibilities that can be true)
+	- drawbacks
+		- logical agent must consider every logically possible explanation for the observations (no matter how unlikely they are) → large and complex representations
+		- correct contingent plan must consider arbitrary likely contingencies (?)
+		- sometimes there's no plan which would guarantee the desired result (but the agent still has to act somehow)
+	- practical problems (in medicine)
+		- laziness – it is too much work to list the complete set of antecedents or consequents and too hard to use such rules
+		- theoretical ignorance – medical science has no complete theory for the domain
+		- practical ignorance – even if we know all the rules, we may not be able run all the necessary tests
+	- that's why we'll use another approach – probability theory
+- probability
+	- conditional probability
+		- $P(a\mid b)=\frac{P(a\land b)}{P(b)}$ whenever $P(b)\gt 0$
+	- in a factored representation, a possible world is represented by a set of variable/value pairs
+		- every variable has a domain
+		- a possible world is fully identified by values of all random variables
+	- probability of all possible worlds can be represented using a table called a *full joint probability distribution*
+	- $\textbf{P}(\mathrm{Cavity})=\braket{0.2,0.8}$
+		- Cavity = true → 0.2
+		- Cavity = false → 0.8
+	- inclusion-exclusion principle
+		- $P(a\lor b)=P(a)+P(b)-P(a\land b)$
+	- we can do inference by summing up certain cells of the full joint distribution table
+	- using normalization constant $\alpha$ may be helpful
+	- drawbacks of inference by enumeration
+		- worst-case complexity $O(d^n)$ where $d$ is number of values in domains of each variable
+	- adding another variable – weather
+		- does not influence tooth problems (is independent) → we add another table
+	- also, we don't need to store the entire table (probabilities add up to one)
+- usually, we are interested in the diagnostic direction P(disease | symptoms)
+	- but we know P(disease), P(symptoms), and P(symptoms | disease)
+	- we use Bayes' rule to get the diagnostic direction
+	- it may be better not to store the diagnostic direction as the original probabilities (we base the calculation upon) may change
+- naive Bayes model
+	- generally, we can exploit conditional independence by ordering the variables properly
+	- naive Bayes model – we assume independence
+		- $P(\text{Cause}, \text{Effect}_1, \dots, \text{Effect}_n) = P(\text{Cause})\prod_iP(\text{Effect}_i\mid\text{Cause})$
+- Wumpus world
+	- we consider worlds with $n$ holes for every possible $n$
+		- we know that probability of a hole is 0.2
+		- (is this useful???)
+	- in the end, we get $P(P_{1,3}\mid \mathrm{known},b)=\alpha'P(P_{1,3})\sum_{\mathrm{fringe}}P(b\mid P_{1,3},\mathrm{known},\mathrm{fringe})P(\mathrm{fringe})$
