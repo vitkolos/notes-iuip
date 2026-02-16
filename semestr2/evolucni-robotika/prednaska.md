@@ -1,0 +1,102 @@
+# Přednáška
+
+- cvičení
+	- jeden domácí úkol → 10 bodů
+	- dva online kvízy s neomezeným časem (budou na ně dva týdny) → 10 bodů
+	- na konci zápočtový projekt – navrhnout řízení pro virtuálního robota (ale mohl by být i hardwarový, akorát tam se nedá dělat evoluce) → 15 bodů
+- závěrečná zkouška (60 %\)
+	- čtyři otázky, písemná odpověď, společně to projdeme
+- historie
+	- automatizace už ve starověkém Řecku
+	- da Vinci: mechanický rytíř
+	- Descartes
+	- biskup Albertus Magnus
+	- mechanická kachna
+	- R.U.R.
+	- robot pro světovou výstavu v New Yorku, 1939
+	- manipulátory
+	- Shakey
+	- Khepera – dá se použít i k hardwarové evoluci
+		- e-Puck – varianta Khepery
+- simulátory
+	- Webots
+		- www.cyberbotics.com
+		- simuluje mobilní roboty, umí fyziku (Open Dynamic Engine)
+	- CoppeliaSim
+		- www.coppeliarobotics.com
+- soutěže
+	- Robocup – cílem je v roce 2050 sestavit robotické mužstvo, které porazí mistry světa ve fotbale
+	- Istrobot
+	- Eurobot
+- návrh robota
+	- hardware – mechatronika (mechanika a elektronika)
+	- řídicí software
+- evoluční robotika
+	- chceme, aby robot řešil úlohu
+	- dochází k tomu pomocí selektivní reprodukce (na základě interakce s prostředím)
+	- používají se neuronové sítě, přírodou inspirovaný design, …
+- jak vypadá evoluční vývoj
+	- máme robota, ten se pohybuje v nějakém světě
+	- definujeme úlohu, např. má hledat nějaký objekt v tom světě
+	- jeho řízení zakódujeme do chromozomů – jeden chromozom kóduje celý řídicí systém
+	- tak jsme dostali nultou generaci
+	- vyzkoušíme každý chromozom, ohodnotíme je fitness funkcí (podle toho, jakých dosahovali výsledků)
+	- přechod k další generaci
+		- selekce (vybereme ty nejlepší)
+		- reprodukce (např. křížení)
+		- mutace
+- učení vs. evoluce
+	- učení je během života robota
+	- evoluce je mezi generacemi
+- behavior-based robotics (robotika založená na chování)
+	- robot má sadu několika základních chování, ta mezi sebou interagují
+		- příklady chování: plním konkrétní úkol, hledám potravu, …
+		- dochází mi energie → musím hledat potravu (na úkor plnění úkolu)
+	- chování spolu můžou soutěžit
+		- kompetitivní koordinace – jeho řízení vítězí → subsumption method
+		- kooperativní koordinace – jednotlivá řízení přispívají k celkovému výsledku
+	- vnímání je těsně navázané na akce
+	- hierarchie chování
+- robotické učení
+	- řídicí systém se učí pomocí neúplných dat a generalizuje
+	- typicky se učí zobrazení, které mapuje vstupy senzorů na výstupy motorů
+- umělý život
+	- simulace světa, kde se pohybuje více organismů
+	- cílem je vyvinout systém, který se dokáže přizpůsobit změnám prostředí
+- k čemu by to mohlo být dobré
+	- evoluce by nám mohla pomoct navrhnout řízení i morfologii robota, aby mohl řešit úlohu
+	- můžeme se inspirovat přírodou a naopak – možná nějaké takové mechanismy zpětně objevíme v přírodě
+- přístupy k návrhu
+	- klasický – perception, planning, execution
+	- behavior-based – rozdělení do jednotlivých základních chování
+		- ale může se stát, že základní chování bude složitější než původní chování
+	- evoluční – necháme to na evoluci
+- chceme najít předmět v bludišti a zůstat tam
+	- je snadné určit jednotlivé úlohy, které robot musí plnit, ale je těžké je zkombinovat
+	- evoluční robotika tohle řeší
+- biologie
+	- přirozená evoluce – jak je možné, že se vyvinula taková spousta úspěšných forem života?
+	- chceme vytvořit podobně úspěšnou umělou evoluci
+	- v přírodě funguje jedno kritérium – přežití druhu
+- bootstrap problém (problém inicializace)
+	- když náhodně vygenerujeme řídicí systémy, neřeší problém → skóre 0
+	- evoluce se nemá čeho chytit
+	- možná řešení
+		- inkrementální evoluce
+			- začneme s jednodušší úlohou, postupně přidáváme obtížnost, až se dostaneme k reálné úloze
+			- je jednodušší upravovat výběrové kritérium (fitness funkci) než navrhovat přímo řízení
+		- koevoluce
+			- např. dravec a kořist
+			- dravec se snaží ulovit kořist, kořist se snaží utéct před dravcem
+			- vlastně závody ve zbrojení
+			- neměníme kritérium, ale stejně dochází k postupnému zlepšování
+		- celoživotní učení
+			- jedinec umí využívat senzorické vjemy, učí se, adaptuje svoje řízení
+			- příklad: dvě neuronové sítě v robotovi, jedna předpovídá výsledky té druhé (?)
+- jak dobře se organismus může vyvíjet? (přizpůsobovat změnám prostředí)
+	- genotyp – množina dědičných charakteristik
+	- fenotyp – konkrétní realizace genotypu ve formě chování
+		- na základě konkrétního prostředí
+	- tzn. prostředí ovlivňuje vývoj konkrétních znaků (tedy jak se genotyp zobrazí na fenotyp)
+	- v evoluční robotice je problém zobrazení z genotypu na fenotyp problémem reprezentace
+	- v přirozené evoluci se to zobrazení evolučně vyvíjí, v umělé evoluci to obvykle zadává autor experimentu
