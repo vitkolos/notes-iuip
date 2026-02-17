@@ -1,0 +1,51 @@
+# Přednáška
+
+- neuronová síť je model popisující výpočet výstupů na základě vstupů
+	- vrací pravděpodobnostní distribuci
+- https://ufal.mff.cuni.cz/courses/npfl138/2526-summer
+- když se nám nedaří vyřešit úlohu, potřebujeme prodloužit termín apod., tak můžeme napsat na Piazzu
+	- očekává se, že s úlohami budeme mít potíže – to je to učení, že jo
+	- jsou připravení kdykoliv nám poradit, navést nás
+- když vyřešíme všechny úlohy, tak nemusíme na zkoušku
+	- ale možná je jednodušší se naučit na zkoušku
+- konzultace jsou další možnost, jak získat zpětnou vazbu
+- self-information
+	- míra překvapení, když se dozvíme hodnotu náhodné veličiny (když ji samplujeme)
+	- měla by být nulová pro jevy s pravděpodobností 1
+	- méně pravděpodobné jevy by měly mít větší míru překvapení
+	- překvapení u nezávislých jevů by se mělo sčítat
+	- $I(x)=-\log P(x)$
+- rozšíříme to na celou náhodnou veličinu
+	- spočteme střední hodnotu self-information
+	- tak dostaneme (Shannonovu) entropii
+	- $H(P)=\mathbb E_{x\sim P}[I(x)]=-\mathbb E[\log P(x)]$
+	- „kolik budeme potřebovat komunikační kapacity, abychom dokázali přenést informace samplované z dané distribuce“
+	- pro $P(x)=0$ uvažujeme $P(x)\log P(x)=0$
+- cross-entropy (křížová entropie)
+	- $H(P,Q)=-\mathbb E_{x\sim P}[\log Q(x)]$
+	- Gibbsova nerovnost
+		- $H(P,Q)\geq H(P)$
+		- $H(P)=H(P,Q)\iff P=Q$
+	- cross-entropy není symetrická
+- Kullback-Leibler Divergence
+	- „relativní entropie“
+	- $D_{KL}(P\|Q)=H(P,Q)-H(P)=\mathbb E_{x\sim P}[\log P(x)-\log Q(x)]$
+	- taky není symetrická
+	- má nějakou horní mez – z té se dá někdy vykoukat, jak se model chová (že třeba vůbec netrénuje)
+- normální distribuce
+	- platí CLV (viz opilci před hospodou)
+	- princip maximální entropie
+		- když máme sadu omezujících podmínek a chceme řešení, které je co nejobecnější, tak to bude distribuce s největší entropií
+		- např. když známe část náhodného rozdělení a neznáme zbytek, tak nejobecnější je tu distribuci doplnit pomocí uniformní distribuce
+		- no a když známe střední hodnotu a rozptyl, tak ze spojitých distribucí je nejobecnější ta normální
+- strojové učení
+	- základní úlohy: klasifikace (u diskrétních veličin), regrese (u spojitých veličin)
+		- název *regrese* vychází z paperu *Regression Towards Mediocrity in Hereditary Stature*
+	- učení s učitelem, bez učitele, …
+	- datasety
+		- obrázkové: MNIST, CIFAR-10, CIFAR-100, ImageNet, ImageNet-ILSVRC, COCO (obsahuje segmentaci)
+		- řeč: TIMIT, CommonVoice
+		- text: Penn Treebank, Prague Dependency Treebank, Universal Dependencies
+- neuron
+	- aktivační funkce, která dostane součet vstupů a rozhodne, jaký bude výstup
+	- bias – hodnota, která na vstupu neuronu je pořád (dovolí mi posouvat, kdy k té aktivaci dojde)
