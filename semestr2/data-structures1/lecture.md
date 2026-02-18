@@ -63,7 +63,7 @@
 		- we can access an arbitrary cell
 	- numbers in cells $\leq  p(\mathrm{len}(I),\mathrm{max}(I))$
 		- $p$ … polynomial
-		- $I$ … instance (of the data structure?)
+		- $I$ … instance of the problem (= the input)
 	- instructions: store, arithmetical operations, logical operations, goto, memory allocator (allocates consecutive space)
 	- time … number of instructions
 	- space … number of cells used (including allocated empty space)
