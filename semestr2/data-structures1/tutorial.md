@@ -1,0 +1,25 @@
+# Tutorial
+
+- allowed containers: `std::vector` in C++, `[]` in Python
+- if we use C++, the datasets are 100× larger (to compensate for the slowness of Python)
+- we want to store a subset $S\subseteq\mathcal U$
+	- $|S|=n$
+	- we allocate an array of size $m=\Theta(n)$
+	- $M=\set{0,\dots,m-1}$
+	- idea: store value $x\in S$ at the index $h(x)$
+		- $h:\mathcal U\to M$
+	- collisions may occur (s.t. $h(x)=h(y)$)
+		- the simplest solution: linked list
+		- if we consider $m=\Theta(n)$ and a hashing function which spreads elements uniformly, the length of the lists will be constant *on average*
+- heap
+- analysis of Dijkstra using heap
+	- binary heap vs. $d$-regular heap
+	- how to select optimal $d$
+	- $O(m\log_d n+nd\log_d n)$
+		- two terms, one increases with $d$, the other decreases with $d$ increasing
+		- intuition: we need the two terms to be equal to get the minimal value
+	- so we use $d=\max{\set{2,\lceil m/n\rceil}}$
+	- does it help?
+		- for dense graphs, it helps
+		- by substitution, we get complexity $\frac{m\log n}{\log(m/n)}$
+		- if $m\geq n^{1+\varepsilon}$, then this equals $\frac{m\log n}{\log n^\varepsilon}=\frac1\varepsilon m=O(m)$
