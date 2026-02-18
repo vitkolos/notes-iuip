@@ -1,0 +1,88 @@
+# Lecture
+
+- https://ktiml.mff.cuni.cz/~gregor/ds1/
+- http://mj.ucw.cz/vyuka/dsnotes/
+
+## Introduction
+
+- data structures: data + operations (queries, updates)
+	- complexity depends on the specific implementation
+	- static or dynamic (does the data structure support updates?)
+- queue (FIFO)
+	- operations: enqueue(x), dequeue, isempty
+	- implementations
+		- (single) linked list with two pointers (head, tail)
+			- enqueue $\Theta(1)$
+			- dequeue $\Theta(1)$
+			- isempty $\Theta(1)$
+		- (rotating) array with two pointers
+			- it's useful for the tail pointer to point at the first free cell
+			- the queue can only store less elements than the capacity of the array
+			- again, constant complexities
+- note: when we use $\Theta$, we should make it clear if it relates to the implementation or to the operation in general (for any possible implementation)
+- set $S\subseteq\mathcal U$
+	- operations
+		- insert(x)
+		- delete(x)
+		- find(x)
+		- build($x_1,\dots,x_n)$ for distinct elements (can be faster than running insert $n$ times)
+	- implementations
+		- unsorted linked list
+			- we could assume $x\notin S$
+			- without this assumption, the complexity of insert is $O(n)$
+			- delete, find … $O(n)$
+			- build is also $O(n)$ (which is faster than repeating insert $n$ times)
+		- (rotating) array
+			- $O(n)$ all the way
+		- sorted array
+			- we need some linear order on the $\mathcal U$
+			- find … binary search, $O(\log n)$
+			- insert … $O(n)$ (we need to shift the elements)
+			- delete … $O(n)$ again
+			- build … $\Theta(n\log n)$
+		- BST (balanced search tree)
+			- we have tree property (elements in the left subtree are strictly smaller than the current node, similarly for the right subtree)
+			- insert, delete, find $O(\log n)$
+			- build $O(n \log n)$
+			- note: we could write thetas everywhere
+		- hashing
+			- we randomly choose a hashing function satisfying some statistical properties
+			- we get insert, delete, find in $O(1)$ but it is *expected time*
+			- build in $O(n)$
+- dictionary – like the set (but for each item, we have a pointer to the data)
+- multiset – set with counters (→ dictionary where the data is the number of occurences)
+- ordered set
+	- new operations: min, max
+		- linked list $O(n)$, array $O(n)$, sorted array $O(1)$, BST $O(\log n)$, hashing $O(n)$ (we need to go through the entire table)
+	- pred(x), succ(x)
+		- linked list $O(n)$, array $O(n)$, sorted array $O(\log n)$, BST $O(\log n)$, hashing $O(n)$
+- RAM (random access machine)
+	- potentially infinite memory organized into cells
+		- each is addressed by a natural number
+		- we keep natural numbers inside the cells (we need set an upper bound!)
+		- we can access an arbitrary cell
+	- numbers in cells $\leq  p(\mathrm{len}(I),\mathrm{max}(I))$
+		- $p$ … polynomial
+		- $I$ … instance (of the data structure?)
+	- instructions: store, arithmetical operations, logical operations, goto, memory allocator (allocates consecutive space)
+	- time … number of instructions
+	- space … number of cells used (including allocated empty space)
+- amortized complexity
+	- stretchable array
+		- usually append in constant time
+		- sometimes we need to reallocate the array (to a larger one)
+			- takes linear time
+		- worst-case complexity $O(n)$
+			- but such allocation does not happen often
+		- let's consider $n$ operations
+			- we consider $n$ such that $2^{k-1}\lt n\leq 2^{k}$
+			- we start with capacity 1
+			- total cost of reallocation (aggregated)
+				- $2^0+2^1+\dots+2^{k-1}=2^k-1=\Theta(n)$
+			- amortized cost $\Theta(1)$
+	- flexible array
+		- stack
+		- append(x), removelast
+		- shrink to $C/2$ if $n\lt C/2$
+			- this is problematic, we would get linear amortized complexity
+			- we should use $n\lt C/4$ instead
