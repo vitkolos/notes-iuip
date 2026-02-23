@@ -100,3 +100,122 @@
 	- tzn. prostředí ovlivňuje vývoj konkrétních znaků (tedy jak se genotyp zobrazí na fenotyp)
 	- v evoluční robotice je problém zobrazení z genotypu na fenotyp problémem reprezentace
 	- v přirozené evoluci se to zobrazení evolučně vyvíjí, v umělé evoluci to obvykle zadává autor experimentu
+- využití
+	- nemusíme navrhovat každý detail, něco za nás řeší evoluce
+	- může spolu interagovat biologie a robotika
+		- např. v rojové robotice
+	- evoluční biorobotika
+		- biorobotika – stavění modelů, které se podobají živým organismům (např. mečoun)
+		- pomocí evoluční robotiky se robot naučí řízení
+	- vývojová robotika
+		- jak se mládě vyvíjí v dospělce?
+		- mohl by se podobně vyvíjet robot?
+		- proces dospívání
+		- snažíme se vyvinout robota, který je schopný se doučit, dorůst
+	- evolučně-vývojová robotika (evo-devo-robot)
+		- zkušení jedinci můžou ovlivňovat méně zkušené
+		- v přírodě: postupná evoluce pohybu po souši – plazení, běh, létání
+		- robotické organismy z krychlí s klouby
+	- rojová robotika
+		- koordinace robotů ve skupině
+		- malé robotické moduly, které se dovedou poskládat dohromady
+	- měkká robotika
+		- zvednutí vajíčka pomocí (pod)tlaku vzduchu
+
+## Evoluční algoritmy
+
+- genetické algoritmy
+- populace umělých chromozomů se cyklicky podrobuje selektivní reprodukci, která upřednostňuje výkonnější jedince, a náhodným změnám
+- umělý chromozom (genotyp) = řetězec symbolů kódující vlastnosti jedince (fenotyp)
+	- může to být binární hodnota proměnné nebo posloupnost hodnot proměnných
+	- mnoho typů kódování (binární, Grayův kód, reálné hodnoty)
+		- Grayův kód – dvě čísla v posloupnosti se liší o jeden bit
+			- je jednoduché ho sestavit (opíšu v opačném pořadí, doplním o nuly a jedničky)
+			- příklady: 1, 0; 10, 00, 01, 11
+	- abecedy – např. binární, ternární, …
+- fitness funkce – kritérium výkonosti (zobrazení: genotyp → reálné číslo)
+- obecný algoritmus
+	- vytvoř populaci $N$ náhodně vygenerovaných chromozomů
+	- opakuj: 1) dekóduj všechny chromozomy a spočítej jejich fitness, 2) vytvoř novou populaci
+	- skončí, když se objeví hledaný jedinec (který plní úlohu) nebo když to trvá dlouho…
+- Hillclimber – gradientní algoritmus
+	- $N=1$
+	- novou populaci tvoříme tak, že zmutujeme chromozom a nahradíme jim ten původní, pokud má lepší fitness
+	- nemůže nastat zhoršení
+	- $\mu$ … pravděpodobnost mutace
+	- $p_k(\mu)$ … pravděpodobnost, že se počet jedniček zvýší z $k$ na $k+1$
+	- najde jenom lokální maximum
+	- možná řešení
+		- začít z různých pozic
+		- dovolit zhoršení fitness (simulované žíhání)
+- simulované žíhání
+	- velikost kroku i směr závisí na teplotě, která se postupně snižuje
+	- pravděpodobnost přijetí zhoršení fitness (= teplota) se s časem zmenšuje
+	- na začátku jsou kroky téměř náhodné
+	- po ochlazení v podstatě deterministické
+- jednoduchý genetický algoritmus (Goldberg)
+	- víc než 1 chromozom v populaci
+	- selektivní reprodukce, křížení, mutace
+- jednoduchá selekce
+	- čím lepší jedinec, tím více jeho kopií se může objevit v nové populace
+	- reprodukce ruletou
+		- každý jedinec dostane výseč kruhu úměrnou své fitness funkci (musí být nezáporná)
+	- problémy
+		- všichni mají podobnou fitness → náhodné prohledávání (nic moc se neděje)
+		- jeden jedinec (nebo dva) má obrovskou fitness → téměř všichni v populaci budou kopií toho stejného jedince
+	- řešení
+		- škálování – zvětšení nebo zmenšení rozdílů
+		- selekce podle pořadí (rank based) – nezáleží na konkrétní hodnotě fitness
+		- rank based s ořezáváním – nejlepších $M$ zkopírujeme $O$-krát, aby $N=M\times O$
+		- turnajová selekce – náhodně se vyberou dva jedinci, ten lepší jedinec s určitou pravděpodobností vyhraje a bude zkopírován (jinak ten druhý)
+	- elitismus – nejlepší jedinci se beze změny zkopírujou (abychom nepřišli o dosud nejlepší řešení)
+- křížení
+	- jedinci jsou náhodně spárováni a každý pár je s danou pravděpodobností zkřížen
+	- jednobodové nebo vícebodové křížení
+- mutace
+	- abychom měli možnost prohledat celý prostor
+	- aby nám algoritmus nekonvergoval příliš brzo
+	- s určitou pravděpodobností flipneme bit
+- nedeterminismus
+	- GA je nedeterministický, používá náhodné veličiny
+	- typicky se sleduje průměrná a maximální fitness, aby se GA mohl ve vhodnou chvíli zastavit
+	- GA se pouští opakovaně se stejnými nebo pozměněnými parametry
+- fitness krajina (fitness landscape)
+	- tvar fitness funkce – v mnohadimenzionálním prostoru
+	- chceme, aby se fitness postupně zvětšovala
+- schémata
+	- schéma – oproti chromozomu má jeho abecedu jeden prvek navíc (typicky hvězdičku)
+	- je to jakoby maska popisující víc chromozomů
+	- schéma s $r$ hvězdičkami reprezentuje $k^r$ řetězců ($r$ je velikost původní abecedy)
+	- každý řetězec délky $m$ je reprezentovaný $2^m$ schématy
+	- řád schématu – …
+	- kolik jedinců určených daným schématem bude v dané populaci?
+		- jak schéma ovlivní selekce?
+			- …
+		- jak schéma ovlivní křížení?
+			- když křížím jedince ze stejného schématu, tak jsou pokrytí i potomci
+			- když je jeden rodič mimo schéma, tak potomek může být mimo schéma
+				- ale záleží, kde se kříží (viz hvězdičkový prefix/suffix)
+		- co mutace?
+			- musí se změnit jeden z pevných symbolů schématu
+	- věta o schématech
+		- krátká nadprůměrná schémata s nízkým řádem pokrývají exponenciálně rostoucí počet řetězců v po sobě jdoucích generacích genetického algoritmu
+		- pozor, máme omezenou velikost populace
+	- hypotéza o stavebních blocích
+		- genetický algoritmus hledá řešení blízké optimu řetězením krátkých schémat
+		- evoluce nefunguje dobře, když se optimum nedá poskládat z krátkých bloků
+- jsou GA dobrou simulací biologické evoluce?
+	- evoluce nekončí a nezačíná vždy od nuly (bootstrapping)
+		- SAGA – proměnlivá délka genotypu; značně zkonvergovaná populace se mění postupnými mutacemi, ne křížením
+		- neutrální sítě
+	- další variace GA spojené s dospíváním a učením
+	- co se nemění – genetická reprezentace jedince, interakce s prostředím
+- vylepšení GA
+	- dělení na druhy
+		- definuje se vzdálenost – míra podobnosti jedinců
+		- křížení jenom v rámci druhu
+		- ochrana nových druhů – jedinec má čas, aby se zdokonalil
+	- proměnlivá velikost populace
+		- optimální velikost populace se těžko určuje
+		- stárnutí – jedinec je po určitém počtu generací vyřazen
+			- těžko se nastavují parametry
