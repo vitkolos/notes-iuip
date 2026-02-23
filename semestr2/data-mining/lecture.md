@@ -61,3 +61,51 @@
 		- preprocess the data
 		- mine the data
 		- interpret the results
+			- we may need to create an analytical report
+			- make the results easy to understand
+			- the output can also mean to carry out a reasonable action
+- tasks
+	- classification and prediction
+		- goal: predict a continuous or discrete value based on some attributes
+		- interpretation may be challenging
+		- prediction: weather forecast, stock prices, …
+		- we should be able to cover the entire domain (all the data may be useful for a reasonable prediction)
+	- description
+		- goal: find a dominant structure or relationships
+		- we may ignore some of the information; the extracted knowledge does not need to be that precise (but it should be easily understandable)
+	- looking for “nuggets”
+		- goal: find some interesting knowledge (does not have to fully cover the given concept)
+- real tasks
+	- segmentation and classification of bank clients
+	- causes of failures in telecommunication networks
+	- causes of change of service provider
+	- prediction of power consumption
+	- analysis of the patient database in a hospital
+		- Florence Nightingale
+		- Ignaz Semmelweis
+	- market basket analysis
+
+## Methodologies
+
+- goal: provide the users with a unified framework; guide data mining applications regardless of industry
+- SEMMA
+	- sample – select data for modeling
+		- may include sampling, imputation (adding other useful information, e.g. adding seasons of the year to the data about the sales), partitioning (train-test-validation split)
+	- explore – visual exploration and dimensionality reduction
+	- modify – prepare the objects, values, and variables for data modeling; transform the data
+	- model – apply data mining techniques (decision trees, regression models, NNs, …)
+		- create models providing relevant outcome
+	- asses – evaluate the results of modeling (assess their reliability and usefulness)
+- CRISP-DM – cross-industry standard process for data mining; a robust general-purpose model
+	- business understanding
+		- determine our business objective
+		- assess our present situation, what data we have
+		- risk assessment
+		- setting KPIs
+	- data understanding
+		- collect and describe initial data; explore and visualize it
+		- verify the quality of the data
+	- data preparation
+		- cleaning, integration (merging), aggregation, …
+	- modeling
+	- evaluation
