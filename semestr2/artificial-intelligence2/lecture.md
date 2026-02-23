@@ -1,5 +1,6 @@
 # Lecture
 
+- look at the slides before the lecture
 - rational agent
 	- agent – perceives environment through sensors, acts upon environment through actuators
 	- rational agent maximizes its expected performance measure
@@ -38,11 +39,11 @@
 		- does not influence tooth problems (is independent) → we add another table
 	- also, we don't need to store the entire table (probabilities add up to one)
 - usually, we are interested in the diagnostic direction P(disease | symptoms)
-	- but we know P(disease), P(symptoms), and P(symptoms | disease)
+	- but we know P(disease), P(symptoms), and P(symptoms | disease) … causal direction
 	- we use Bayes' rule to get the diagnostic direction
 	- it may be better not to store the diagnostic direction as the original probabilities (we base the calculation upon) may change
 - naive Bayes model
-	- generally, we can exploit conditional independence by ordering the variables properly
+	- generally, we can exploit conditional independence by ordering the variables properlyexa
 	- naive Bayes model – we assume independence
 		- $P(\text{Cause}, \text{Effect}_1, \dots, \text{Effect}_n) = P(\text{Cause})\prod_iP(\text{Effect}_i\mid\text{Cause})$
 - Wumpus world
@@ -50,3 +51,52 @@
 		- we know that probability of a hole is 0.2
 		- (is this useful???)
 	- in the end, we get $P(P_{1,3}\mid \mathrm{known},b)=\alpha'P(P_{1,3})\sum_{\mathrm{fringe}}P(b\mid P_{1,3},\mathrm{known},\mathrm{fringe})P(\mathrm{fringe})$
+- summary
+	- we use probability theory to handle uncertainty
+	- full joint distribution describes probabilities of all possible worlds
+	- answers to queries can be obtained by summing out probabilities of worlds consistent with the observation (marginalization)
+		- too expensive for larger problems → we exploit conditional independence
+			- we can remove some “dependencies”
+- Bayesian network
+	- DAG; specifies conditional independence relationships among random variables
+	- nodes correspond to random variables
+	- arcs describe the dependencies
+	- example: burglary detection
+	- CPT (conditional probability table) for each variable
+		- to get full joint distribution, we just multiply the tables
+	- we construct the network based on the selected order
+		- usually, we want to use the causal direction (so that we know how to construct the CPTs)
+		- the arc should be there if there is a dependence between the variables
+			- for $X$ independent on $Y$, it should hold that $P(X\mid Y,Z)=P(X\mid \neg Y,Z)=P(X\mid Z)$
+	- how much space can we save?
+		- assume that each variable is directly influenced by at most $k$ other variables
+		- then the size of representation is $n\cdot 2^k$ for Bayesian network vs. $2^n$ for full joint distribution
+	- *Markov blanket*
+	- inference by enumeration
+		- using joint probability (including hidden variables) + moving terms out of the sums if possible
+		- using branching to compute the probabilities
+		- dynamic programming
+		- we can use factors (tables constructed from CPTs)
+			- multiplication: we can multiply the rows that have the same values of the shared variables
+			- elimination: we sum the rows that are almost the same (differ only in the value of the variable we want to eliminate)
+			- we construct the factors based on the evidence
+			- suggested ordering – eliminate the variables that would need large factors in the subsequent stages
+		- complexity
+	- approximate inference
+		- Monte Carlo methods
+		- direct sampling
+			- we are going through the Bayesian network in top-down order
+			- in each step, we sample one variable and then base further sampling on this choice
+		- but we don't care about the samples!
+		- rejection sampling
+			- we generate samples using direct sampling
+			- we eliminate the ones that don't correspond to the evidence
+			- we estimate $P(X\mid e)$ as the number of correct (not eliminated) samples divided by the number of all samples
+			- problem: we may reject too many samples
+		- likelihood weighting
+			- instead of rejecting samples, we generate only the ones consistent with evidence $e$
+			- but then, we lose information about the probability of the specific piece of evidence
+			- so we assign weights to the samples according to the probability of the evidence
+			- our arithmetic has to be precise enough
+		- MCMC (Markov chain Monte Carlo)
+			- Gibbs sampling
