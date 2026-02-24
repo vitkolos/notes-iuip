@@ -49,3 +49,41 @@
 - neuron
 	- aktivační funkce, která dostane součet vstupů a rozhodne, jaký bude výstup
 	- bias – hodnota, která na vstupu neuronu je pořád (dovolí mi posouvat, kdy k té aktivaci dojde)
+- optimalizace vs. ML
+	- cíl optimalizace: co nejlíp popsat trénovací data
+	- cíl ML: zároveň zajistit, abychom uměli generalizovat
+- No free lunch theorem
+	- kdybychom uvažovali všechny možné distribuce, které existujou, tak všechny klasifikátory budou stejně úspěšné (v průměru)
+- co se může pokazit
+	- underfitting – máme slabý model, už ta optimalizace selže
+		- extrémně silný model si může zapamatovat data a jejich odpovídající výsledky
+	- overfitting (přeučení) – model se naučí příliš specifická pravidla
+		- např. při klasifikaci obrázků se naučí první řádky testovací sady nazpaměť
+- jak s tím pracovat – měníme kapacitu modelu
+	- reprezentační kapacita – co model vůbec může zachytit (např. přímka vs. polynom; závisí na velikosti modelu)
+	- efektivní kapacita – co se model reálně naučí (závisí na tréninku, regularizaci, …)
+- jak bojovat s overfittingem
+	- mít víc dat
+	- regularizovat
+- ztrátové funkce
+	- MSE pro regresi
+	- obecně – maximum likelihood principle (princip maximální věrohodnosti)
+		- maximum likelihood estimation (MLE) je postup, který nám řekne, jak by ta funkce měla vypadat
+- MLE
+	- máme empiric data distribution
+	- model nám pro fixní parametry $\theta$ dává taky nějakou distribuci
+	- když místo toho zafixujeme $x$ (přičemž s $\theta$ se dá hýbat), dostaneme likelihood
+		- není to distribuce, nenasčítá se na jedna
+		- „jak moc se modelu líbí trénovací data“
+		- vede na NLL / cross-entropy / KL divergence
+			- je to vlastně to samé (všechno se to odvozuje stejně)
+- estimator („odhadce“)
+	- má systematickou chybu? / je vychýlený? (biased)
+	- je nevychýlený (unbiased), když jeho střední hodnota odpovídá hodnotě, co má říct
+	- vychýlení … $\text{bias}(\hat\theta)=\mathbb E(\hat\theta)-\theta$
+	- MLE je konzistentní odhadce (konverguje v pravděpodobnosti k $\theta$)
+	- taky je statisticky efektivní
+- MSE jako MLE
+	- ze sítě padá nějaká hodnota $f(x;\theta)$, my ji interpretujeme jako normální distribuci se střední hodnotou v $f(x;\theta)$ a nějakým fixním rozptylem
+	- *všude stejně velký rozptyl* je docela silný předpoklad
+- SGD s Nesterovým momentem je lepší
