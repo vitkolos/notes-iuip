@@ -178,18 +178,22 @@
 		- $1\leq(\frac23)^dn$
 		- $d\leq\log_{2/3}(1/n)=\log_{3/2}n=O(\log n)$
 	- *insert* operation
-		- *find*, add a leaf, update sizes
+		- *find*, add a leaf, update sizes (we keep track of the sizes $s(v)$)
 		- if not balanced, *rebuild* in the highest unbalanced node
 	- observation: for $n$ sorted items, *build* takes linear time
 		- select the middle item as the root and split the rest in two subtrees
 		- proceed recursively
 	- $\Phi:=\sum_v\varphi(v)$
-	- $\varphi(v):=\begin{cases}|s(\ell(v))-s(r(v))|&\text{if }\geq 2\\ 0&\text{otherwise}\end{cases}$
+	- $\varphi(v):=\begin{cases}|s(\ell(v))-s(r(v))|&\text{if at least } 2\\ 0&\text{otherwise}\end{cases}$
+		- the clamping ensures that perfectly balanced tree has zero potential
 	- cost of *insert*
 		- no rebuild: $A=R+\Delta\Phi=O(\log n)+O(\log n)=O(\log n)$
-			- $\Delta\varphi\leq 2$ for each visited node
+			- $\Delta\Phi=O(\log n)$ because $\Delta\varphi\leq 2$ for each visited node (usually $\Delta\varphi=1$ but there may be nodes with $\varphi$ hopping from 0 to 2 due to the clamping)
 		- rebuild at $v$
-			- w.l.o.g. $s(\ell(v))\gt\frac23 s(v)\implies s(r(v))\lt\frac13 s(v)\implies\varphi(v)\gt\frac13 s(v)$
+			- the invariant was broken for $v$ and its child $c$
+			- WLOG $s(\ell(v))\gt\frac23 s(v)\implies s(r(v))\lt\frac13 s(v)\implies\varphi(v)\gt\frac13 s(v)$
+				- after the rebuild, this contribution and all the contributions in the subtree become zero
+				- contributions elsewhere stay the same
 			- cost of *rebuild*: $O(s(v))+c\cdot\Delta\Phi\leq 0$
 				- for sufficiently large cost $c$
 - splay trees
