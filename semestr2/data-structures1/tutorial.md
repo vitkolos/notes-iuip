@@ -23,3 +23,21 @@
 		- for dense graphs, it helps
 		- by substitution, we get complexity $\frac{m\log n}{\log(m/n)}$
 		- if $m\geq n^{1+\varepsilon}$, then this equals $\frac{m\log n}{\log n^\varepsilon}=\frac1\varepsilon m=O(m)$
+- binary tree
+- binary search tree
+- single rotation – we rotate a non-root node $u$ with its parent $p$
+	- $u$ becomes a parent of $p$
+- idea: whenever we access an element, we move it to the root
+	- frequently accessed elements end up close to the root (not so deep)
+	- but simple rotations can make the tree very unbalanced
+- splay trees
+	- we apply zig (single) rotation only if the node is a child of the root
+	- zig-zag are just two single rotations of x
+	- trick: for zig-zig, we first rotate the parent and grandparent
+	- find operation
+		- find and splay
+		- if you don't find, splay the last found element
+			- otherwise, the enemy could ask us to find an absent element too many times
+	- insert = insert (if not present) & splay!
+	- delete = replace by the successor, delete the successor, splay the parent of the deleted successor
+		- or we could (somehow) splay the tree first and then delete
