@@ -67,22 +67,151 @@
 	- instructions: store, arithmetical operations, logical operations, goto, memory allocator (allocates consecutive space)
 	- time … number of instructions
 	- space … number of cells used (including allocated empty space)
-- amortized complexity
-	- stretchable array
-		- usually append in constant time
-		- sometimes we need to reallocate the array (to a larger one)
-			- takes linear time
-		- worst-case complexity $O(n)$
-			- but such allocation does not happen often
-		- let's consider $n$ operations
-			- we consider $n$ such that $2^{k-1}\lt n\leq 2^{k}$
-			- we start with capacity 1
-			- total cost of reallocation (aggregated)
-				- $2^0+2^1+\dots+2^{k-1}=2^k-1=\Theta(n)$
-			- amortized cost $\Theta(1)$
+
+## Amortized Complexity
+
+- stretchable array
+	- usually append in constant time
+	- sometimes we need to reallocate the array (to a larger one)
+		- takes linear time
+	- worst-case complexity $O(n)$
+		- but such allocation does not happen often
+	- let's consider $n$ operations
+		- we consider $n$ such that $2^{k-1}\lt n\leq 2^{k}$
+		- we start with capacity 1
+		- total cost of reallocation (aggregated)
+			- $2^0+2^1+\dots+2^{k-1}=2^k-1=\Theta(n)$
+		- amortized cost $\Theta(1)$
+		- “aggregation method”
+- flexible array
+	- stack
+	- append(x), removelast
+	- shrink to $C/2$ if $n\lt C/2$
+		- this is problematic, we would get linear amortized complexity
+		- we should use $n\lt C/4$ instead
+	- amortized analysis
+		- average over operations in the worst-case scenario
+	- append – double the capacity if the array is full … costs $O(C)$ in this case
+	- removelast – halve the capacity if the array becomes shorter than $C/4$ … costs $O(C)$
+	- we consider blocks of operations
+		- block boundaries = growing/shrinking operation
+		- “how many elements does the array contain at the beginning and at the end of the block?”
+		- if growing: $C$ at the end, then $C/2$ at the beginning
+		- if shrinking: $C/4$ at the end, then $C/2$ at the beginning
+		- so at the beginning of the block, the array always contains $C/2$ elements
+		- at the end of the block, the array contains $C/4$ or $C$ elements
+		- → there are at least $C/4$ operations in each block
+		- → amortized $O(1)$ for operation
+			- “accounting method” – we account the cost to the operations
+- binary counter, $\ell$ bits
+	- *increment* operation
+	- how many bits we flip?
+	- worst case: $O(\ell)$ bit flips
+	- aggregation method
+		- observation: bit $i$ changes once every $2^{i-1}$ operations
+		- → \# bit flips $=\sum_{i=1}^\ell\lfloor\frac n{2^{i-1}}\rfloor\leq n\sum_{i=0}^\infty\frac1{2^i}=2n$
+	- coin method
+		- 1 coin … 1 bit flip
+		- 000 → 001
+			- we pay 1 coin for flipping 0→1
+			- we store 1 coin on 1
+		- 001 → 010
+			- we use the stored coin – it pays for 1→0
+			- we pay 1 coin for 0→1
+			- we store 1 coin on 1 again
+		- → 2 coins suffice
+	- so we get $O(1)$ amortized
+- potential method (generalization of coin method)
+	- $m$ operations, real costs $R_i$
+	- we want to compute upper estimates on the costs
+	- amortized cost $A_i$ … our choice
+	- we want $\sum_{j=1}^mA_j-\sum_{j=1}^mR_j\geq 0$
+		- “never owe time”
+		- this should hold not only for $m$ but for any $i\leq m$
+	- we define potential $\Phi_i:=\sum_{j=1}^iA_j-\sum_{j=1}^iR_j$
+		- $\Phi_0=0$ by definition
+		- $\Delta\Phi_i=\Phi_i-\Phi_{i=1}=A_i-R_i$
+			- > 0 → saving time
+			- = 0 → pay exactly
+			- < 0 → spending time
+	- back to the bit flips
+		- $\Phi_i=$ number of coins saved = number of ones
+		- $A_i=2$
+		- $R_i=1+t$
+			- $t$ … number of trailing ones
+		- $\Delta\Phi_i=1-t$
 	- flexible array
-		- stack
-		- append(x), removelast
-		- shrink to $C/2$ if $n\lt C/2$
-			- this is problematic, we would get linear amortized complexity
-			- we should use $n\lt C/4$ instead
+		- $\Phi_i=$ number of ops since last reallocation
+		- $R_i=1$ (without reallocation) or $1+\Theta(n)$
+		- $A_i=2$
+			- we may need to rescale this
+	- different approach
+		- we choose $\Phi_i\geq 0$
+		- $A_i:=R_i+\Delta\Phi_i$
+		- so $\sum_{i=1}^m A_i=\sum_{i=1}^mR_i+\sum_{i=1}^m(\Phi_i-\Phi_{i-1})$
+			- the last sum is a telescopic sum
+		- $\sum_{i=1}^m A_i=\sum_{i=1}^mR_i+\Phi_m-\Phi_0$
+		- $\Phi_m-\Phi_0$ should be $\geq 0$
+			- we can have a non-zero $\Phi_0$ but this difference has to be non-negative
+		- steps
+			0. choose unit cost
+			1. estimate (upper) $R_i$
+			2. choose potential $\Phi$
+			3. show $\Phi_i\geq 0$
+			4. aim $A_i=R_i+\Delta\Phi_i$ to be small
+- lazily balanced trees
+	- notation
+		- $n$ … number of items stored
+		- $v$ … node
+		- $T(v)$ … subtree rooted at $v$
+		- $\ell(v),r(v)$ … left/right child of $v$
+		- $s(v)$ … size = number of nodes in $T(v)$ including $v$
+	- def: BST is perfectly balanced if for every node $v$ it holds that $|s(\ell(v))-s(r(v))|\leq 1$
+		- the ratio is approximately 1 : 1
+	- def: BST is balanced if for every $v$ and its every child $c$ it holds that $s(\ell(c))\leq \frac23s(v)$
+		- the ratio is between 1 : 2 and 2 : 1
+	- lemma: any balanced BST has depth $O(\log n)$
+		- imagine the longest path from the root to a leaf
+		- in each step from the root to the leaf, the size drops to at most 2/3 of the preceding size
+		- size of the root … $n$
+		- size of the leaf … 1
+		- $1\leq(\frac23)^dn$
+		- $d\leq\log_{2/3}(1/n)=\log_{3/2}n=O(\log n)$
+	- *insert* operation
+		- *find*, add a leaf, update sizes
+		- if not balanced, *rebuild* in the highest unbalanced node
+	- observation: for $n$ sorted items, *build* takes linear time
+		- select the middle item as the root and split the rest in two subtrees
+		- proceed recursively
+	- $\Phi:=\sum_v\varphi(v)$
+	- $\varphi(v):=\begin{cases}|s(\ell(v))-s(r(v))|&\text{if }\geq 2\\ 0&\text{otherwise}\end{cases}$
+	- cost of *insert*
+		- no rebuild: $A=R+\Delta\Phi=O(\log n)+O(\log n)=O(\log n)$
+			- $\Delta\varphi\leq 2$ for each visited node
+		- rebuild at $v$
+			- w.l.o.g. $s(\ell(v))\gt\frac23 s(v)\implies s(r(v))\lt\frac13 s(v)\implies\varphi(v)\gt\frac13 s(v)$
+			- cost of *rebuild*: $O(s(v))+c\cdot\Delta\Phi\leq 0$
+				- for sufficiently large cost $c$
+- splay trees
+	- splay(x) … pull node $x$ to the root
+		- preferably using double rotation (zigzig, zigzag)
+		- possibly with one single rotation (zig)
+	- zig
+		- y has child x
+		- zig(x) makes y child of x
+	- zigzig, zigzag
+		- z has child y
+		- y has child x
+		- zigzig(x)/zigzag(x) moves x above both y and z
+		- zigzig is used if $x \lt y\lt z$ or $z\lt y\lt x$
+		- zigzag is used if $y\lt x\lt z$
+	- splay performs a sequence of the operations until x becomes the root
+	- find(x)
+		- search(x)
+		- splay(lowest visited node)
+	- how to choose potential
+		- $\Phi:=\sum_v r(v)$
+		- rank $r(v)=\log s(v)$
+		- $1\leq s(v)\leq n$
+		- $0\leq r(v)\leq \log n$
+		- $0\leq\Phi\leq n\log n$
