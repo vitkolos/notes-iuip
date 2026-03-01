@@ -86,4 +86,19 @@
 - MSE jako MLE
 	- ze sítě padá nějaká hodnota $f(x;\theta)$, my ji interpretujeme jako normální distribuci se střední hodnotou v $f(x;\theta)$ a nějakým fixním rozptylem
 	- *všude stejně velký rozptyl* je docela silný předpoklad
+- momentum
+	- $v\leftarrow\beta\cdot v+g$
+	- $v$ … rychlost
+	- $\beta$ … hyperparametr
+	- $g$ … gradient
 - SGD s Nesterovým momentem je lepší
+- adaptivní learning rates
+	- AdaGrad přizpůsobuje learning rate velikosti gradientu
+		- ale může zpomalit postup učení
+		- používá $g^2$ k úpravě learning ratu
+	- RMSProp odhaduje střední hodnotu $g^2$ místo aby je sčítal
+	- Adam kombinuje RMSProp a momentum
+		- používáme exponential moving average (něco jako vážený průměr)
+		- akorát když nemáme nekonečno hodnot, tak se váhy nenasčítají na jedna
+		- abychom získali nevychýlený (unbiased) odhad, musíme váhy přeškálovat
+	- ale pořád potřebujeme learning-rate schedule
