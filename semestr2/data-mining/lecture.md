@@ -88,6 +88,8 @@
 ## Methodologies
 
 - goal: provide the users with a unified framework; guide data mining applications regardless of industry
+	- it's necessary to have high-quality data
+	- the steps are usually iterative
 - SEMMA
 	- sample – select data for modeling
 		- may include sampling, imputation (adding other useful information, e.g. adding seasons of the year to the data about the sales), partitioning (train-test-validation split)
@@ -99,7 +101,7 @@
 - CRISP-DM – cross-industry standard process for data mining; a robust general-purpose model
 	- business understanding
 		- determine our business objective
-		- assess our present situation, what data we have
+		- assess our present situation, what resources and data we have
 		- risk assessment
 		- setting KPIs
 	- data understanding
@@ -107,5 +109,46 @@
 		- verify the quality of the data
 	- data preparation
 		- cleaning, integration (merging), aggregation, …
+		- make the dataset ready for further analysis and modeling
 	- modeling
+		- select the modeling technique
+		- generate test design
+		- build the model
+		- assess the model
 	- evaluation
+		- evaluate the results – from the point of view of the manager
+		- review the process
+		- determine the next steps
+	- deployment
+		- results should be presented in a simple and comprehensible way
+		- plan the deployment (what steps should be done)
+		- final report, review the project
+			- to preserve knowledge
+- ciritique of CRISP-DM
+	- little support for project management
+	- what to do if there are problems?
+	- → IBM released Analytics Solutions Unified Method for Data Mining (ASUM)
+- ASUM
+	1. analyze – define the needs (desired features, performance, usability, …), obtain agreement
+	2. design – define solution components, identify resources, clarify requirements
+	3. configure & build – including testing and validation
+	4. deploy – create a plan to run and maintain the solution
+	5. operate & optimize – preserve the health
+	- \+ project management – there are processes that help to monitor the progress and maintain the project
+	- benefits
+		- minimized risk
+		- scalable and enterprise-ready
+		- comprehensive
+		- product-specific implementation roadmaps
+
+## Data Analysis
+
+- data standardization
+	- decimal scaling – divide the data by the smallest power of 10 to get them to the interval $[-1,1]$
+	- range standardization
+		- to $[0,1]$ … $\frac{x-\mathrm{min}}{\mathrm{max}-\mathrm{min}}$
+		- to $[-1,1]$ … $2\cdot \frac{x-\mathrm{min}}{\mathrm{max}-\mathrm{min}}-1$
+	- Z-score standardization … $\frac{x-\mu}{\sigma}$
+		- $\mu$ … mean
+		- $\sigma$ … standard deviation
+		- or we can use the *corrected* sample standard deviation

@@ -219,3 +219,88 @@
 		- optimální velikost populace se těžko určuje
 		- stárnutí – jedinec je po určitém počtu generací vyřazen
 			- těžko se nastavují parametry
+	- kódování – různé přístupy
+		- konečná doména – pevný počet bitů
+			- potenciální problém: pro rozlišení pěti prvků potřebujeme tři bity, ale tím dostaneme osm prvků
+		- celá čísla – binární, Grayův kód
+		- reálná čísla – různá kódování (omezený rozsah, pevný počet desetinných míst, plovoucí desetinná čárka)
+
+## Neuronové sítě
+
+- umělá neuronová síť, neurony
+- učení
+	- s učitelem, bez učitele
+	- online × offline
+		- upravují se váhy rovnou na základě každého vstupu (online) nebo až najednou pro celou dávku (offline)?
+	- algoritmus zpětného šíření
+- rekurentní neuronové sítě (RNN)
+	- posuvné okénko (tzn. síť předpovídá další prvek v řadě na základě minulých $k$ prvků pro fixní $k$) někdy nestačí – potřebujeme, aby si síť pamatovala informace
+	- jak si se zpětnou hranou poradí algoritmus zpětného šíření?
+		- neurony zdvojíme, vystačíme si s dopřednými hranami
+		- při úpravě vah klonů upravujeme váhy původních neuronů
+	- LSTM, GRU
+	- reinforcement learning
+	- základní architektury rekurentních sítí
+		- Elman – uchovávají se stavy ze skrytých neuronů
+		- Jordan – uchovávají se stavy z výstupních neuronů
+- kombinace evoluce a NS
+	- NS nám zajistí hladkost prohledávaného prostoru (malá změna váhy trochu změní výstup)
+	- různé úrovně granularity
+	- přímočaré zobrazení „senzory → motory“
+	- robustnost vůči šumu
+- problémy s učením
+	- permutací vah můžeme dostat tu samou neuronovou síť
+	- roste nám počet lokálních minim
+	- to nám vadí, ať síť učíme jakkoliv (zpětným šířením nebo geneticky)
+- evoluce vah a parametrů učení
+	- GA zkoušejí celou populaci sítí – ne jen jednu síť
+	- nepotřebujeme detailně znát výstup sítě pro každý vzor
+	- kódování vah
+		- řetězec reálných čísel
+		- řetězec binárních čísel – jako čísla s pevnou desetinnou čárkou se zadanou přesností
+			- dynamické kódování – v průběhu učení zafixujeme vyšší bity a síť se učí jen ty nižší (tzn. zajistíme jistou kvalitu řešení)
+	- příklad: k analýze sonarových signálů fungoval GA lépe než zpětné šíření
+	- jiná strategie: kombinace evoluce a učení s učitelem
+	- gen může kódovat i hyperparametry a typ architektury
+		- naopak nemusíme kódovat váhy
+		- přímé (kód obsahuje přesné váhy) vs. nepřímé kódování 
+	- příklady
+		- přepisovací pravidla
+		- neurony, z nichž rostou axony na substrátu
+	- evoluce pravidel učení
+
+## Genetické programování
+
+- genetický řetězec nekóduje řešení problému, ale program řešící problém
+- typicky to vychází z LISPovské reprezentace programů
+- postup
+	- zvolí se množina funkcí $F$ a terminálů $T$
+		- funkce musí být uzavřené, tj. všude definované
+	- náhodně se vygeneruje počáteční populace
+	- dále jako genetický algoritmus
+- křížení – vezmeme dva jedince (stromy), prohodíme jejich větve
+- mutace – zvolí se uzel a zruší se nebo se tam vytvoří nový podstrom
+	- moc se nepoužívají
+- vylepšení: automaticky definované funkce
+	- funkce nahrazuje celý podstrom
+- alternativní přístup: gramatická evoluce
+	- evoluce programu v libovolném programovacím jazyce
+	- používá to lineární genom (kdežto GP používá stromy)
+	- zobrazení z genotypu na fenotyp se dělá podle gramatiky
+	- jak se má uplatnit pravidlo? na to se používá kodon
+		- tzn. slouží k výběru správné pravé strany přepisovacího pravidla
+		- vždycky přepisujeme nejlevější neterminál
+			- tudíž ten algoritmus ale generuje stromy, které se zanořují doleva
+			- existuje ještě jiný přístup, co generuje stromy
+
+## Evoluce robotů
+
+- okruhy problémů
+	- mechanická odolnost
+	- přívod energie
+	- analýza – vyvinutý řídící systém může být hodně složitý
+	- časová náročnost
+	- návrh fitness funkce
+- přístupy
+	- evoluce fyzických robotů – Khepera
+	- simulovaná evoluce – pozor, často zneužívá rozdíl mezi simulací a realitou
