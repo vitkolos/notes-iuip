@@ -100,3 +100,52 @@
 			- our arithmetic has to be precise enough
 		- MCMC (Markov chain Monte Carlo)
 			- Gibbs sampling
+- partially observable environment with discrete time
+	- structure of the model is similar to the Bayesian network
+	- hidden variables $X_t$, observable variables $E_t$
+	- states are evolving according to some rules → transition model
+	- Markov assumption: $X_t$ depends on a fixed number of previous states (usually one)
+		- $P(X_t\mid X_{0:t-1})=P(X_t\mid X_{t-1})$
+		- → first-order Markov chain
+			- in a second-order MC, $X_t$ depends on both $X_{t-1}$ and $X_{t-2}$
+	- another assumption: the process is stationary
+		- transition probabilities are always the same (independent on $t$)
+	- sensor Markov assumption: $E_t$ depends only on $X_t$
+		- but there are sensors where this does not hold (e.g. liquid-based thermometer)
+		- personal note: for proprioceptive sensors, $E_t$ depends on $X_t$ and $X_{t-1}$
+	- first-order Markov assumption: the state variables contain all the information needed to characterize the next time slice (its distribution)
+		- what if it does not hold?
+		- increase the order of the Markov process model
+		- or enlarge the set of state variables
+		- note: increasing the order can be reformulated as an increase in set of state variables
+	- reasoning in this Bayesian network
+		- can be done but is not efficient (too many time steps)
+	- basic inference tasks: filtering, prediction, smoothing, most likely explanation
+		- these tasks can be performed efficiently without a Bayesian network
+		- filtering
+			- we want to have a recursive estimation – estimate the current distribution based on the observation and previous distribution
+		- prediction
+			- idea: perform filtering, then use the transition model
+			- after some time (mixing time) the distribution converges to the stationary distribution of the Markov process and remains constant
+		- smoothing
+			- we use both filtering (forward message passing) and backward message passing
+		- most likely explanation/sequence
+			- we could do smoothing for every time slice and select the most probable state at the given time
+				- but this might lead to a sequence with very low probability (e.g. if there are two states with low transition probability)
+			- again, forward message passing algorithm
+			- we don't need to normalize if we only want the maximum (but the numbers get smaller)
+			- Viterbi algorithm
+	- hidden Markov models
+		- single discrete random variable & single evidence variable → it's a hidden Markov model
+		- we can use matrix implementation of all the basic algorithms
+		- full smoothing
+			- we don't need to run smoothing $t$ times in order to smooth the whole sequence
+			- we can use dynamic programming (store the forward/backward values) – but we need more memory then
+				- we need to store the whole sequence of forward distributions
+			- idea: remember only the current forward distribution, apply operation to get the previous one
+				- we can exploit matrix multiplication – use the inverse matrices $(T^T)^{-1},O^{-1}$ if possible (for the $O$ matrix it's always possible as it's a diagonal matrix)
+		- smoothing with a fixed time lag
+			- $P(X_{t-d}\mid e_{1:t})$
+			- forward: simple
+			- backward: keep the multiplied matrix without multiplying by the vector $b$
+				- then the product of matrices can be modified incrementally
