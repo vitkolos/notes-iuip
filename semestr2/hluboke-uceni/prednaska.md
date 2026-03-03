@@ -102,3 +102,64 @@
 		- akorát když nemáme nekonečno hodnot, tak se váhy nenasčítají na jedna
 		- abychom získali nevychýlený (unbiased) odhad, musíme váhy přeškálovat
 	- ale pořád potřebujeme learning-rate schedule
+- sigmoid, logit
+- jak trénovat
+	- když dobře regularizujeme, tak by nám nemuselo vadit, že trénujeme moc dlouho
+	- chceme dost velkou batch size, aby nás to moc nezpomalovalo
+		- na GPU se vyplatí mít větší batch
+		- na CPU jak kdy
+		- čím větší batch, tím lepší odhad gradientu ztrátové funkce
+		- ale zase potřebujeme udělat dost kroků optimizerem (jedna batch = jeden krok)
+- regularizace
+	- kdybychom každé dato viděli jen jednou, tak bychom nemuseli regularizovat
+	- early stopping
+		- můžeme si průběžně ukládat ten nejlepší model
+	- $L^2$ regularizace
+		- chceme malé váhy, aby model pro podobné vstupy vracel podobné výsledky (aby byl konzervativní, ne moc agresivní)
+		- typicky se neaplikuje na bias – ten neřeší konzervativnost modelu
+		- lze interpretovat jako maximum a posteriori (MAP)
+		- je to weight decay – postupně ubírám váhy
+			- to může být problém u algoritmů, co používají momentum (např. Adam)
+			- řešení – AdamW
+	- $L^1$ regularizace
+		- odčítá se konstanta od všech vah
+		- v praxi nefunguje tak dobře
+	- dataset augmentation
+		- pro určité typy dat může být levné generovat upravená data na základě původního datasetu
+	- ensembling
+		- aspoň z pěti modelů, aby to dávalo smysl
+		- u neuronových sítí je ta loss landscape dost rozmanitá, je tam hodně lokálních minim, takže platí předpoklady o nekorelovaných chybách
+		- u algoritmů s konvexní ztrátovou funkcí (konvergují ke stejnému optimu) se používá bagging
+		- používá se hlasování
+			- hard voting – většinově
+			- soft voting – průměrují se distribuce nebo logity
+				- průměrování logitů může být problematické – jeden model může přehlasovat všechny ostatní
+		- poznámka: lokální minima u SGD
+			- loss funkce se mění na základě toho, prosmoo jakou batch ji znova počítám
+			- lokální minimum typicky neplatí pro všechny batche – dokonce pro většinu batchí tam není
+	- dropout
+		- idea: geny, jejichž funkce závisí na jiných genech, fungují hůř než geny, které jsou nezávislé
+		- s pravděpodobností $p$ daný neuron vynulujeme
+	- label smoothing
+		- MLE loss vynucuje, abychom si byli 100% jistí výsledkem klasifikace
+		- to ale není realistické – u některých dat si ani nemůžeme být 100% jistí
+		- používá se smoothing – gold distribuci (targety) „zjemníme“
+			- místo 100% pravděpodobnosti target třídy a 0% pravděpodobnosti ostatních tříd zvolíme distribuci $(1-\alpha)1_\mathrm{gold}+\alpha\frac1{\#\mathrm{classes}}$ pro nějakou malou konstantu $\alpha$
+	- rozumné defaulty
+		- data augmentation když to jde
+		- dropout na skrytých vrstvách
+			- začít s 0.5, případně snížit
+		- pak případně weight decay na konvolučních sítích
+		- možná taky label smoothing (začít od 0.1)
+		- dá se taky ensembling, když máme hodně zdrojů a chceme být co nejlepší
+	- konvergence
+		- …
+		- skrytá vrstva
+			- je potřeba ji náhodně inicializovat
+			- jakmile jednou svážu dvě vstupní data, už je nedovedu rozvázat
+		- výstupní vrstva se dá inicializovat na nuly
+		- biasy by se měly incializovat na nulu, ale PyTorch to tak nedělá
+		- záleží na tom, jaké náhodné váhy se použijou (z jakého rozsahu)
+			- dřív se používalo $[-\frac{1}{\sqrt n},\frac{1}{\sqrt n}]$
+			- rozptyl $U(-a,a)$ je $a^2/3$
+			- chceme, aby to zachovávalo rozptyl při forward i backward passu
