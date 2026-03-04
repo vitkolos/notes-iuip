@@ -219,3 +219,71 @@
 		- $1\leq s(v)\leq n$
 		- $0\leq r(v)\leq \log n$
 		- $0\leq\Phi\leq n\log n$
+- statically optimal tree
+	- goal: for a given sequence of operations *find* construct a binary earch tree minimizing the total search time
+	- formally
+		- elements $x_1,\dots,x_n$ with weights $w_1,\dots,w_n$
+		- cost of a tree = $\sum_i w_id_i$
+			- $d_i$ … depth of $x_i$
+		- statically optimal tree is a binary search tree with minimal cost
+	- Knuth: statically optimal tree can be constructed in $O(n^2)$
+- back to splay trees
+	- we don't know the sequence → we move every searched element to the root
+	- splay = apply zig-zig and zig-zag until the element becomes the root (use zig as the last step if necessary)
+	- note: we consider $\log_2$ here!
+	- lemma: for $a,b,c\in\mathbb R^+$ satisfying $a+b\leq c$, it holds that $\log(a)+\log(b)\leq 2\log(c)-2$
+	- proof
+		- $4ab=\underbrace{(a+b)^2}_{\leq c^2}-\underbrace{(a-b)^2}_{\geq 0}\leq c^2$
+		- $\log 4+\log a+\log b\leq\log c^2$
+	- notation
+		- $s(x)$ … number of nodes in the subtree rooted at node $x$ (including $x$)
+		- potential of a node $x$ … $\Phi(x)=\log s(x)$
+		- total potential = sum of all potentials
+		- $s_i,\Phi_i$ … values after $i$-th step
+		- $p$ … parent of $x$
+		- $g$ … parent of $p$
+	- zig step
+		- $\Phi_i(x)=\Phi_{i-1}(p)$
+		- $\Phi_i(p)\lt\Phi_i(x)$
+		- the potential of the remaining nodes stays the same
+		- $\Phi_i-\Phi_{i-1}=\sum_u(\Phi_i(u)-\Phi_{i-1}(u))=\Phi_i(x)-\Phi_{i-1}(x)+\Phi_i(p)-\Phi_{i-1}(p)$
+		- $=-\Phi_{i-1}(x)+\Phi_i(p)\lt\Phi_i(x)-\Phi_{i-1}(x)$
+	- zig-zag
+		- $\Phi_i(x)=\Phi_{i-1}(g)$
+		- $\Phi_{i-1}(x)\lt\Phi_{i-1}(p)$
+		- $\Phi_i(p)+\Phi_i(g)\leq 2\Phi_i(x)-2$
+			- clearly $s_i(p)+s_i(g)\leq s_i(x)$
+			- so we just apply the lemma
+		- $\Phi_i-\Phi_{i-1}=\Phi_i(g)-\Phi_{i-1}(g)+\Phi_i(p)-\Phi_{i-1}(p)+\Phi_i(x)-\Phi_{i-1}(x)$
+		- $=\Phi_i(g)+\Phi_i(p)-\Phi_{i-1}(p)-\Phi_{i-1}(x)\leq 2(\Phi_i(x)-\Phi_{i-1}(x))-2$
+	- zig-zig
+		- similar
+		- but we need to apply the lemma on this inequality: $s_{i-1}(x)+s_i(g)\leq s_i(x)$
+		- we get $\Delta\Phi\leq 3\Delta\Phi(x)-2$
+	- an operation has amortized cost $A$ if every execution of the operation satisfies $T_i+\Phi_i-\Phi_{i-1}\leq A$
+	- zig-zig or zig-zag step ($T_i=2$)
+		- $T_i+\Delta\Phi\leq 2+3\Delta\Phi(x)-2=3\Delta\Phi(x)$
+	- zig step ($T_i=1$)
+		- $T_i+\Delta\Phi\leq 1+\Delta\Phi(x)\leq 1+3\Delta\Phi(x)$
+	- in total
+		- $\sum_i(T_i+\Delta\Phi)\leq 1+\sum_i3(\Phi_i(x)-\Phi_{i-1}(x))$
+			- we can apply telescopic sum (cancellation)
+		- $\leq 1+3(\Phi_\mathrm{last}(x)-\Phi_0(x))$
+			- in the end, the potential of $x$ is $\log n$
+			- the initial potential of $x$ is at least zero
+		- $\leq 1+3\log n=O(\log n)$
+		- amortized complexity
+	- worst-case complexity of $k$ operations *splay*
+		- potential always satisfies $0\leq\Phi\leq n\log n$
+		- the difference between the final and the initial potential is at most $n\log n$
+		- $\sum_{i=1}^k T'_i\leq\sum_{i-1}^k(1+3\log n+\Phi_{i-1}-\Phi_i)=k+3k\log n+\sum_{i=1}^k(\Phi_{i-1}-\Phi_i)$
+		- $=k+3k\log n+\Phi_0-\Phi_k\leq O(k+k\log n+n\log n)=O((n+k)\log n)$
+	- analyzing operations
+		- we need to consider that operations change the potential
+		- *delete* decreases it
+		- *insert* increases it
+			- only for the nodes on the path
+			- we can apply telescopic cancellation again
+	- theorem: if we perform $k$ searches for elements from a subset of size $m$, then the total cost is $O(n\log n+k+k\log m)$
+	- working set theorem
+	- splay tree is never asymptotically slower than static optimal tree
