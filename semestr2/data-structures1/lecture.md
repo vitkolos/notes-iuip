@@ -2,6 +2,7 @@
 
 - https://ktiml.mff.cuni.cz/~gregor/ds1/
 - http://mj.ucw.cz/vyuka/dsnotes/
+- https://ktiml.mff.cuni.cz/~fink/teaching/data_structures_I/lecture-splay.pdf
 
 ## Introduction
 

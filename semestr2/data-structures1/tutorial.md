@@ -41,3 +41,23 @@
 	- insert = insert (if not present) & splay!
 	- delete = replace by the successor, delete the successor, splay the parent of the deleted successor
 		- or we could (somehow) splay the tree first and then delete
+- experimental assignment
+	- copy my solution to the directory
+	- run the script to generate CSV files
+	- we don't mesure time, we measure the number of rotations
+	- log scale may be useful sometimes
+	- analysis: estimate the asymptotic tendencies on all parameters
+		- apply regression
+	- state the theorems that justify the observed behavior
+		- we need to cite all our sources (lecture, lecture notes, paper, website, …)
+	- compare the theory against the results
+- statically optimal BST (SOBST)
+	- goal: construct a binary search tree minimizing the total search cost
+	- idea: put the heaviest node to the root, split and repeat
+	- problem: we might get a path if the weights decrease with decreasing nodes
+	- observation: if $T$ is a SOBST then the subtree of every node in $T$ is a SOBST
+		- if we manage to decrease the cost of a subtree, we decrease the cost of the whole tree
+	- dynamic programming construction
+		- $C(i,j)$ … minimum cost of a subtree containing keys $x_i,\dots,x_j$
+- interval queries using splay trees
+	- how many keys are in the interval $a,b$
