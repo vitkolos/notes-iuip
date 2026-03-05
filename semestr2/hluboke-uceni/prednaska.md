@@ -152,14 +152,21 @@
 		- pak případně weight decay na konvolučních sítích
 		- možná taky label smoothing (začít od 0.1)
 		- dá se taky ensembling, když máme hodně zdrojů a chceme být co nejlepší
-	- konvergence
-		- …
-		- skrytá vrstva
-			- je potřeba ji náhodně inicializovat
-			- jakmile jednou svážu dvě vstupní data, už je nedovedu rozvázat
-		- výstupní vrstva se dá inicializovat na nuly
-		- biasy by se měly incializovat na nulu, ale PyTorch to tak nedělá
-		- záleží na tom, jaké náhodné váhy se použijou (z jakého rozsahu)
-			- dřív se používalo $[-\frac{1}{\sqrt n},\frac{1}{\sqrt n}]$
-			- rozptyl $U(-a,a)$ je $a^2/3$
-			- chceme, aby to zachovávalo rozptyl při forward i backward passu
+- konvergence
+	- …
+	- skrytá vrstva
+		- je potřeba ji náhodně inicializovat
+		- jakmile jednou svážu dvě vstupní data, už je nedovedu rozvázat
+	- výstupní vrstva se dá inicializovat na nuly
+	- biasy by se měly incializovat na nulu, ale PyTorch to tak nedělá
+	- záleží na tom, jaké náhodné váhy se použijou (z jakého rozsahu)
+		- dřív se používalo $[-\frac{1}{\sqrt n},\frac{1}{\sqrt n}]$
+		- rozptyl $U(-a,a)$ je $a^2/3$
+		- chceme, aby to zachovávalo rozptyl při forward i backward passu
+- gradienty
+	- gradient v obecnosti není omezený, takže mi může model při trénování ustřelit někam mimo
+		- řeší se to gradient clippingem
+		- nebo softmax to taky nějak řeší (?)
+- metrics and losses
+	- loss – diferencovatelná funkce používaná při tréninku
+	- metrika – libovolná funkce používaná při vyhodnocení
