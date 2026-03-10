@@ -170,3 +170,67 @@
 - metrics and losses
 	- loss – diferencovatelná funkce používaná při tréninku
 	- metrika – libovolná funkce používaná při vyhodnocení
+
+## Konvoluční sítě
+
+- používat víc FC vrstev moc nepomáhá
+- co když použijeme konvoluci?
+- konvoluční operace
+	- když data mají nějakou strukturu (např. prostorovou nebo časovou dimenzi)
+		- přičemž naopak o tabulkových datech bychom řekli, že nemají strukturu
+	- na rozdíl od hustě propojených vrstev může být užitečné…
+		- když se daný neuron kouká jen na lokální okolí (které mu odpovídá na předchozí vrstvě)
+		- když platí shift invariance (výsledek dopadne stejně, ať je daný vzor v tom prostoru kdekoliv)
+	- tzn. vezmu si okýnko s váhami a posouvám ho po vrstvě neuronů
+	- definice konvoluce
+		- konvoluce vektorů
+		- konvoluce matic
+			- ale použijeme cross-correlation, aby platila paralela s posuvným okýnkem
+- hodnota každého pixelu je vlastně vektor (typicky 3 kanály)
+	- tedy i konvoluční filtr musí mít odpovídající hloubku
+- taky můžeme určit požadovaný počet výstupních kanálů
+- s čím setupujeme konvoluční vrstvu
+	- výška a šířka konvolučního jádra (okýnka)
+	- počet výstupních kanálů
+	- stride (jak hustě chceme dělat konvoluci)
+- můžeme uvažovat libovolnou velikost vstupu
+- padding schémata
+	- valid – používáme jenom platné pixely, takže výstup je menší než vstup
+	- same – paddujeme nulama → výstup je stejně velký jako vstup
+- tvar obrázku – pořadí dimenzí
+	- obvykle N, H, W, C
+	- ale PyTorch má N, C, H, W
+		- přičemž lze přepnout, aby byly reálně uložené na konci (a defaultně to tak je)
+- pooling
+	- max pooling
+	- average pooling
+- jak budeme zpracovávat obrázky
+	- konvoluce → nelinearita (typicky ReLU) → pooling
+	- těchto bloků několik
+	- pak to zplacatíme a dáme tam jednu skrytou FC vrstvu a pak výstupní vrstvu
+	- obvykle stačí 3×3 konvoluce
+- AlexNet
+- LeNet
+- pro konvoluci je přirozené udělat obrázek ostřejší
+- architektura VGG
+- Inception (GoogLeNet)
+	- Inception blok
+	- trik: nejprve 1×1 konvoluce (jenom redukce kanálů), až pak 3×3 konvoluce
+	- trik: average pooling na konci
+		- síť je dost hluboká, takže každý neuron v téhle části vidí všechno → lze použít avg pool
+		- vlastně pak ani není potřeba FC vrstva
+- batch normalizace
+	- když trénujeme hlubokou síť, tak se nám všechny části sítě upravujou najednou
+		- druhá část sítě se snaží reagovat na vstupy první sítě
+		- první část sítě se učí, jaké lepší vstupy generovat
+		- takže na začátku tréninku se ty části trochu nahánějí
+	- řešení: mezi dvě části sítě dáme normalizační vrstvu, která druhou část trochu odstíní od rozmarů té první
+	- budeme normalizovat konkrétní batch
+		- odhadneme střední hodnotu
+		- odhadneme rozptyl (nevíme proč se používá nevyvážený odhad)
+		- normalizujeme
+		- navíc vynásobíme (po složkách) $\gamma$ a přičteme $\beta$
+			- to jsou trénované parametry
+	- normalizace se používá před nelinearitou
+		- je zvykem na vstupu zahazovat bias (protože se při normalizaci stejně ztratí)
+	- při inferenci se pak používá dlouhodobý odhad průměru a rozptylu (plovoucí průměr), které se spočítaly při tréninku
