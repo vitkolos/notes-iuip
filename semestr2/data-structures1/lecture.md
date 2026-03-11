@@ -288,3 +288,99 @@
 	- theorem: if we perform $k$ searches for elements from a subset of size $m$, then the total cost is $O(n\log n+k+k\log m)$
 	- working set theorem
 	- splay tree is never asymptotically slower than static optimal tree
+
+## $(a,b)$-trees
+
+- multiway search tree
+	- $k$ keys stored in a non-decreasing order in one node
+		- $x_1,\dots,x_k$
+	- this node has $k+1$ children
+		- subtrees $T_0,\dots,T_k$
+		- $x_i\lt$ keys in $T_i\lt x_{i+1}$
+	- we may consider sentinels $x_0,x_{k+1}$
+		- in the root: $-\infty,+\infty$
+	- terminology
+		- internal node
+		- external node (leaf)
+	- number of children depends on the number of keys inside the internal node
+		- if its child is empty, it's an external node
+- $(a,b)$-tree for $a\geq 2,\ b\geq 2a-1$ is a multiway search tree s.t.
+	- $a\leq$ \# children in internal node $\leq b$
+		- $a-1\leq$ \# keys $\leq b-1$
+		- we relax this for the root to be able to store a single key in the entire data structure
+			- $2\leq$ \# children in root $\leq b$
+	- all external nodes are on the same level
+- example: $(2,3)$-tree
+	- 6 keys in total
+	- height 2 (levels 0, 1, 2)
+	- level 2 … external nodes
+- observation: for any $(a,b)$-tree of height $h$…
+	- number of external nodes is at most $b^h$
+		- every node has at most $b$ children
+	- number of keys is at most $b^h-1$
+		- external nodes correspond to intervals – keys separate them
+	- number of external nodes is at least $2a^{h-1}$
+		- every node has at least $a$ children (root has at least 2)
+	- number of keys is at least $2a^{h-1}-1$
+	- → $\log_b(n+1)\leq h\leq \log_a(\frac{n+1}2)+1$
+	- $\Omega(\log_b n)=h=O(\log_a n)=O(\frac{\log n}{\log a})$
+- operation Find
+	- $O(\log b)$ per node
+	- in total $O(\log n\cdot\frac{\log b}{\log a})=O(\log n)$ if $b\in\mathrm{poly}(a)$
+		- (= if $b$ is polynomially bounded)
+- operation Insert($x$)
+	- we consider it is not there (Find ends in an external node)
+	- we take the parent $v$ of the external node
+	- we add $x$ to $v$ (and add an internal node)
+	- if $v$ not oversized → stop
+	- otherwise we split the node and push one of the keys (the middle one) to the upper node
+		- we propagate this up
+		- if the root is oversized, we create a new root
+	- does the splitting create valid nodes?
+		- oversized node has $b$ keys
+		- new nodes have $\lfloor\frac{b-1}2\rfloor$ and $\lceil\frac{b-1}2\rceil$ keys
+		- we need $\lfloor\frac{b-1}2\rfloor\geq a-1$
+		- we have $b\geq 2a-1$, so this holds
+- operation Delete($x$)
+	- Find returns $v$
+	- if $v$ is not in the last internal level, we replace it by a suitable key from the nodes in the last internal level
+		- suitable = successor
+	- so now we are deleting a node $v'$ in the last internal level (including an external node)
+		- if $v'$ not undersized → stop
+	- otherwise, we borrow a key from a sibling (if it has at least $a$ keys)
+		- we perform a “rotation” of the keys (sibling to the parent, parent to the undersized node)
+	- if a sibling does not have enough keys, we merge the nodes (we take a key from the parent)
+		- in total, we get $a-2+1+a-1=2a-2$ keys which is alright (as $b\geq 2a-1$)
+		- this may propagate upwards if the parent does not have enough keys (again, we first try to borrow a key from a sibling)
+- complexity
+	- Insert, Delete in $O(b\frac{\log n}{\log a})$
+		- we need to manipulate at most $b$ items at each level (merging/splitting the nodes)
+	- Find in $O(\log b\frac{\log n}{\log a})$
+	- we need $b$ small (probably $2a-1$ or $2a$)
+		- $2a$ to give some breathing space
+	- if we consider such $b$, we can write $O(a\frac{\log n}{\log a})$ and $O(\log a\frac{\log n}{\log a})$
+		- so we want $a$ small → $(2,3),(2,4)$
+		- in practice, we store the trees in memory
+		- we want one memory block to roughly correspond to one node
+			- considering a block of size 4 KB ($2^{12}$ B)
+			- 64-bit keys and pointers
+				- → 24 B
+			- so we may consider $(128,256)$-tree
+- variants
+	- B-tree of order $n$ ~ $(\lceil\frac n2\rceil,n)$-tree
+	- key + data in external node; minima/maxima in the internal nodes
+	- $B^+$-tree
+		- uses this way of storing data in the external nodes
+		- also contains pointers to the siblings
+	- $B^*$-tree ~ $(\lceil\frac{2n}3\rceil,n)$-tree
+		- better use of memory blocks (they are not half empty)
+		- the operations are a bit different (merging three nodes into two)
+	- RB-trees ~ $(2,4)$-trees (there is some correspondance)
+	- top-down $(a,b)$-tree
+		- based on maintaining invariants
+		- insert: “parent can always accept a new key”
+			- we split during find and propagate down
+			- so splitting does not propagate up
+		- delete: “parent can always spare a key”
+			- similar
+		- useful for parallelism – we can lock a branch and the change does not propagate up
