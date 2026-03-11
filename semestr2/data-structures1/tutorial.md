@@ -61,3 +61,28 @@
 		- $C(i,j)$ … minimum cost of a subtree containing keys $x_i,\dots,x_j$
 - interval queries using splay trees
 	- how many keys are in the interval $a,b$
+- $(a,b)$-trees
+	- $O(n)$ construction from sorted sequence
+		- $n$ inserts
+		- at most $n$ nodes
+		- each split creates one new node
+		- no deletes
+		- → total number of splits at most $n$
+		- constant time per split
+		- we keep track of the last inserted node so we don't need to find to insert
+		- $O(bn)$ if we consider $b$ as a part of the input
+	- amortized number of splits and merges in any sequence of $k$ operations insert and delete in an $(a,2a)$-tree is $O(1)$, and the total number is $O(n+k)$
+		- $O(\log n)$ reads but $O(1)$ *amortized* writes
+- red-black trees
+	- definition
+		- binary search tree with elements stored in all nodes
+		- each node is either black or red
+		- all paths from the root to the leaves contain the same number of black nodes
+		- the parent of a red node must be black
+		- leaves are black
+	- observation: we can always change the color of the root
+	- observation: equivalence with (2,4)-trees
+		- red child can be glued to its parent
+	- it's more memory efficient
+		- if storing on the memory (RAM) → red-black trees
+		- if storing on the disk → (a,b)-trees
