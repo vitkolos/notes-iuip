@@ -149,3 +149,49 @@
 			- forward: simple
 			- backward: keep the multiplied matrix without multiplying by the vector $b$
 				- then the product of matrices can be modified incrementally
+- dynamic Bayesian networks, Kalman filter
+	- …
+
+## Utility theory
+
+- utility function $U(s)$
+- rational agent maximizes its expected utility
+- rational preferences
+- often there is uncertainty about what is really being offered
+	- every possible outcome has a probability
+	- “lottery”
+- rational preferences should obey certain constraints
+	- orderability
+	- transitivity (violating it can lead to irrational behavior)
+	- continuity
+	- substitutability
+	- monotonicity
+	- decomposability
+- normalized utility function $\in[0,1]$
+	- how can we assign it?
+	- trick with a lottery (with $1-p$ you get the worst output, with $p$ you get the best output)
+- utility of money
+- human judgment
+	- Allais paradox
+	- certainty effect
+		- nedá se to popsat jako dvě funkce (expected money, risk), z nichž jedna dominuje?
+	- Ellsberg paradox
+	- ambiguity aversion
+	- framing effect
+	- anchoring effect
+- multi-attribute utility theory
+	- sometimes we can use *dominance* to select the best outcome without combining the attribute values
+		- strict dominance
+		- can be used even for uncertained outcomes (instead of individual points, we consider some areas)
+		- stochastic dominance
+- preference structure
+	- preference independence
+	- mutually utility independent
+- the value of information (quantitative)
+	- “what questions to ask?”
+	- value of perfect information (VPI)
+		- properties
+	- information gathering – how should rational agent proceed
+- qualitative value of information
+	- information is beneficial if it changes my action
+	- how much do I gain by changing my action?

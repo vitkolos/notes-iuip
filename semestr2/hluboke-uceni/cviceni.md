@@ -4,3 +4,23 @@
 	- `-1` je wild card, PyTorch použije velikost dat
 - je zvykem, že se obrázky ukládají jako pole bytů a pak se převádějí na floaty až během tréninku (?)
 - nepoužívat pythoní seznam jako seznam vrstev – PyTorch je nenajde při hledání parametrů
+- gym cartpole
+	- baseline model: 128 neuronů ve skryté vrstvě, ReLU
+	- menší model neoverfituje tak moc
+	- pro 4 skryté neurony to funguje dost dobře
+	- Tanh asi funguje líp než ReLU, protože vlastně nedělá nic (→ neoverfittuje)
+	- bez skryté vrstvy to taky funguje lol
+- GPUčka
+	- MetaCentrum (pro studenty VŠ)
+	- AIC
+	- jak pracovat s clusterem
+		- pomocí ssh se přihlásíme do hlavy (head) clusteru
+			- např. tarkil
+		- pošleme tam job (specifikujeme, jaké zdroje potřebujeme – CPU, GPU apod.)
+		- pak je tam nějaká fronta a workers
+		- interactive job (s terminálem) × batch job (bez terminálu)
+	- je to v FAQ sekci na webu
+	- `%time` na začátku řádku v interaktivním režimu (ipython) stopuje čas pro daný příkaz
+	- můžeme používat VS Code přes ssh, ale bacha, pořád je potřeba submitnout job pomocí pomocí srun
+- dosud naše architektury začínají zplacatěním
+	- teďka budeme zplacatění používat až mezi konvolucí a FC vrstvami
