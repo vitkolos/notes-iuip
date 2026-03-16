@@ -304,3 +304,46 @@
 - přístupy
 	- evoluce fyzických robotů – Khepera
 	- simulovaná evoluce – pozor, často zneužívá rozdíl mezi simulací a realitou
+- …
+
+---
+
+- reaktivní inteligence
+	- reaktivní systémy – senzory jsou přímo připojené k motorům a na stejný stav senzorů systém reaguje stejně
+		- systém může mít pomocné stavy, které slouží k určení motorických akcí
+	- vtělené a situační systémy
+	- senzorově-motorická koordinace
+	- nejednoznačnost vjemů
+	- aktivní vnímání
+		- robot může jít vjemům „naproti“
+	- může se stát, že se od sebe dva různé vjemy ze senzorů dají špatně rozlišit (ale chtěli bychom je umět rozlišit)
+		- to může řešit překódování stavů senzorů – zesílí se užitečné příznaky
+		- typicky to řeší skrytá vrstva v neuronové síti
+		- nebo to taky můžeme řešit pomocí aktivního vnímání
+		- příklad: válec/stěna
+			- pohyblivý robot odjel, jakmile objekt správně klasifikoval
+			- takže měl paradoxně méně vjemů, kde došlo ke správné klasifikaci (?)
+		- index geometrické separability
+			- chtěli bychom, aby vjemy pro stejné třídy byly blízko sebe
+			- zaznamenáme si vjemy v průběhu experimentu
+			- každému vjemu přiřadíme třídu
+			- spočítáme podíl vjemů, jejichž nejbližší jiný vjem má stejnou třídu
+	- atraktor chování
+	- umělá evoluce využívá omezení modelu
+	- příklad: krysy hledají potravu
+		- Khepera – pohybuje se po zakřivené dráze a nutně najde dlouhou stěnu
+
+## Moduly
+
+- v evoluční robotice nejsou nutné, ale možná budou fungovat dobře
+	- přizpůsobíme tomu architekturu
+- úlohy: sběr odpadu, navigace s návratem domů
+- sběr odpadů
+	- Khepera čistič s ramenem
+	- emergentní modulární architektura
+	- simulovaná evoluce
+	- ale arbitři moc nefungovaly
+		- moduly se nepřepínaly
+- návrat domů k nabíječce
+	- simulovaná baterie
+	- chceme, aby robot jezdil co nejrychleji mimo nabíječku – tomu odpovídal výpočet fitness
