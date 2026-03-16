@@ -152,3 +152,31 @@
 		- $\mu$ … mean
 		- $\sigma$ … standard deviation
 		- or we can use the *corrected* sample standard deviation
+- …
+
+---
+
+### Regression Analysis
+
+- motivation
+	- it may be costly to obtain output values
+	- input values are known earlier than the output (we want to estimate the output)
+	- controlling input variables may lead to the desired behavior of the output
+	- we want to find a (causal) relationship between the input and the output
+- correlation analysis – is there a linear relationship between two numerical quantities?
+- linear regression – what are the parameters of the linear relationship between two numerical quantities?
+- least squares method
+	- find parameters $\alpha,\beta$
+	- set partial derivatives equal to zero
+		- $n\alpha+\beta\sum_i x_i=\sum_i y_i$
+			- or $\alpha=\bar y-\beta\bar x$
+		- $\alpha\sum_i x_i+\beta\sum_i x_i^2=\sum_i x_iy_i$
+	- so $(\bar y-\beta\bar x)\sum_i x_i+\beta\sum_i x_i^2=\sum x_iy_i$
+	- we get $\beta=\frac{\sum_i (x_i-\bar x)(y_i-\bar y)}{\sum_i(x_i-\bar x)^2}$
+- correlation coefficients
+- multi-dimensional regression
+	- linear → least-squares method in matrix form
+	- non-linear
+		- logistic regression
+- discriminant analysis
+	- classification into classes
