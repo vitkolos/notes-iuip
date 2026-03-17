@@ -234,3 +234,40 @@
 	- normalizace se používá před nelinearitou
 		- je zvykem na vstupu zahazovat bias (protože se při normalizaci stejně ztratí)
 	- při inferenci se pak používá dlouhodobý odhad průměru a rozptylu (plovoucí průměr), které se spočítaly při tréninku
+- z minula
+	- když děláme pooling, tak zdvojnásobujeme počet kanálů
+- ResNet
+	- když mám moc hlubokou síť, tak se ani na těch trénovacích datech nedovede dost dobře naučit
+		- ten problém není nutně ve velikosti dat, ale prostě v hloubce sítě – nedaří se propagovat gradienty
+	- idea: nebudeme se učit přímo zobrazení, ale jenom požadovanou změnu
+	- preaktivace funguje dobře
+	- ale nejlepší varianta je conv → BN → ReLU → conv → BN
+		- tzn. bez ReLU na konci
+		- mj. abychom mohli dělat záporný update
+		- tu nelinearitu na konci nepotřebujeme
+	- proč dát BN (batchnorm) mezi conv a ReLU
+		- když nám conv vrátí samé záporné hodnoty, tak by nám je ReLU zničilo – BN to ještě může zachránít
+- WideNet
+	- idea: je super, že jdeme do hloubky, ale je potřeba jít i do šířky
+- ResNeXt
+	- konvoluce po skupinkách
+	- chceme znásobit počet kanálů, aby měla síť podobně parametrů
+- regularizace
+	- stochastic depth (jakoby dropout bloků sítě – necháme jenom skip connection)
+	- cutout – typ augmentace obrázků, vyřízneme část obrázku (dáme tam průměrnou barvu)
+	- DropBlock – jako cutout, ale je to uvnitř sítě
+	- CutMix – smíchá obrázky, target se pak naváhuje podle poměru obsahu obrázku
+	- takeaway: když chceme zahazovat u vstupů s prostorovou strukturou, tak musíme zahodit celé nějaké okolí (když vyhodím jenom jeden pixel a nechám jeho okolí, tak se toho moc nestane)
+- EfficientNet
+	- dneska pořád relevantní architektura
+	- SENet (squeeze and excitation network)
+		- vítěz ILSVRC 2017
+		- idea: nechceme jít jenom od lokálu ke globálu, ale hodilo by se nám nějak vidět globál už na začátku
+		- SE blok dostane nějaké kanály a z nich vybere ty, které mu připadají důležité
+	- mobile inverted bottleneck
+		- rozsekáme konvoluci
+			- nejdřív 3×3 na jednotlivých kanálech odděleně
+			- pak 1×1
+		- místo zmenšování (bottleneck) budeme zvětšovat
+			- na konci (na výstupní vrstvě) bottlenecku není ReLU
+	- EfficientNet byl nalezen pomocí prohledávání prostoru modelů
