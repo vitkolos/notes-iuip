@@ -384,3 +384,97 @@
 		- delete: “parent can always spare a key”
 			- similar
 		- useful for parallelism – we can lock a branch and the change does not propagate up
+- when we need to modify the a,b-tree
+	- add or remove a key
+		- changes 1 node
+	- split, merge, move (a key: sibling → parent, parent → me)
+		- each changes 3 nodes
+	- → $O(1)$ real cost
+	- every insert can generate multiple splits
+		- but splitting creates “light” nodes (they likely won't be split again in the next few inserts)
+- theorem: $m$ inserts on empty $(a,b)$-tree do $O(m)$ modifications
+	- number of splits $\leq$ number of nodes in $(a,b)$-tree with $m$ keys $\leq m$
+	- $m$ add key
+	- → $O(1)$ amortized insert
+- observation: $(a,2a{-}1)$-tree cannot have $O(1)$ amortized modifications for inserts/deletes
+	- there exists a problematic sequence of operations which performs $\log n$ modifications for every operation
+		- similar to the shrinking array
+- theorem: any sequence of $m$ inserts/deletes on empty $(a,2a)$-tree do $O(m)$ modifications
+- proof
+	- $A=R+\Delta\Phi$
+	- goal: find $\Phi$ s.t. $A=O(1)$ for add/remove/move and $A\leq 0$ for split/merge
+	- $\Phi=\sum_{v \text{ internal}} f(|v|)$
+		- $|v|$ … number of keys in $v$
+	- we need to define the contribution $f$ for every possible size of a node (including oversized and undersized nodes)
+	- add/remove/move: $|f(i+1)-f(i)|\leq c$ for some constant $c$
+	- split: $f(2a)\geq f(a-1)+f(a)+c+1$ (should be 3 but we write 1 → up to rescaling)
+		- so $A_\mathrm{split}\leq 0$
+	- merge: $f(a-1)+f(a-2)\geq f(2a-2)+c+1$
+		- so $A_\mathrm{merge}\leq 0$
+	- possible function
+		- $c=2$
+		- $f(a-2)=2$
+		- $f(a-1)=1$
+		- $f(a)=0$
+		- …
+		- $f(2a-2)=0$
+		- $f(2a-1)=2$
+		- $f(2a)=4$
+	- → $\sum R_i=\sum A_i-\Delta\Phi$
+	- $\sum A_i=O(m)$
+	- $\Delta\Phi=\underbrace{\Phi_m}_{\geq 0}-\underbrace{\Phi_0}_{=0}$
+	- so we get $\sum R_i=O(m)$
+
+## Memory
+
+- memory access
+	- we have L1, L2, L3 caching
+	- 200 CPU cycles to get data from the memory
+	- 4 CPU cycles to get data from the L1 cache
+	- cache controller handles accesses to the memory (cache hits or misses)
+	- hierarchy: CPU → L1 → L2 → L3 → memory → disk → network
+	- types of cache
+		- fully associative cache – any memory block can be in any cache line
+			- has a tag array (for every cache line, there is the corresponding tag – prefix of the address in the memory)
+			- memory address = tag + offset (6 bits for a 64B cache line)
+			- offset determines the exact position in the cache line
+		- direct mapping – each memory block can be in one cache line
+			- address = tag + index (9 bits for 512 cache lines) + offset (6 bits)
+			- index determines the cache line
+		- set associative ($2^j$-way associative) – each memory block can be in a given set of $2^j$ cache lines
+			- address = tag + index ($9{-}j$ bits) + offset (6 bits)
+- memory models (for reasoning purposes)
+	- external memory model (I/O model)
+		- we have internal and external memory
+		- operations read (external → internal) and write (internal → external)
+			- are directly controlled by the programmer (by CPU; there's no cache controller)
+		- definition: any algorithm has I/O complexity $f(n,B,M)$ if for any input of size $n$ it performs $\leq f(n,B,M)$ read/write operations
+			- $M$ … total size of memory
+			- $B$ … size of one memory block
+			- so the memory has $M/B$ blocks
+		- typically \# writes = O(\# reads)
+			- unless output = $\omega$(input)
+			- so we usually care only about reads
+	- cache-aware model
+		- cache line of size $B$
+		- size $M$ of the cache
+		- CPU knows $B,M$
+		- assumptions
+			- fully associative cache
+			- cache controller has an *optimal* strategy
+				- it evicts the cache lines that won't be needed (or will be needed the latest in the future)
+	- cache-oblivious model
+		- same as cache-aware, but CPU does not know $B,M$
+		- if our algorithm works well in this model, it may work well for any level of the cache (unlike the previous models which work well for certain values of parameters)
+- scan of an array
+	- it has $N$ items
+	- external memory model
+		- we can make the array start at a block boundary
+		- we have to read $\lceil N/B\rceil\leq N/B+1$ blocks
+	- cache-aware
+		- number of cache misses $\leq N/B+1$
+	- cache-oblivious
+		- the array may not be aligned with the block boundaries
+		- number of cache misses $\leq N/B+2$
+	- in all cases, we get the I/O complexity of $O(N/B+1)$
+		- we need the 1 in the formula as the ratio can be arbitrarily small
