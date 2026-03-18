@@ -86,3 +86,43 @@
 	- it's more memory efficient
 		- if storing on the memory (RAM) → red-black trees
 		- if storing on the disk → (a,b)-trees
+- memory access
+	- for splay trees, going down is more expensive than going up
+		- writing into the memory can be postponed
+	- we consider two levels of the memory: cache and disk
+		- cache size $M$
+		- cache is split into blocks (or pages) of size $B$
+			- how many *units* (nodes, integers, …) can be stored in one block
+		- we consider a fully-associative cache
+		- $P=M/B$ … number of blocks
+	- ExtractMin from a heap
+		- we need to access $O(\log n-\log B)$ blocks
+		- because the top $O(\log B)$ levels fit in the first block
+	- BubbleSort (compare two elements and swap them if needed)
+		- in the first iteration (epoch): $\frac nB(+1)$ blocks
+		- which block to remove from the cache?
+			- LRU (least-recently used) strategy: the first one
+			- optimal strategy: the penultimate
+		- LRU
+			- second iteration: $\frac{n-1}B$ blocks
+			- $i$-th iteration: $\frac{n-i+1}B$ blocks
+			- until there are $M$ remaining elements
+			- so we need $\Theta(\frac{n^2-M^2}B+1)$ blocks
+		- optimal
+			- we can store $P-2$ blocks from the beginning in the cache
+			- so in the second iteration, we load something like $\frac{n-M+2B}B$ blocks
+			- in total, we need to load $\Theta(\frac{(n-M)^2+n}{B}+1)$
+	- HeapSort
+		- constructing heap in $O(n)$ → $O(n)$ pagefaults
+		- removing one element … $\log\frac nB\approx\log n$
+		- so to remove the first element … $\log n$
+			- second element … $\log(n-1)$
+			- third element … $\log(n-2)$
+			- element $n-M$ … 0
+		- we get $\Theta((n-M)\log n)$
+		- → for every step of the algorithm we need one memory access
+		- HeapSort is quite slow on real computers
+	- MergeSort
+		- $n/B$ per level
+		- in total $O(\frac nB\log n)$
+		- if we take $M$ into account, we get $O(\frac nB\log\frac nM)$
