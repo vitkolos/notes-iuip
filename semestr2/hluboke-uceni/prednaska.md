@@ -271,3 +271,13 @@
 		- místo zmenšování (bottleneck) budeme zvětšovat
 			- na konci (na výstupní vrstvě) bottlenecku není ReLU
 	- EfficientNet byl nalezen pomocí prohledávání prostoru modelů
+- transfer learning
+	- modely natrénované na ImageNetu se často používají jako obecné modely pro feature extraction (u obrázků)
+	- tzn. sundáme poslední klasifikační vrstvu a zbytek použijeme jako vstup pro naši nadstavbovou síť
+	- tu část převzatou z ImageNetu můžeme zmrazit nebo finetunovat
+		- ale finetuning můžeme dělat, až když nám zkonverguje naše nadstavba
+		- musíme použít malý learning rate (třeba desetkrát menší než původní), abychom ImageNet nerozbili
+		- taky je dobré použít různé typy regularizace
+- transposed convolution
+	- chtěli bychom upscaling convolution (tzn. konvoluci, co má výstup větší než vstup)
+	- 

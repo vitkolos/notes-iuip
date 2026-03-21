@@ -24,3 +24,20 @@
 	- můžeme používat VS Code přes ssh, ale bacha, pořád je potřeba submitnout job pomocí pomocí srun
 - dosud naše architektury začínají zplacatěním
 	- teďka budeme zplacatění používat až mezi konvolucí a FC vrstvami
+- uppercase competition
+	- nemůžeme klasifikovat jednotlivá písmena – zajímá nás i kontext
+	- jak reprezentovat písmena?
+		- jako inty? ne :(
+		- můžeme onehotovat
+		- můžeme použít embedding
+	- batch size 2048, 10 epoch
+	- modely s jednou skrytou vrstvou fungujou líp než modely s více skrytými vrstvami
+		- 8192 neuronů
+	- zmenšení abecedy nám sníží čas trénování
+	- label smoothing pomáhá
+	- window size 7
+	- ensembling taky zlepší přesnost
+		- průměrování pravděpodobnosti
+	- nejlepší model (po ensemblu)
+		- embeddingy, window 10, label_smoothing 0.4
+- 
