@@ -180,3 +180,35 @@
 		- logistic regression
 - discriminant analysis
 	- classification into classes
+
+### Cluster analysis
+
+- we want to divide the observed patterns into groups of mutually similar patterns
+	- assumption: we can measure the distance between patterns
+- Minkovski metrics
+	- Hamming distance … $L_1$
+	- Euclidean distance … $L_2$
+	- Chebyshev distance … $L_\infty$
+- Mahalanobis distance
+	- uses the covariance matrix
+- distance between two clusters
+	- method of the nearest neighbor
+	- method of the farthest neighbor
+	- method of average distance
+	- centroid method
+- centroid
+	- compute the average over all the features
+	- but such pattern may not be in the data at all
+- k-means clustering
+	- several variants
+- k-medians – just use Hamming distance instead of Euclidean
+- hierarchical clustering
+	- dendrogram
+- learning vector quantization (LVQ)
+	- no guarantee of convergence (?)
+- k-medoids
+	- uses a similarity measure instead of averaging
+- grid-based methods (e.g. MAFIA)
+	- which cells of the grid are densely covered by the data?
+- density-based algorithms
+	- core point, border point, noise point
