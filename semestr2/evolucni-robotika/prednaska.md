@@ -347,3 +347,33 @@
 - návrat domů k nabíječce
 	- simulovaná baterie
 	- chceme, aby robot jezdil co nejrychleji mimo nabíječku – tomu odpovídal výpočet fitness
+
+## Učení a evoluce
+
+- dvě různé formy biologické adaptace
+- evoluce – na populaci, operuje na genotypu
+- učení – v jednom jedinci po dobu jeho života, ovlivňuje jenom fenotyp
+	- budeme uvažovat umělé neuronové sítě (učení vah)
+- konekcionismus rozlišuje
+	- učení – změny synaptických vah
+	- paměť – změny aktivačních stavů
+- učení se zpětnou vazbou z prostředí pracuje rychleji než evoluce
+	- ale výsledky učení se přímo nepřepisují do genotypu
+- výhody
+	- i evolučně suboptimální jedinci můžou přežít, pokud se dovedou dobře učit
+		- ale učení stojí čas, takže evoluce upřednostňuje jedince, které mají dané vlastnosti od narození
+	- učení umožňuje vytvořit složité fenotypy z krátkých genotypů – část informací se extrahuje z prostředí
+- nevýhody
+	- ne vždy je možné naučit se, co je potřeba
+	- nenaučený jedinec si může ublížit
+- učení dělá fitness funkci „hladší“
+- učení a evoluce můžou mít různé cíle
+	- prostor učení a prostor evoluce vypadají jinak
+- výhody učení se projevují v interakci s evolucí
+- evoluce učení
+	- Floreano, Mondala
+	- genotyp kóduje architekturu a pravidla učení pro váhy (ne jejich hodnoty)
+	- učící pravidla – skutečné vzorce se nemusíme učit
+- sekvenční úloha – zapnutí světla vypínačem
+	- učení jedinci si uměli poradit se změnou barvy stěn (jedinci s genetický kódovanými váhami nikoliv)
+- …
