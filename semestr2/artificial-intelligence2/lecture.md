@@ -195,3 +195,21 @@
 - qualitative value of information
 	- information is beneficial if it changes my action
 	- how much do I gain by changing my action?
+
+## Sequential decision problems
+
+- how to set the utility
+	- goal exit: +1
+	- unwanted exit: -1
+	- other states: -0.04 (to find the shortest path to the goal)
+- optimal policies
+	- do not depend on the initial state
+	- the policy is driven by the current state and the goal
+- we can first assign long-term utilities to states
+	- it's not sufficient to select using argmax, we need to take stochasticity of the actions into account
+- POMDP
+	- belief state = probability distribution (before, it was just a set of possible states)
+	- POMDP can be reduced to a continuous-space MDP
+	- value iteration can be modified for POMDPs but it's not very efficient
+	- dynamic Bayesian networks and look-ahead techniques are more efficient
+		- *expected minimax* algorithm
