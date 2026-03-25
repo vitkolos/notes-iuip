@@ -564,3 +564,4 @@
 				- $d=\Theta(B)$
 			- so we get $O(N^2/B+1)$
 				- c/o model
+				- the matrix is actually stored in $O(N^2/B+1)$ blocks
