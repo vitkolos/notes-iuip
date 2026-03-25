@@ -126,4 +126,22 @@
 		- $n/B$ per level
 		- in total $O(\frac nB\log n)$
 		- if we take $M$ into account, we get $O(\frac nB\log\frac nM)$
-	
+- matrices
+	- suggested to implement in C++ (not in Python)
+	- perform operations only in the leaves!
+	- how to work with odd matrix sizes
+		- just consider the “smaller” and “larger” halves (beware that then we get rectangular matrices in lower nodes of the recursion tree)
+- multiplying two $n$-bit numbers
+	- naive way
+		- $O(n)$ space
+		- $O(n^2)$ time
+		- $O(n^2/B+1)$ I/O complexity
+	- Karatsuba algorithm
+		- trivial approach (with 4 multiplications)
+			- time $O(n^2)$
+			- root → 4 children (each of half the size)
+			- height of the tree $\log n$
+			- but we only need $\log n-\log M=\log \frac nM$ levels until the whole subtree fits in the cache
+			- I/O: $O(\frac{n^2}{BM}+\frac nB+1)$
+		- standard approach (with 3 multiplicaiton)
+			- time $O(n^{\log_2 3})$
