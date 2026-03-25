@@ -280,4 +280,16 @@
 		- taky je dobré použít různé typy regularizace
 - transposed convolution
 	- chtěli bychom upscaling convolution (tzn. konvoluci, co má výstup větší než vstup)
-	- 
+
+## Detekce objektů
+
+- R-CNN
+	- pro obrázek dostane RoI (regions of interest), má určit, jestli tam je nějaký objekt (jaký) a kde přesně je
+		- RoI generujeme nějakou tradiční metodou – může jich být třeba 2000
+	- smooth L1 loss (Huber loss) – zakulacená L1 (v okolí nuly je to MSE)
+	- každý RoI musíme protlačit konvoluční sítí (třeba VGG)
+- Fast R-CNN
+	- všechny RoI proháníme sítí najednou (konvolvujeme celý obrázek naráz, pak se koukáme na regiony)
+	- average precision (?)
+- Faster R-CNN
+	- region proposal network

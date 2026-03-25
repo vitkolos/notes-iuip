@@ -478,3 +478,89 @@
 		- number of cache misses $\leq N/B+2$
 	- in all cases, we get the I/O complexity of $O(N/B+1)$
 		- we need the 1 in the formula as the ratio can be arbitrarily small
+- mergesort
+	- we merge two “runs” (sorted arrays) of sizes $n_1,n_2$ into a single run of size $n_1+n_2$
+	- $O(n\log n)$
+		- $O(\log n)$ passes; $O(n)$ operations in each one
+	- one merge = three scans
+		- $O(\frac{n_1+n_2}B+1)$
+	- one pass
+		- sequence of merges that goes through the entire array (they are on the same level of recursion)
+		- $O(N/B+1)$
+		- → mergesort $O(\frac{N\log N}B+\log N)$
+		- but we can write $O(\frac{N\log N}B+1)$
+			- because in general for $O(N/B+1)$
+				- if $N\geq B$ … $O(N/B+1)=O(N/B)$
+				- if $N\lt B$ … $O(N/B+1)=O(1)$
+					- it fits in a single cache block
+- $K$-way mergesort
+	- number of passes … $O(\log_K N)=O(\frac{\log N}{\log K})$
+	- we need a heap to keep minimum of $K$ elements
+		- $O(\log K)$
+	- time
+		- one pass … $O(N\log K)$
+		- $K$-mergesort … $O(N\log K\cdot\frac{\log N}{\log K})=O(N\log N)$
+	- I/O complexity
+		- $K+1$ scans per one run
+		- one pass … $O(N/B+1)$
+		- mergesort … $O(N/B\cdot\frac{\log N}{\log K}+1)$
+	- how many memory blocks we need?
+		- $K+1$ blocks for merge + $K-1$ for heap
+			- $K-1$ is more than enough (even a logarithm of $K$ would suffice but we want to get a nice sum)
+		- → $M\geq 2KB$ → $K=\lfloor M/2B\rfloor$
+		- → $O(N/B\cdot\frac{\log N}{\log M/B}+1)$
+			- in cache-aware (c/a) model
+
+### Matrices
+
+- usually stored **by rows** (in Matlab by columns)
+- consider a matrix $N\times N$
+- scanning by rows … $O(N^2/B+1)$
+- scanning by columns … $O(N^2+1)$ if $M\lt NB$
+- matrix transposition
+	- naive way: we traverse in both ways (by columns and by rows at once)
+		- $O(N^2+1)$ block transfers if the memory is small … $M=o(NB)$
+	- idea: split the problem into smaller subproblems which fit in the cache
+		- “tiling” … tiles of size $d\times d$
+		- tiles on the main diagonal can be transposed directly
+		- non-diagonal tiles have to be transposed and swapped with the opposite ones
+			- we need two tiles to fit into the cache
+		- number of tiles … $\lceil N/d\rceil^2\leq (N/d+1)^2=O(N^2/d^2+1)$
+		- consider $d=B$
+			- we need $M\geq 2B^2$
+			- usually, we make “tall cache assumption”
+				- $M=\Omega(B^2)$
+				- “memory is at least as tall as it is wide”
+		- if $B$ divides $N$
+			- we need $M\geq 2B^2$
+		- if $B$ does not divide $N$
+			- we need $M\geq 4B^2$
+	- → $O(N^2/B^2+1)\cdot O(B)=O(N^2/B+1)$
+		- for c/a model
+	- divide and conquer
+		- consider $N=2^k$
+		- naive
+			- four transposes, one swap
+			- $O(N^2\log N)$ time
+		- another approach
+			- operation transpose (T)
+				- T → 2T + TS
+			- operation transpose and swap (TS)
+				- TS → 4TS
+			- each task splits in at most 4 subtasks
+			- in level $i$, we will have at most $4^i$ nodes
+			- number of levels … $\log N=k$
+				- each time, we reduce the size by two
+			- in leaves
+				- T … do nothing
+				- TS … swap elements, $O(1)$
+			- internal nodes … $O(1)$ time
+			- number of leaves $\leq 4^{\log N}=N^2$
+			- number of internal nodes $\leq$ number of leaves $\leq N^2$
+			- time $O(N^2)\quad\checkmark$
+			- consider a level where the subtree fits in the memory
+				- min $i$ such that $d=\frac N{2^i}\leq B$
+				- $B/2\lt d\leq B$
+				- $d=\Theta(B)$
+			- so we get $O(N^2/B+1)$
+				- c/o model
