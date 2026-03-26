@@ -40,4 +40,23 @@
 		- průměrování pravděpodobnosti
 	- nejlepší model (po ensemblu)
 		- embeddingy, window 10, label_smoothing 0.4
-- 
+- cifar competition
+	- baseline: ReLU, batch 128, 200 epochs, SGD with lr 0.1 and Nesterov 0.9, cosine decay, dropout 0.2, stochastic depth 0.2, label smoothing 0.1, weight decay 0.004/10
+	- data augmentation
+		- basic: horizontal flip, random move of the image
+		- cutout
+		- AutoAugment or RandAugment
+	- stochastic depth funguje
+	- bacha na „overfitting“
+		- vývojová množina obvykle pochází ze stejného zdroje jako tréninková množina (kdežto testovací je odjinud)
+		- takže se nám snadno stane, že overfitneme na trénovací data, když porovnáváme hyperparametry
+	- weight decay je citlivý parametr, je potřeba ho zvolit dobře
+		- a taky přizpůsobovat, když měním ostatní hyperparametry
+- jak na transfer learning
+	- zmrazení pretrained modulu (backbone)
+		- backbone.requires_grad_(false)
+		- je potřeba přepsat train metodu, aby backbone byla v eval módu
+	- rozmražení
+		- backbone.requires_grad_(true)
+		- backbone do train módu – až na BatchNorm (musí zůstat v eval módu)
+	- když trénuju model, který bych chtěl později finetunit, tak může být praktické použít group norm

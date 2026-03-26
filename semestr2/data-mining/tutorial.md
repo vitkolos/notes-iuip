@@ -13,3 +13,10 @@
 - np.load
 	- we can set mmap_mode → only part of the file is loaded into the memory (useful for large arrays)
 - outlier – definition from the lecture
+- chí-kvadrát
+	- je to rozdělení součtu druhých mocnin $k$ čísel z normálního rozdělení
+	- zafixujeme řádkové a sloupcové součty
+	- jak určit stupně volnosti? zbavím se posledního řádku a posledního sloupce, spočítám zbývající buňky
+- Fisherův test
+	- máme zafixované řádkové a sloupcové součty
+	- náhodně tam umisťujeme prvky
