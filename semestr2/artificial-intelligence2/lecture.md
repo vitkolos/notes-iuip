@@ -213,3 +213,7 @@
 	- value iteration can be modified for POMDPs but it's not very efficient
 	- dynamic Bayesian networks and look-ahead techniques are more efficient
 		- *expected minimax* algorithm
+
+## Game theory, mechanism design
+
+- …

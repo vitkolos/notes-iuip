@@ -208,7 +208,23 @@
 	- no guarantee of convergence (?)
 - k-medoids
 	- uses a similarity measure instead of averaging
+	- we consider $k$ best representatives (from the dataset)
+		- so the medoids are real data points
 - grid-based methods (e.g. MAFIA)
 	- which cells of the grid are densely covered by the data?
+	- merge neighboring *dense* hyper-cubes (cells) to get clusters
 - density-based algorithms
-	- core point, border point, noise point
+	- core point: there at least $\tau$ points closer than $\varepsilon$
+	- border point: there is at least one core point closer than $\varepsilon$
+	- noise point: otherwise
+- scalable approaches – for lots of data
+	- CLARA, CLARANS
+	- k-medoids are expensive to compute
+	- CURE
+
+## Decision Trees
+
+- difficult to process continuous data
+	- decision trees divide the features space into rectangular regions
+	- problem if the decision boundary looks like $y=x$
+		-  we would need to check a value of one attribute relatively to another attribute
