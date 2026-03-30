@@ -377,3 +377,41 @@
 - sekvenční úloha – zapnutí světla vypínačem
 	- učení jedinci si uměli poradit se změnou barvy stěn (jedinci s genetický kódovanými váhami nikoliv)
 - …
+
+## Koevoluce, dravec-kořist
+
+- současná evoluce dvou nebo více populací s provázanou fitness funkcí
+- koevoluce nemusí vést ke zdokonalování jedinců – strategie se můžou pouze cyklicky opakovat
+	- lze brzdit pomocí síně slávy
+- jak sledovat vývoj?
+	- když se zlepšuje jeden druh, tak se skoro jistě (relativně) zhoršuje druhý
+	- takže se používá CIAO – necháme nejlepšího jedince z aktuální generace utkat se s nejlepšími soupeři z minulých generací
+		- generujeme bitmapu N×N, kde N je počet generací – pixel je černý nebo bílý podle toho, kdo vyhrál
+	- po skončení evoluce můžeme uspořádat tzv. mistrovství – necháme nejlepšího z dané generace utkat se s nejlepšími ze všech generací (ideálně by křivka měla růst)
+- aplikace
+	- třídící algoritmus pro data s určitými vlastnostmi (např. jsou částečně setříděné)
+- příklad: dravec-kořist s roboty
+	- jedinec testovaný proti nejlepším soupeřům z předcházejících 10 generacích
+	- fitness kořisti = čas do kontaktu / maximální čas
+	- fitness dravce = 1 – fitness kořisti
+	- různé strategie, lze je pozorovat a popsat (ale těžko)
+		- různí jedinci v populaci můžou mít různé strategie
+	- aby se předešlo cyklení, dává smysl vybírat ze všech předchozích generací (ne jen z 10 předcházejících)
+	- nedá se úplně zabránit cyklení strategií – těch tříd je konečně mnoho
+	- metoda síně slávy fungovala líp
+	- zkusili vylepšit kořist
+	- experimenty s jednoduchou evolucí
+	- experimenty s celoživotním učením
+- koevoluce tvaru těla
+	- Karl Sims
+- hra Tron
+
+## Zobrazení genotypu na fenotyp
+
+- dosud 1:1
+- ale dekódování genotypu na fenotyp může být ovlivněno prostředím
+- výsledná fitness je daná fenotypem
+- jedinec se může vyvíjet postupně – mít vývojová stádia
+- genetické kódování
+	- přímé kódování
+		- jednoduché na implementaci, ale chtěli bychom něco s větší vyjadřovací silou (na krátkém rozsahu)
