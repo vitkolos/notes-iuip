@@ -293,3 +293,70 @@
 	- average precision (?)
 - Faster R-CNN
 	- region proposal network
+
+## Rekurentní sítě
+
+- rekurentní buňka má nějaký interní stav, ten posílá sama sobě
+- ale neuronka nemůže být cyklický graf, proto ji „rozbalíme“
+- buňka žere vstup a předchozí stav, generuje výstup a nový stav
+- nejjednodušší přístup: výstup = nový stav
+	- může vypadat třeba takto: nejdřív concat, pak fully-connected vrstva, pak tanh
+		- nebo se to dá zapsat jako $\tanh(Uh^{(t-1)} + Vx^{(t)} + b)$
+			- $h$ … stav
+			- $x$ … vstup
+	- tanh fyzicky omezí velikost hodnot
+		- prevence exploze gradientu
+	- v PyTorch jako torch.nn.RNN nebo torch.nn.RNNCell
+	- co s vanishing gradienty?
+	- aplikujeme hodněkrát za sebou to samé
+		- když si to zjednodušíme na lineární transformaci, tak je to jako násobení mocninou matice
+- long short-term memory (LSTM)
+	- z roku 1997
+	- chceme konstantní error flow
+		- zařídíme to pomocí speciální residual connection
+	- má gaty
+		- sigmoid rozhoduje, jestli ukládáme do paměti nebo ne
+			- po prvkách
+		- proč to nedělá přímo tanh?
+			- mohl by, ale empiricky je pro síť snazší ty problémy (spočítat to, co mě zajímá, a určit, zda výsledek uložím) řešit odděleně
+		- sigmoid taky rozhoduje, jestli použijeme stav z paměti nebo ne
+		- byl problém s tím, že když jsme síť přetížili (dali jsme jí toho moc k zapamatování), tak pak fungovala špatně
+			- takže potřebuje ještě gate, který jí umožní zapomínat
+			- forget gate bias se obvykle inicializuje na 1 (nebo třeba na 3), aby výchozí procento zapamatování nebylo 0.5, ale vyšší (0.731 nebo 0.953)
+- gated recurrent unit (GRU)
+	- z roku 2014
+	- zjednodušení LSTM
+		- jeden vnitřní stav
+		- ukládání a zapomínání je spojeno v jedné gate
+			- jakoby nahradím nějakou část uložených dat
+		- „output gate“ – co z paměti potřebuješ, abys vypočítal další stav (na základě vstupu)
+- GRU vs. LSTM
+	- GRU používá míň parametrů
+	- s GRU se snáz pracuje, je to jen jeden tensor
+	- když mám GRU, tak nemůžu něco přidat do paměti, aniž bych něco zahodil
+		- LSTM umí rozpoznat jazyk $a^nb^n$, GRU s tím má problém
+- je vhodné váhy incializovat ortogonální maticí – abychom neměli problém s gradienty
+	- PyTorch to nedělá
+- jak to regularizovat?
+	- pomocí dropoutu
+	- ale dropout se nepoužívá na skrytém stavu – to bychom měli moc krátkou paměť
+		- jsou nějaké alternativní přístupy (aby se dal dropoutovat stav buňky), ale je to za cenu hardwarové akcelerace, takže se to nevyplatí
+	- variační dropout
+	- rekurentní dropout
+	- zoneout
+		- „chvilka nepozornosti“ – vrátíme se zpátky k minulému skrytému stavu (částečně)
+	- batch normalization
+		- je potřeba dobře inicializovat, jinak přijdeme o gradienty
+	- layer normalization
+		- pozor, kdybychom ho chtěli použít u obrázků, tak tam může být problém – spíš chceme použít group norm s jednou skupinou
+- úlohy
+	- můžeme získat reprezentaci celé sekvence nebo jednotlivých prvků
+	- můžeme generovat sekvenci
+- můžeme mít víc vrstev, pak typicky chceme residuální spoje (obvykle od druhé vrstvy)
+- můžeme mít obousměrné RNN
+
+## Reprezentace slov
+
+- místo one-hot embeddingu použijeme distribuovanou reprezentaci – slovo odpovídá vektoru reálných čísel
+- co s neznámými slovy?
+	- pořídíme si rekurentní síť, která ze znaků vyrobí embedding slova
