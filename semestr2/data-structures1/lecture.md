@@ -645,6 +645,7 @@
 		- $\mathcal H$ “behaves” as totally random function
 	- definition
 		- $\mathcal H$ is $c$-universal for a constant $c\gt 0$ if $\forall x,y\in\mathcal U,\ x\neq y$, the probability of collision is $\leq\frac cm$ (for $h$ uniformly randomly sampled from $\mathcal H$)
+			- or ”the number of hash functions $h\in\mathcal H$ satisfying $h(x)=h(y)$ is at most $\frac{c|\mathcal H|}{m}$”
 		- $\mathcal H$ is universal if it is $c$-universal for some $c\gt 0$
 	- theorem
 		- let $\mathcal H$ be $c$-universal, $x_1,\dots,x_n,y\in\mathcal U$ are distinct

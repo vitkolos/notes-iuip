@@ -145,3 +145,9 @@
 			- I/O: $O(\frac{n^2}{BM}+\frac nB+1)$
 		- standard approach (with 3 multiplicaiton)
 			- time $O(n^{\log_2 3})$
+- hashing functions
+	- system which is 1-universal but not 2-independent
+		- set of all hash functions such that $h(0)=0$ and $h(1)=1$
+	- $k$-independent system which is not $k+1$-independent
+		- again, consider all hash functions
+		- now, we want $\sum_{i=1}^kh(i)$ to be equal to 0 (mod $m$)
