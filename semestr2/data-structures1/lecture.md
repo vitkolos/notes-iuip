@@ -565,3 +565,98 @@
 			- so we get $O(N^2/B+1)$
 				- c/o model
 				- the matrix is actually stored in $O(N^2/B+1)$ blocks
+
+### Cache Eviction
+
+- optimal strategy: “evict the cache line needed the latest”
+	- offline strategy
+- cost of strategy … $T_{STR}$ = number of cache misses
+	- w.r.t. sequence of requests for particular blocks $a_1,\dots,a_n$
+	- we assume fully associative cache
+	- no assumption on initial contents of the cache
+- strategy is $k$-competitive for a constant $k\geq 1$ if $(\forall C)(\forall a_1,\dots,a_n):T_{STR}\leq k\cdot T_{OPT}$
+	- $C$ … cache size
+	- $T_{OPT}$ … cost of the optimal strategy
+- LRU (least-recently used) strategy
+	- “evict the cache line unused the longest time”
+- theorem: $\forall C,\varepsilon\gt 0:$ there is an access sequence s.t. $T_{LRU}\geq C\cdot(1-\varepsilon)\cdot T_{OPT}$
+	- (we can choose $C\cdot (1-\varepsilon)\gt k$)
+- proof
+	- access sequence $1,\dots,C,C{+}1,1,\dots,C,C{+}1,\dots$ repeated
+	- LRU evictions
+		- we want to show LRU is bad, so we consider that the cache contains $1,\dots,C$ at the beginning (best-case scenario)
+		- after the initial sequence $1\dots,C$, there's a cache miss (and eviction) at every step
+	- EPOCH evictions
+		- let's divide the accesses into epochs by $C$
+		- first epoch: we evict everything
+		- second epoch: we evict $C$ (one item)
+		- third epoch: we evict $C{-}1$
+		- so we get $T_{LRU}\geq C T_{EPOCH}\geq C T_{OPT}$
+		- $\varepsilon$ … influence of the first epoch
+			- we get low $\varepsilon$ if we repeat the sequence for many times
+- theorem: $(\forall C_{LRU}\gt C_{OPT}\geq 1)(\forall a_1,\dots,a_n): T_{LRU}\leq\underbrace{\frac{C_{LRU}}{C_{LRU}-C_{OPT}}}_{\gt 1} T_{OPT}+C_{OPT}$
+	- Sleator, Tarjan
+- corollary: for $C_{LRU}=2 C_{OPT}$, LRU is $(2+\varepsilon)$-competitive for large-enough sequences
+- proof
+	- we split the sequence into epochs (from the end to the beginning) s.t. in every epoch except for the first one, $T_{LRU}=C_{LRU}$
+		- in the first one ($E_0$): $T_{LRU}\leq C_{LRU}$
+	- epoch $E_i$ s.t. $i\geq 1$
+		- …
+	- epoch $E_0$
+		- $T_{OPT}\geq T_{LRU}-C_{OPT}$
+
+## Hashing
+
+- hashing with chaining
+	- universe $\mathcal U$
+	- $m$ buckets … $[m]=\set{0,\dots,m-1}$
+	- hashing function $h:\mathcal U\to [m]$
+	- $n$ elements are already in the hash table
+	- collision → we add the element to the end of the chain
+	- density $\alpha=n/m$
+		- expected length of the chain (in some cases?)
+	- examples of hashing functions
+		- hashing by linear congruence
+			- $h(x)=ax\bmod m$
+			- $a,m$ coprime (nesoudělná)
+		- multiply-shift
+			- $m=2^\ell,\ w\gt\ell,\ a$ odd
+			- $h(x)=\lfloor(ax\bmod 2^w)/w^{w-\ell}\rfloor$
+			- so we take $\ell$ bits
+		- scalar product
+			- e.g. for hashing strings
+			- $h(x_0,\dots,x_{d-1})=\sum a_ix_i \bmod m=a\cdot x\bmod m$
+				- $x_i\in\mathbb Z_p$
+		- polynomial hashing
+			- we interpret $x_0,\dots,x_{d-1}\in\mathbb Z_p$ as coefficients of a polynomial and evaluate the polynomial in a given point $a\in\mathbb Z_p$
+			- $h(x_0,\dots,x_{d-1})=\sum x_ia^i\bmod m$
+	- using a fixed hashing function is problematic – there exists an adversarial sequence of inputs
+	- solution: pick our hashing function uniformly randomly from a family of hashing functions ($h\in\mathcal H$)
+	- consider a family of all functions
+		- $\mathcal H=\set{h\mid h:\mathcal U\to[m]}$
+		- totally random function
+			- but how to store it?
+			- needs $|\mathcal U|\log m$ bits
+			- we don't have that many bits :(
+	- “good family”
+		- parametrized
+			- we only need to store the parameter
+		- computed in $O(1)$ (or $O(d)$ for strings)
+		- $\mathcal H$ “behaves” as totally random function
+	- definition
+		- $\mathcal H$ is $c$-universal for a constant $c\gt 0$ if $\forall x,y\in\mathcal U,\ x\neq y$, the probability of collision is $\leq\frac cm$ (for $h$ uniformly randomly sampled from $\mathcal H$)
+		- $\mathcal H$ is universal if it is $c$-universal for some $c\gt 0$
+	- theorem
+		- let $\mathcal H$ be $c$-universal, $x_1,\dots,x_n,y\in\mathcal U$ are distinct
+		- $\mathbb E_{h\in\mathcal H}[\# i\mid h(x_i)=h(y)]\leq\frac{cn}m$
+	- proof (from linearity of expectation)
+		- indicator variable $A_i$ for each collision
+			- $A_i=1$ iff $h(x_i)=h(y)$
+		- $\mathbb E[A_i]=0\cdot P(h(x_i)\neq h(y))+1\cdot P(h(x_i)=h(y))\leq\frac cm$
+		- $\mathbb E[\sum_{i=0}^n A_i]=\sum_{i=0}^n\mathbb E[A_i]\leq\frac{cn}m$
+	- complexity of hashing with chaining
+		- unsuccessful find … $O(n/m)$
+		- successful find … $O(n'/m)$
+			- $n'$ … number of elements at the time of insertion
+		- insert, delete – similar analysis
+			- unsuccessful insert = successful find
