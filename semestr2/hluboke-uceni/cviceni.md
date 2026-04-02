@@ -60,3 +60,7 @@
 		- backbone.requires_grad_(true)
 		- backbone do train módu – až na BatchNorm (musí zůstat v eval módu)
 	- když trénuju model, který bych chtěl později finetunit, tak může být praktické použít group norm
+- cags soutěž
+	- 232 soutěžících
+- není zásadní rozdíl mezi transponovanou konvolucí a upscalingem
+	- u transponované konvoluce se používají kernely se sudou velikostí (typicky 4)

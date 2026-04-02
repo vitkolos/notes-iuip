@@ -20,3 +20,4 @@
 - Fisherův test
 	- máme zafixované řádkové a sloupcové součty
 	- náhodně tam umisťujeme prvky
+	- pro dvoustranný test potřebuju znát i střední hodnotu
