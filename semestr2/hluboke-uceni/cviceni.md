@@ -64,3 +64,6 @@
 	- 232 soutěžících
 - není zásadní rozdíl mezi transponovanou konvolucí a upscalingem
 	- u transponované konvoluce se používají kernely se sudou velikostí (typicky 4)
+- existují funkce na logaritmování součtu $e^x$
+	- logaddexp, logsumexp
+- FastText embeddingy

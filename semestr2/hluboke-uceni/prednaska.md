@@ -360,3 +360,51 @@
 - místo one-hot embeddingu použijeme distribuovanou reprezentaci – slovo odpovídá vektoru reálných čísel
 - co s neznámými slovy?
 	- pořídíme si rekurentní síť, která ze znaků vyrobí embedding slova
+
+## Strukturovaná predikce
+
+- např. predikce slovních druhů, závisí na kontextu
+- nebo named entity recognition
+	- span labeling
+	- IOB tagování
+- některé sekvence můžou být neplatné, co s tím?
+	- u IOB nám stačí matice, která řekne, jestli může nějaká značka následovat po jiné značce
+	- musíme zakázat `I-t` za čímkoliv jiným než `B-t`
+	- na začátek a na konec můžeme přidat zarážky, jestli je to potřeba
+	- $\alpha_t(k)$ … logaritmus pravděpodobnosti nejpravděpodobnější posloupnosti $t$ prvků s posledním prvkem $k$
+	- když se je posloupností hodně, tak použijeme dynamické programování (Viterbiho algoritmus)
+	- místo log pravděpodobnosti můžu použít logit
+		- je to jako log pravděpodobnost + konstanta
+	- někdy se řeší, aby to síť sledovala i při trénování (byť to obvykle není potřeba)
+		- mohl bych síti natvrdo předložit předchozí značku a nutit ji generovat aktuální značku
+			- zafixujeme argmaxovanou značku
+			- dál podobné jako předtím
+		- CRF – conditional random fields
+			- pravděpodobnost sekvence jako softmax přes všechny validní sekvence
+			- pak se to dá derivovat a počítat z toho loss
+- connectionist temporal classification (CTC)
+	- nemáme zarovnání mezi nahrávkou a slovy
+	- generujeme spoustu symbolů, mezi ně dáváme blanky, pak symboly pospojujeme
+		- musíme rozlišovat, jestli posloupnost končí blankem nebo ne – značíme jako $\alpha_*$ nebo $\alpha_{\_}$
+	- při tréninku uvažujeme všechny možné alignmenty, které vygenerujou tu správnou výslednou sekvenci, a maximalizujeme součet pravděpodobností
+	- neumíme provést dekódování v polynomiálním čase
+		- chtěli bychom najít posloupnost, co má největší součet pravděpodobností odpovídajících kódovaných posloupností
+	- beam search
+		- udržujeme si $k$ nejlepších řešení
+		- extended labeling převedeme na regular labeling, takže si nepamatujeme každý extended labeling zvlášť, ale pamatujeme si skupinky, které odpovídají stejným regular labelingům
+- Word2Vec
+	- unsupervised (self-supervised) word embeddings
+	- potřebujeme mít nějakou úlohu, na které se síť naučí význam slov
+		- hypotéza: slova ve stejných kontextech mají podobné významy
+	- CBOW, skip-gram
+	- není tam žádná nelinearita, jenom sčítání, maticové násobení a softmax
+		- akorát softmax potřebuje znát všechna možná výstupní slova
+		- první možnost
+			- hierarchický softmax – postavíme si binární strom nad daty, na každém patře děláme binární klasifikaci
+		- druhá možnost
+			- negative sampling – chceme, aby to správné slovo mělo pravděpodobnost nula a aby $k$ náhodně nasamplovaných slov mělo pravděpodobnost 0
+			- typicky $k=5$, dá se mít větší (15) nebo menší (2)
+			- jak samplovat negativní příklady
+				- uniformně – pak budou častá slova relativně málo často jako negativní příklady
+				- pomocí jejich pravděpodobnosti v textu – pak budou výjimečná slova málo často jako negativní příklady
+				- něco mezi – s distribucí $U(w)^{3/4}$
