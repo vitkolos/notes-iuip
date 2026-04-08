@@ -667,6 +667,8 @@
 			- if $\alpha=\frac nm\gt 1$, then $m'=2m$, pick new $h\in\mathcal H$, rehash
 			- if $\alpha\lt 1/4$, then $m'=\frac m2$, pick new $h$, rehash
 			- so we keep $\alpha$ in the interval $[1/4,1]$ (but we could choose a different interval)
+			- we need to ensure that we have linearly many operations between reallocations
+				- so after reallocation, we want to be somewhere in the middle between the two bounds
 	- consider $h_t(x)=xt=\sum_{i=1}^d x_it_i \mod p$
 		- $h_t:\mathbb Z_p^d\to\mathbb Z_p$ (for hashing strings, only mixes the field)
 		- $t,x\in\mathbb Z_p^d$

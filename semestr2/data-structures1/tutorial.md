@@ -151,3 +151,35 @@
 	- $k$-independent system which is not $k+1$-independent
 		- again, consider all hash functions
 		- now, we want $\sum_{i=1}^kh(i)$ to be equal to 0 (mod $m$)
+- note that a 1-independent hash system might consist of constant hash functions only
+	- so 1-independence does not imply universality
+- *separate chaining* (hashing with chaining) requires universality
+	- this is the standard implementation
+	- separate – we have separate chains for each bucket
+- complexity of *find* depends on the expected number of elements in the bucket where the element is stored
+- multiply-shift hashing system
+	- $\mathcal U=[2^w]$
+		- $w$-bit integers
+	- $m=2^\ell$
+	- $h_a(x)=(ax\bmod 2^w)\gg(w-\ell)$
+	- $a$ is an odd $w$-bit integer
+	- on a real computer, we don't need to do the modulo (it overflows)
+	- if $a$ was even, it would not work that well
+		- intuition: most of the randomness is in the middle
+		- if we took bits exactly from the middle we would not care about $a$ being even or odd
+		- but we are taking the leftmost bits from the right part of the number
+- linear probing
+	- one of the techniques of open addressing
+	- elements are stored directly inside the array (no memory overhead)
+	- if the cell, where we want to store the element, is already full, we move through the array one by one and use the next empty cell
+	- deletion
+		- we can mark the cell as deleted – then we need to perform cleanups from time to time
+		- or we need to move all the elements which are hashed above the gap but stored below the gap
+	- we can have $O(1)$ operations if $m\geq cn$, $c\gt 1$, and $\mathcal H$ is totally independent
+		- but it's impossible to have a totally independent hashing system
+		- 5-independent hashing system is sufficient
+	- another approach: quadratic hashing
+		- we skip by more than just one position
+	- or double hashing
+		- we have two hash functions
+	- historically very popular (little memory available), now becoming popular again (accesses memory sequentially which is fast)
