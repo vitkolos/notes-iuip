@@ -178,8 +178,9 @@
 	- we can have $O(1)$ operations if $m\geq cn$, $c\gt 1$, and $\mathcal H$ is totally independent
 		- but it's impossible to have a totally independent hashing system
 		- 5-independent hashing system is sufficient
+	- if combined with multiply-shift, it gets logarithmic :(
+	- historically very popular (little memory available), now becoming popular again (accesses memory sequentially which is fast)
 	- another approach: quadratic hashing
 		- we skip by more than just one position
 	- or double hashing
 		- we have two hash functions
-	- historically very popular (little memory available), now becoming popular again (accesses memory sequentially which is fast)
