@@ -661,3 +661,93 @@
 			- $n'$ … number of elements at the time of insertion
 		- insert, delete – similar analysis
 			- unsuccessful insert = successful find
+		- if $n=\Omega(m)$, we get constant expected time
+	- what if we don't know $n$ (how many elements we need to hash)
+		- idea: stretching
+			- if $\alpha=\frac nm\gt 1$, then $m'=2m$, pick new $h\in\mathcal H$, rehash
+			- if $\alpha\lt 1/4$, then $m'=\frac m2$, pick new $h$, rehash
+			- so we keep $\alpha$ in the interval $[1/4,1]$ (but we could choose a different interval)
+	- consider $h_t(x)=xt=\sum_{i=1}^d x_it_i \mod p$
+		- $h_t:\mathbb Z_p^d\to\mathbb Z_p$ (for hashing strings, only mixes the field)
+		- $t,x\in\mathbb Z_p^d$
+		- $p$ prime
+		- theorem: $\mathcal S=\set{h_t\mid t\in\mathbb Z_p^d}$ is 1-universal $\forall d\geq 1$, $p$ prime
+		- proof
+			- for $x\neq y$ (WLOG $x_d\neq y_d$) it holds that $P(h_t(x)=h_t(y))=P(xt=yt)=P((x-y)t=0)=$
+			- $=P\left((x_d-y_d)t_d=-\sum_{i=1}^{d-1}(x_i-y_i)t_i\right)$
+			- note that $(x_d-y_d)\neq 0$
+			- every $t_i$ is chosen independently with probability $1/p$
+			- after fixing the sum, there is only one element $t_d$ such that the equality holds (and we have $p$ choices for $t_d$)
+	- $h_{a,b}(x)=(ax+b\bmod p)\bmod m$
+		- $\mathcal L=\set{h_{a,b}\mid a,b\in\mathbb Z_p}$
+		- theorem: $\mathcal L$ is 2-universal $\forall$ prime $p\geq m$
+		- proof
+			- $x\neq y$ fixed
+			- $r=(ax+b)\bmod p$
+			- $s=(ay+b)\bmod p$
+			- claim: $(a,b)\mapsto (r,s)$ is a bijection
+				- for any pair $(r,s)$ there is exactly one choice of $(a,b)$
+				- because the system of equations is regular (thanks to $x\neq y$)
+				- → if I'm picking $a,b$ uniformly randomly, then $r,s$ is also chosen uniformly randomly
+			- $P(r=s\mod m)=$ \# bad pairs / \# all pairs $\leq\frac{p\cdot\lceil p/m\rceil}{p^2}$
+			- $\lceil p/m\rceil\leq\frac{p+m-1}m\leq\frac{2p-1}m\lt\frac{2p}m$
+				- “how many times does $m$ fit inside $p$”
+			- so $\frac{p\cdot\lceil p/m\rceil}{p^2}\lt\frac{2p}{pm}=\frac 2m$
+		- exercise: $\mathcal L'=\set{h_{a,b}\mid a,b\in\mathbb Z_p,\ a\neq 0}$
+			- 1-universal $\forall$ prime $p\geq m$
+	- consider $h_i:\set{0,1}^2\to\set{0,1}$
+		- $h_i(x_1x_2)=x_i$
+		- $\mathcal H=\set{h_1,h_2}$
+		- is this family $c$-universal?
+		- $P(h(x)=h(y))$ for $x\neq y$ depends on $x,y$
+			- if $x=\overline y$, then $P=0$
+			- otherwise, $P=1/2$
+		- so it's 1-universal
+		- but
+			- 00 always maps to 0
+			- if you know where 01 maps, then you know where 10 maps
+- definition
+	- $\mathcal H$ is $(k,c)$-independent if $\forall$ distinct $x_1,\dots,x_k\in\mathcal U$ and $a_1,\dots,a_k\in[m]$ it holds that $P_{h\in\mathcal H}(h(x_1)=a_1\land\dots\land h(x_k)=a_k)\leq\frac c{m^k}\ (k,c\geq 1)$
+	- it's $k$-independent if it's $(k,c)$-independent for some $c$
+- exercises
+	- for $k\geq 2$, $(k,c)$-independence $\implies$ $(k-1,c)$-independence
+	- $(2,c)$-independence $\implies$ $c$-universality
+	- $(1,c)$-independence $\centernot\implies$ $c$-universality
+- consider $h_t(x)=\sum_{i=0}^{k-1} t_ix^i\mod p$
+	- $t\in\mathbb Z_p^k$
+	- $x\in\mathbb Z_p$
+	- $h_t:\mathbb Z_p\to\mathbb Z_p$
+	- evaluation of the polynomial in $\mathbb Z_p$
+	- $\mathcal P_k=\set{h_t\mid t\in\mathbb Z_p^k}$
+- theorem: $\mathcal P_k$ is $(k,1)$ independent $\forall p$ prime, $k\geq 1$
+- example
+	- for $k=2$, we get $h_{a,b}=ax+b\mod p$
+	- we will find out that $\mathcal P_2$ is $(2,1)$-independent (and thus 2-universal even without $\bmod m$)
+- proof
+	- we have distinct $x_1,\dots,x_k$
+	- we have $a_1,\dots,a_k$
+	- we need to find $P(\forall i:h_t(x_i)=a_i)$
+	- by Lagrange interpolation theorem, there is exactly one polynomial of degree $k-1$ that intersects $k$ points
+	- so $P=\frac 1{p^k}$
+- lemma
+	- let $\mathcal H'$ be $(2,c)$-independent family of $h':\mathcal U\to[r]$
+	- $\mathcal H=\mathcal H'\bmod m=\set{h'\bmod m\mid h'\in\mathcal H},\ m\leq r$
+	- we want to show that $\mathcal H$ is $2c$-universal and $(2,4c)$-independent
+- example
+	- by this lemma, we find out that $\mathcal L$ is 2-universal (as we know already) and $(2,4)$-independent
+- proof
+	-  $2c$-universality
+		- $x\neq y$ fixed
+		- consider $$P_{h\in\mathcal H}(h(x)=h(y))=\sum_{i_1\equiv i_2\mod m}P\left(h'(x)=i_1\land h'(y)=i_2\right)\leq\sum\frac c{r^2}\leq\frac{cr\lceil r/m\rceil}{r^2}$$
+			- where $h=h'\bmod m$
+		- we apply the reasoning from the previous proof
+			- $\lceil r/m\rceil\leq\frac{r+m-1}m\leq(\frac{2r}m)^2$
+		- $P\leq\frac{2c}m$
+	- $(2,4c)$-independence
+		- $x_1\neq x_2,\ a_1,a_2\in[m]$
+		- $$P\left(h(x_1)=a_1\land h(x_2)=a_2)\right)=\sum_{i_1,i_2} P_{h\in\mathcal H}\left(h'(x_1)=i_1\land h'(x_2)=i_2\right)$$
+			- for $i_1\equiv a_1\mod m$ and $i_2\equiv a_2\mod m$
+		- $\leq\sum_{i_1,i_2}\frac c{r^2}\leq\frac c{r^2}\lceil r/m\rceil^2\leq\frac {4c}{m^2}$
+		- by this proof, we would get $(2,2^kc)$-independence for $(k,c)$-independent family
+			- that's weak
+			- but we could add another assumption that $2km\leq r$ to get $(k,2c)$-independence
