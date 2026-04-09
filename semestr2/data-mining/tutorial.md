@@ -21,3 +21,12 @@
 	- máme zafixované řádkové a sloupcové součty
 	- náhodně tam umisťujeme prvky
 	- pro dvoustranný test potřebuju znát i střední hodnotu
+- vyhodnocení kvality clusteringu
+	- silhouette method
+	- representation error
+- pro k-means je obvykle potřeba normalizovat data (pokud jsou pro nás všechny atributy stejně důležité)
+- linkage – k počítání vzdáleností mezi clustery
+	- complete – farthest points
+	- single – closest points
+	- average
+	- ward
