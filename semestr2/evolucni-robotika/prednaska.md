@@ -415,3 +415,18 @@
 - genetické kódování
 	- přímé kódování
 		- jednoduché na implementaci, ale chtěli bychom něco s větší vyjadřovací silou (na krátkém rozsahu)
+	- co bychom chtěli
+		- vyjadřovací sílu
+		- kompaktnost
+		- možnost rozvoje
+- stabilní genetický algoritmus
+	- konstantní počet jedinců
+	- při vytvoření nového jedince se z aktuální populace vybere nějaký jedinec, který se zahodí
+	- dá se dobře paralelizovat – akorát se pak nedá jasně říct, kdy začíná a končí generace
+
+## Kráčející stroje
+
+- složitější než kolečka – noha potřebuje aspoň 2 stupně volnosti
+	- trik: můžeme použít symetrie
+	- ale všechny nohy se nemůžou pohybovat stejně
+- statická × dynamická chůze – podle toho, jestli je těžiště stále nad mnohoúhelníkem dotyku noh
