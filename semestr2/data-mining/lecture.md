@@ -228,3 +228,11 @@
 	- decision trees divide the features space into rectangular regions
 	- problem if the decision boundary looks like $y=x$
 		-  we would need to check a value of one attribute relatively to another attribute
+- several algorithms
+- pruning
+- bagging
+	- reduces the variance
+- random forests
+	- deal with problems of pairwise correlation of models constructed using bagging
+- boosting
+	- reduces the bias
