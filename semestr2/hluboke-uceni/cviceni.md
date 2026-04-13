@@ -67,3 +67,9 @@
 - existují funkce na logaritmování součtu $e^x$
 	- logaddexp, logsumexp
 - FastText embeddingy
+- svhn
+	- chceme obrázky přeškálovat na jednu velikost
+	- padování nefunguje tak dobře
+	- vezmeme nějaké patro features z EfficientNetu (třeba reprezentaci 14×14)
+	- vygenerujeme kotvičky pro každou buňku té reprezentace
+	- můžeme uvažovat několik 

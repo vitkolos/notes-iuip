@@ -217,3 +217,37 @@
 ## Game theory, mechanism design
 
 - …
+
+## Supervised learning
+
+- hypotheses consistent with the training set
+- Ockham's razor
+	- sometimes, we may even prefer a simple hypothesis that does not perfectly fit all the data
+- decision trees
+	- for binary variables … $2^n$ possible input vectors, each can be mapped to 0 or 1
+		- so we get $2^{2^n}$ hypotheses
+	- constructed using a greedy divide-and-conquer strategy
+	- if we have no remaining attributes and there are still multiple classes, we return the *mode* (majority vote, česky modus)
+	- if there are no samples in the branch of the tree, we use the default value (class) = mode at the previous level
+	- to find the best splitting attribute, we use information gain (decrease of Shannon entropy)
+		- we subtract the weighted average of new entropies (in the branches) from the original entropy
+	- chance of overfitting increases with the number of hypotheses
+	- decision tree pruning
+		- bottom-up approach, $\chi^2$ test
+			- can it be used when constructing the decision tree as an early-stopping condition?
+			- no, there are cases where we need a combination of attributes to classify (e.g. XOR) but individual attributes would fail $\chi^2$
+	- problems
+		- missing data
+			- usually, we use the most frequent value (mode) to fill the missing one
+		- multivalued attributes
+			- (traditionally, we consider nominal attributes with several possible values – what if we have integers or real numbers?)
+			- find a threshold
+			- for real values, we may want to sort the samples and look at the points where the class changes
+	- can be used for regression
+		- but the learning algorithm needs to move from classification to regression at some point (usually, we consider only constants in leaves)
+- regression
+	- hypothesis space = linear functions
+	- univariate linear regression
+		- $L_2$ loss
+		- we can use an analytical solution – set derivatives equal to zero
+		- or we can use gradient descent
