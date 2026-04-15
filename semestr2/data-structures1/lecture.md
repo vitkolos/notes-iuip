@@ -770,7 +770,7 @@
 	- we have two hash functions $f,g$ and two sets of $m$ buckets $T_f,T_g$
 	- we hash the inserted element and if the bucket is already full, we take the element present there and insert it it using the other function
 		- we continue until we have correctly placed all the elements
-	- when we meed the timeout (we keep cycling back and forth between the tables for long enough), we rehash
+	- when we meet the timeout (we keep cycling back and forth between the tables for long enough), we rehash
 		- timeout ~ $\log n$
 	- invariant: $\forall x\in X$ is in $T_f(f(x))$ or $T_g(g(x))\implies$ Find, Delete in $O(1)$ (worst case)
 	- theorem

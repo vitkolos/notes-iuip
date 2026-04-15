@@ -184,3 +184,32 @@
 		- we skip by more than just one position
 	- or double hashing
 		- we have two hash functions
+	- cuckoo hashing
+		- worst-case constant lookup
+		- two tables with size $m/2$
+			- $m\geq cn$
+			- $c\gt 2$
+		- note that in the one table version, we need to always check both hashes when moving elements (so that we don't end up in very short cycles)
+		- rehashing can be done in-place – we just iterate over all elements (remove and insert each existing element)
+			- if rehashing is done recursively, it's a good idea to stop the outer loops (so that there's only one active loop over the contents of the table)
+	- tabular hashing
+		- just initialize $t$ tables with random values from 0 to $m-1$
+			- if $m$ is a power of 2
+		- then we use the parts of the hashed value to index into the tables
+		- it's 2-independent
+			- definition: $P(h(x_1)=z_1\land h(x_2)=z_2)\leq \frac c{m^2}$
+			- $x_1,x_2$ are different → there exists a part $i\in [t]$ where the numbers differ
+				- WLOG $i=1$
+			- $$=P\left(F_1(x_1^1)=z_1\oplus F_2(x_1^2)\oplus\dots\oplus F_t(x_1^t)\land F_2(x_2^1)=z_2\oplus F_2(x_2^2)\oplus\dots\oplus F_t(x_2^t)\right)$$
+			- on the right hand side we have random integers $\in[m]$
+			- $P=1/m^2$
+		- 3-independence is harder
+		- 4-independence counterexample
+			- $x_1=0000\dots$
+			- $x_2=0100\dots$
+			- $x_3=1000\dots$
+			- $x_4=1100\dots$
+			- $h(x_4)$ can be determined from $h(x_1),h(x_2),h(x_3)$
+			- because $h(x_4)=h(x_1)\oplus h(x_2)\oplus h(x_3)$
+				- we use the fact that $a\oplus a=0$
+			- this also applies for larger blocks (if we consider the same values $x^1,x^2,\dots,x^t$)
