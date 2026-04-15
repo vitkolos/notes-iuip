@@ -753,3 +753,108 @@
 		- by this proof, we would get $(2,2^kc)$-independence for $(k,c)$-independent family
 			- that's weak
 			- but we could add another assumption that $2km\leq r$ to get $(k,2c)$-independence
+- reminder: we hat $\mathcal P_k\bmod m$
+	- if $p\geq 2km$, then it is $(k,2)$-independent
+- tabulation hashing
+	- $|\mathcal U|=2^{tk}$
+	- $m=2^\ell$
+	- hash function maps $(x_1,\dots,x_t)$ to $\ell$ bits
+		- size of $x_i$ … $k$
+	- if we want to store a totally random function, we need $2^{tk}\ell$ bits
+	- idea
+		- consider totally random functions $h_1,\dots,h_t$
+		- use their XOR
+		- now we need only $t2^k\ell$ bits
+		- is only 3-independent (not 4-independent)
+- cuckoo hashing
+	- we have two hash functions $f,g$ and two sets of $m$ buckets $T_f,T_g$
+	- we hash the inserted element and if the bucket is already full, we take the element present there and insert it it using the other function
+		- we continue until we have correctly placed all the elements
+	- when we meed the timeout (we keep cycling back and forth between the tables for long enough), we rehash
+		- timeout ~ $\log n$
+	- invariant: $\forall x\in X$ is in $T_f(f(x))$ or $T_g(g(x))\implies$ Find, Delete in $O(1)$ (worst case)
+	- theorem
+		- let $m\geq (2+\varepsilon)n,\ f,g$ from $\lceil 6\log n\rceil$-independent family
+		- then cuckoo hashing with timeout $\lceil 6\log n\rceil$ has expected amortized Insert time $O(1)$
+- probing
+	- saves space
+	- probing sequence: $h(x,0),h(x,1),\dots$
+	- linear probing
+		- $h(x,i)=h(x)+i\mod m$
+	- double hashing
+		- $h(x,i)=h(x)+ig(x)\mod m$
+- linear probing
+	- problem: long clusters get longer
+		- we need some condition that there's not too many elements in the table / the clusters are not too long
+	- problem: Delete
+		- we cannot freely remove elements in the middle of clusters
+		- one solution: mark the bucket as deleted (“tombstone”)
+			- we need to keep the number of tombstones limited (if it gets above some threshold, we need to rehash the table)
+	- it's cache-friendly
+	- theorem: if $m\geq (1+\varepsilon)n$ (where $\varepsilon=$ \# free / \# occupied), then the expected number of probes in Find is…
+		- $O(1/\varepsilon^2)$ for a totally random hashing function
+			- or tabulation hashing (even though it's only 3-independent!)
+		- $O(1/\varepsilon^{13/6})$ for any 5-independent family
+		- $\Omega(\log n$) for some 4-independent family
+		- $\Omega(\sqrt n)$ for some 2-independent family
+	- theorem
+		- let $m\geq 3n$ s.t. $m$ is a power of 2
+			- (we choose $\varepsilon=2$)
+		- $h:\mathcal U\to[m]$ totally random
+		- $x\in\mathcal U$
+		- then the expected number of probes in Find($x$) is $O(1)$
+	- proof
+		- we use Chernoff bound (for the right tail)
+			- let $X=\sum_i X_i$ s.t. $X_i$ are binary and independent
+			- then $P(X\gt c\mu)\leq (\frac{e^{c-1}}{c^c})^\mu$
+				- $\mu=\mathbb E[X]$
+				- $c\gt 1$
+			- observation: if we fix $c$ and increase $k$, the probability drops exponentially
+		- we use union bound
+			- $P(\bigcup_i A_i)\leq\sum_i P(A_i)$
+		- we also use the observation, that if we randomly generate a value of variable $X$, then $\mathbb E[X]\leq\sum_i\max I_i\cdot P(X\in I_i)$
+			- $I_i$ are intervals where the value can fall
+			- so we use the maximum from each interval and the probability that the value falls in that interval
+		- aim: show that the expected length of a run $R$ is constant
+		- we need to bound the probability that $|R|\in[2^{\ell+2},2^{\ell+3})$
+		- we will consider blocks of size $2^t$ that together tile the entire table of size $m$
+		- definition: block $B$ of size $2^t$ is critical if more than $\frac23\cdot 2^t$ items are hashed to $B$
+			- it does not matter where the items are stored! we only care about the items being hashed to that block
+		- lemma L1: let $B$ be block of size $2^t$, then the probability that $B$ is critical is $\leq(\frac e4)^{\frac{2^t}3}$
+		- proof
+			- we consider indicators $X_i$ indicating if $h(x_i)\in B$
+			- $X=\sum X_i$ … number of items hashed to $B$
+			- $\mu=\sum\mathbb E[X_i]=n\cdot\frac {2^t}m$
+				- as we consider a totally random function
+			- $\mu\leq\frac{2^t}3$
+				- as $m\geq 3n$
+			- $P(B\text{ critical})\leq P(X\gt 2\mu)\leq(\frac{e}4)^{\frac{2^t}3}$
+				- from Chernoff
+				- to simplify the reasoning, we can consider $m=3n$
+			- we can set $q=(e/4)^{1/3}$
+			- then $P\leq q^{2^t}$
+		- lemma L2
+			- let $R$ be run, $|R|\leq 2^{\ell+2},\ B_0,\dots,B_3$ first 4 blocks of size $2^\ell$ intersecting $R$
+			- then at least one of $B$ is critical
+		- proof
+			- $L=R\cap (B_0\cup \dots\cup B_3)$
+			- $1+3\cdot 2^\ell\leq$ \# items stored in $L$ $\leq$ \# items hashed to $L$
+				- we are considering a prefix of the run so every element stored in the blocks also has to be hashed there
+			- suppose that none of the blocks is critical
+				- there are at most $4\cdot\frac23\cdot 2^\ell$ items hashed to $L$
+				- but this is less than $1+3\cdot 2^\ell$ → contradiction
+		- lemma L3
+			- run $R$ containing $h(x),\ |R|\in[2^{\ell+2},2^{\ell+3})$
+			- then at least one of 12 consecutive blocks of size $2^\ell$ is critical
+				- we consider the 8 blocks before $h(x)$, the block containing $h(x)$, and the 3 blocks after $h(x)$
+		- proof
+			- $4|B|\leq |R|\lt 8|B|$
+			- so $R$ can begin up to 8 blocks before $h(x)$
+			- then we use L2
+		- we get $P(|R|\in[2^{\ell+2},2^{\ell+3}))\leq 12q^{2^\ell}$
+			- from union bound
+		- now we use the intervals
+			- $I_1=[0,3]$ and the remaining intervals
+			- $\mathbb E[|R|]\leq 3\cdot 1+\sum_{\ell\geq 0}2^{\ell+3} P(|R|\in[2^{\ell+2},2^{\ell+3}))$
+			- $\leq 3+12\cdot 8\cdot \sum_{\ell\geq 1}iq^i$
+			- $q\lt 1$ so we get $O(1)$

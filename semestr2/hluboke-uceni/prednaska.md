@@ -408,3 +408,11 @@
 				- uniformně – pak budou častá slova relativně málo často jako negativní příklady
 				- pomocí jejich pravděpodobnosti v textu – pak budou výjimečná slova málo často jako negativní příklady
 				- něco mezi – s distribucí $U(w)^{3/4}$
+- seq2seq
+	- používá se teacher forcing
+	- embedovací matice (pro vstup a výstup) jsou obvykle svázané
+		- tzn. jedna je transpozice druhé
+		- akorát tu výstupní obvykle ještě dělíme $\sqrt D$ kvůli rozptylu
+	- BPE algoritmus k tvoření podslov (subwords)
+		- alternativa: WordPieces (moc se nepoužívá)
+- transformer je super silný, takže potřebujeme hodně dat, aby neoverfittoval (nebo musíme hodně řešit regularizaci)
