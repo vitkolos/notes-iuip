@@ -73,3 +73,7 @@
 	- vezmeme nějaké patro features z EfficientNetu (třeba reprezentaci 14×14)
 	- vygenerujeme kotvičky pro každou buňku té reprezentace
 	- můžeme uvažovat několik 
+- SparseAdam / LazyAdam
+	- když používáme normální Adam pro embeddingovou matici, tak se nám u nepoužívaných slov sbírá momentum
+	- jakmile to slovo jednou najdeme, tak to může „bouchnout“
+	- takže dává smysl používat SparseAdam pro embeddingovou matici – nepoužívaných slov si nevšímá
