@@ -233,44 +233,108 @@
 
 ## Cluster analysis
 
-- we want to divide the observed patterns into groups of mutually similar patterns
+- cluster analysis
+	- we want to divide the observed patterns into groups of mutually similar patterns
 	- assumption: we can measure the distance between patterns
-- Minkovski metrics
-	- Hamming distance … $L_1$
-	- Euclidean distance … $L_2$
-	- Chebyshev distance … $L_\infty$
-- Mahalanobis distance
-	- uses the covariance matrix
+	- Minkovski metrics $L_z(x_1,x_2)=\sqrt[z]{\sum_j (x_{1j}-x_{2j})^z}$
+		- Hamming distance … $L_1$
+		- Euclidean distance … $L_2$
+		- Chebyshev distance … $L_\infty$
+	- Mahalanobis distance – useful if the quantities have different variance
+		- uses the covariance matrix
+		- $d(x_1,x_2)=(x_1-x_2)^TS^{-1}(x_1-x_2)$
 - distance between two clusters
 	- method of the nearest neighbor
 	- method of the farthest neighbor
-	- method of average distance
-	- centroid method
+	- method of average distance (we compute the mean distance of two arbitrary samples – one from each cluster)
+	- centroid method (distance between the centers of the clusters)
 - centroid
 	- compute the average over all the features
 	- but such pattern may not be in the data at all
 - k-means clustering
-	- several variants
-- k-medians – just use Hamming distance instead of Euclidean
+	- Lloyd
+		- divide the points randomly into $k$ clusters
+		- repeat until convergence
+			- compute the centroids
+			- assign each point to its closest centroid
+	- alternative initializations
+		- pronounce the first $k$ points to be centroids
+		- k-means++ … sample $k$ points (to be used as centroids) with probability proportional to their squared distance to the closest existing centroid
+		- LocalSearch++ … start with k-means++, then sample some more points (in the same way) one by one and replace some of the existing centroids if they cover the distribution (points) better
+- k-medians
+	- just use Manhattan distance instead of Euclidean
+	- → centroid = median (independently along each dimension)
+		- the representative may not exist in the dataset
+	- median is less sensitive to the presence of outliers than the mean
 - hierarchical clustering
-	- dendrogram
+	- bottom-up approach
+	- we get a dendrogram
+		- a clustering corresponds to some “cut” in the dendrogram
+	- algorithm
+		- initialization: each point is its own cluster
+		- repeat: merge the two closest clusters
 - learning vector quantization (LVQ)
-	- no guarantee of convergence (?)
+	- for *supervised* clustering
+	- we consider several weight vectors (representatives)
+		- each weight vector corresponds to a single class
+	- first, we need to initialize the weight vectors
+	- then, for every sample, we update the closest weight vector
+		- if the class of the vector corresponds to the class of the sample, we move the vector closer to the sample: $w\leftarrow w+\mu(x-w)$
+		- otherwise, we move it further from the sample: $w\leftarrow w-\mu(x-w)$
+	- $\mu$ … learning rate (usually some constant divided by the number of the epoch)
+	- no guarantee of convergence
 - k-medoids
 	- uses a similarity measure instead of averaging
-	- we consider $k$ best representatives (from the dataset)
+	- we try to find $k$ best representatives $Y_1,\dots,Y_k$ (from the dataset)
 		- so the medoids are real data points
-- grid-based methods (e.g. MAFIA)
+	- objective function: $O=\sum_{i=1}^n(\min_j\mathrm{Dist}(X_i,Y_j))$
+	- more robust to outliers than k-means
+	- sometimes, we cannot easily compute average (or it does not make sense)
+	- possible strategy
+		- randomly select $r$ pairs $(X_i,Y_j)$ for a possible exchange
+		- the pair with the best improvement of the objective function is exchanged
+		- requires time proportional to $rn$
+- grid-based methods
+	- e.g. MAFIA
 	- which cells of the grid are densely covered by the data?
 	- merge neighboring *dense* hyper-cubes (cells) to get clusters
+		- there is a threshold which tells us if the hyper-cube is dense
 - density-based algorithms
 	- core point: there at least $\tau$ points closer than $\varepsilon$
 	- border point: there is at least one core point closer than $\varepsilon$
 	- noise point: otherwise
+	- DBSCAN
+		- connectivity graph
+		- nodes = core points
+		- nodes are connected if the core points are closer than $\varepsilon$
+		- clusters = connected components
+		- border points still belong to the corresponding clusters
+		- noise points are reported as outliers
+	- another algorithm: DENCLUE
 - scalable approaches – for lots of data
-	- CLARA, CLARANS
 	- k-medoids are expensive to compute
-	- CURE
+	- CLARA
+		- based on *partitioning around medoids* (PAM) – a variant of k-medoids
+			- all possible $k(n-k)$ pairs of medoids and non-medoids are tested for an exchange
+			- the pair with the best improvement of the objective function is exchanged
+			- $O(kn^2d)$ time per iteration for a $d$-dimensional dataset
+		- we apply the algorithm to a smaller sample set of size $fn$ where $f\in(0,1)$
+			- the remaining data points are assigned to the medoids found in the smaller sample
+			- we repeat this multiple times and use the best found clustering
+			- $O(kf^2n^2d+k(n-k))$ time
+		- the main problem occurs when the preselected samples do not include a good choice of medoids
+	- CLARANS
+		- k-medoids, but uses the entire dataset
+		- finds several locally optimal solutions and uses the best one
+		- finding a locally optimal solution
+			- randomly initialize $k$ medoids
+			- repeat: take a random pair of a medoid and a non-medoid, swap them if this improves the objective function
+			- if a certain number of unsuccessful exchanges is reached, we consider the solution to be locally optimal
+	- CURE (clustering using representatives) – agglomerative hierarchical algorithm
+		- sample $s$ points, divide them into $p$ equal partitions
+		- cluster each partition independently using hierarchical merging to $k'$ clusters
+		- perform hierarchical clustering over the $k'p$ clusters across all partitions to get the desired number of clusters ($k$)
+		- assign each point to its closest cluster
 
 ## Decision Trees
 
