@@ -153,10 +153,35 @@
 		- box … between $Q_1$ and $Q_3$ with a mark (line) representing the median
 		- two other lines … boundaries for outliers (or the extrema that are not outliers)
 		- other marks outside … individual outliers
+- contingency table
+	- relationship between two categorical quantities (may be binary)
+	- cell … how many observations have this combination of attributes
+	- there are also column and row totals
+	- we get an expected frequency of combination if we multiply the column total with the row total and divide it by the total number of observations
+		- intuition: we take the number of elements in the column and multiply it by the (observed) probability that any sample belongs to the given row (has this value of the attribute)
+- $\chi^2$-test
+	- $\chi^2=\sum_k\sum_\ell\frac{(a_{k\ell}-e_{k\ell})^2}{e_{k\ell}}$
+		- where $a_{k\ell}$ is the value of the cell (number of observation with this combination of attributes)
+		- $e_{k\ell}$ is the expected frequency as described above: $e_{k\ell}=\frac{r_k\cdot s_\ell}n$
+	- $\chi^2$ distribution has $(R-1)(S-1)$ degrees of freedom (the last row and column are somehow determined by the rest of the table)
+	- we choose a level of significance $\alpha$ (usually 0.05) = probability of rejecting a true null hypothesis
+	- we reject $H_0$ if our $\chi^2$-statistic is greater than the value of the $\chi^2$ distribution (for the given DoF and $\alpha$)
+	- it can be used only for large-enough frequencies – when $\forall k,\ell:e_{k\ell}\geq 5$
+		- if the frequencies are too low and the contingency table contains only 4 fields, we can use Fisher’s test
+- Fisher's test
+	- for a contingency table with only 4 fields (two binary attributes)
+	- one-sided or two-sided version
+	- we get the $p$-value directly: what is the probability of this or more extreme table if we assume fixed column and row totals?
+		- for the two-sided version, we need to compute the expected frequencies $e_{k\ell}$
+		- probability of this table: $$p=\frac{r_1!\cdot r_2!\cdot s_1!\cdot s_2}{n!\cdot a!\cdot b!\cdot c!\cdot d!}$$
+			- $a,b,c,d$ … values of the cells
+			- $r_i,s_j$ … row and column totals respectively
+		- probability of some more extreme table $T_i$ – we consider values $a-i,\ b+i,\ c+i,\ d-i$ instead
+		- the probabilities of the tables need to be summed up to get the $p$-value
+	- null hypothesis: independence of the attributes
+		- we reject for $p$-value $\leq \alpha$
 
----
-
-### Regression Analysis
+## Regression Analysis
 
 - motivation
 	- it may be costly to obtain output values
@@ -181,7 +206,7 @@
 - discriminant analysis
 	- classification into classes
 
-### Cluster analysis
+## Cluster analysis
 
 - we want to divide the observed patterns into groups of mutually similar patterns
 	- assumption: we can measure the distance between patterns
