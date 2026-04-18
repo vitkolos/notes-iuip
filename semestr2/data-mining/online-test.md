@@ -190,7 +190,7 @@
 	- we want to find a (causal) relationship between the input and the output
 - linear regression
 	- what are the parameters of the linear relationship between two numerical quantities?
-	- $y=\beta x+\alpha \color{gray}+ \varepsilon$
+	- $y=\beta x+\alpha \textcolor{gray}{+ \varepsilon}$
 	- least squares method
 		- find parameters $\alpha,\beta$
 		- we minimize $SSE=\sum_i(y_i-f(x_i))^2$ (sum of squared errors)
@@ -203,13 +203,33 @@
 			- and $\alpha=\bar y-\beta\bar x$
 - correlation analysis
 	- is there a linear relationship between two numerical quantities?
-	- correlation coefficients
+	- correlation coefficient $\rho(x,y)=\frac{\text{cov}(x,y)}{\sigma_x\sigma_y}\in[-1,1]$
+		- corrected sample covariance $\text{cov}(x,y)=\frac{1}{n-1}\sum_i(x_i-\bar x)(y_i-\bar y)$
+		- corrected sample standard deviation $\sigma_x=\sqrt{\frac1{n-1}\sum_i(x_i-\bar x)^2}$
+			- similar for $\sigma_y$
 - multi-dimensional regression
 	- linear → least-squares method in matrix form
-	- non-linear
-		- logistic regression
+		- $y=X\beta$
+		- $X$ … matrix of input samples
+			- before the $x$ values of the sample, there is $1$ (so that we don't need to keep the constant $\alpha$)
+		- so $\beta=(X^TX)^{-1}(X^Ty)$
+		- may be computationally expensive → approximate solutions
+	- non-linear – example: logistic regression
+		- if the dependent variable is categorical
+		- we use log (conditional) odds to model the conditional probability
+			- $x=\ln\frac{P}{1-P}$
+			- so $P=\frac 1{1+e^{-x}}$ (sigmoid)
+			- where $x=\alpha+\sum_j\beta_j x_j$
+		- we estimate the parameters using *maximum likelihood*
+		- (see the slides for more formulas 😬)
 - discriminant analysis
 	- classification into classes
+	- we consider a discriminant function $f_t$ for every class $c_t$
+		- conditional (a posteriori) probability of classifying $x$ to the class
+	- for two classes, we get $f(x)=f_1(x)-f_2(x)=P(x|c_1)P(c_1)-P(x|c_2)P(c_2)$
+		- (there should be a normalization constant $\alpha$ maybe)
+	- for normal distributions, we only need to estimate the means and the covariance matrices to get the discriminant functions
+		- the decision boundary is located where the distribution curves intersect
 
 ## Cluster analysis
 
