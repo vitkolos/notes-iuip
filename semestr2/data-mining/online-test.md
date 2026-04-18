@@ -338,11 +338,22 @@
 
 ## Decision Trees
 
-- difficult to process continuous data
-	- decision trees divide the features space into rectangular regions
-	- problem if the decision boundary looks like $y=x$
-		-  we would need to check a value of one attribute relatively to another attribute
-- several algorithms
+- decision tree, (dis)advantages
+	- each inner node is labeled by an attribute
+	- each edge is labeled by a predicate applicable to the attribute of the parent node
+	- each leaf has a class label
+	- advantages: easy to implement and interpret, efficient, extract simple rules, applicable to large datasets
+	- disadvantages
+		- difficult to process continuous data (decision trees divide the features space into rectangular regions)
+		- difficult to process for missing data
+		- overfitting (solved by pruning)
+		- mutual correlations among the attributes are not considered
+			- problem if the decision boundary looks like $y=x$ (we would need to check a value of one attribute relatively to another attribute)
+- top down induction of decision trees (TDIDT)
+	- top-down method
+
+---
+
 - pruning
 - bagging
 	- reduces the variance
