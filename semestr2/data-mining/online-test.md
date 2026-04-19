@@ -14,7 +14,7 @@
 	- \+ how to use the results for decision-making
 - data mining is an interactive and iterative process
 	- data preparation – we build one table containing all the relevant data
-		- selection, preprocessing, transformation
+		- selection (of useful attributes), preprocessing, transformation
 	- the actual “data mining” – we find *patterns* in the data
 	- interpretation – found knowledge shall be evaluated from the point of view of the end user (manager, customer, etc.)
 - PoV of a manager
@@ -60,9 +60,10 @@
 
 ## Methodologies
 
-- goal: provide the users with a unified framework; guide data mining applications regardless of industry
-	- it’s necessary to have high-quality data
-	- the steps are usually iterative
+- goal, popular methodologies
+	- goal: provide the users with a unified framework; guide data mining applications regardless of industry
+	- it’s necessary to have high-quality data; the steps are usually iterative
+	- popular methodologies: 5A, SEMMA, CRISPR-DM
 - SEMMA
 	- sample – select data for modeling
 		- may include sampling, imputation (adding other useful information, e.g. adding seasons of the year to the data about the sales), partitioning (train-test-validation split)
@@ -71,8 +72,10 @@
 	- model – apply data mining techniques (decision trees, regression models, NNs, …)
 		- create models providing relevant outcome
 	- assess – evaluate the results of modeling (assess their reliability and usefulness)
+		- so that the manager can understand
 - CRISP-DM
 	- cross-industry standard process for data mining; a robust general-purpose model
+		- software-independent
 	- 6 phases (their order is not strict)
 		- business understanding
 			- determine our business objective
@@ -116,6 +119,7 @@
 		- scalable and enterprise-ready
 		- comprehensive
 		- product-specific implementation roadmaps
+		- users can replicate previous software implementations
 
 ## Data Analysis
 
@@ -436,7 +440,8 @@
 		- this way, the new dataset contains roughly $1-(1-1/n)^n\approx 1-1/e\approx 63.2\%$ distinct data points
 - random forests
 	- *we use bagging*
-		- problem: pairwise correlation of models constructed using bagging
+	- problem: pairwise correlation of models constructed using bagging
+		- if our $k$ classifiers, each with variance $\sigma^2$, have a positive pairwise correlation $\rho$, then the variance of the averaged prediction will be $\rho\sigma^2+\frac{(1-\rho)\sigma^2}k$
 	- solution: we limit the number of features that can be used for splitting
 		- at each node, only a random subset of features is available
 	- this speeds up training due to fewer features to search over at each stage and there is no need to prune the trees
