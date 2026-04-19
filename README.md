@@ -20,3 +20,7 @@ Master of Computer Science – Artificial Intelligence ([some notes are in Engli
 - [Multi-Agent Systems](semestr1-erasmus/multi-agent-systems/exam.md)
 - [Computer Vision](semestr1-erasmus/computer-vision/exam.md)
 - [Multimodal AI](semestr1-erasmus/generative-multimodal-ai/multimodal-exam.md)
+
+#### Praha
+
+- [Data Mining (online test)](semestr2/data-mining/online-test.md)
