@@ -18,7 +18,7 @@
 	- the actual “data mining” – we find *patterns* in the data
 	- interpretation – found knowledge shall be evaluated from the point of view of the end user (manager, customer, etc.)
 - PoV of a manager
-	- there's a topical issue
+	- there’s a topical issue
 	- goal of the data mining process is to obtain as much information as possible that is relevant to solving the problem
 	- example
 		- find groups of customers of a department store to offer special services to
@@ -61,7 +61,7 @@
 ## Methodologies
 
 - goal: provide the users with a unified framework; guide data mining applications regardless of industry
-	- it's necessary to have high-quality data
+	- it’s necessary to have high-quality data
 	- the steps are usually iterative
 - SEMMA
 	- sample – select data for modeling
@@ -168,7 +168,7 @@
 	- we reject $H_0$ if our $\chi^2$-statistic is greater than the value of the $\chi^2$ distribution (for the given DoF and $\alpha$)
 	- it can be used only for large-enough frequencies – when $\forall k,\ell:e_{k\ell}\geq 5$
 		- if the frequencies are too low and the contingency table contains only 4 fields, we can use Fisher’s test
-- Fisher's test
+- Fisher’s test
 	- for a contingency table with only 4 fields (two binary attributes)
 	- one-sided or two-sided version
 	- we get the $p$-value directly: what is the probability of this or more extreme table if we assume fixed column and row totals?
@@ -211,7 +211,7 @@
 	- linear → least-squares method in matrix form
 		- $y=X\beta$
 		- $X$ … matrix of input samples
-			- before the $x$ values of the sample, there is $1$ (so that we don't need to keep the constant $\alpha$)
+			- before the $x$ values of the sample, there is $1$ (so that we don’t need to keep the constant $\alpha$)
 		- so $\beta=(X^TX)^{-1}(X^Ty)$
 		- may be computationally expensive → approximate solutions
 	- non-linear – example: logistic regression
@@ -342,6 +342,7 @@
 	- each inner node is labeled by an attribute
 	- each edge is labeled by a predicate applicable to the attribute of the parent node
 	- each leaf has a class label
+	- there’s a stopping criterion – e.g. all the training data in the node belong to the same class
 	- advantages: easy to implement and interpret, efficient, extract simple rules, applicable to large datasets
 	- disadvantages
 		- difficult to process continuous data (decision trees divide the features space into rectangular regions)
@@ -351,13 +352,106 @@
 			- problem if the decision boundary looks like $y=x$ (we would need to check a value of one attribute relatively to another attribute)
 - top down induction of decision trees (TDIDT)
 	- top-down method
-
----
-
-- pruning
+	- algorithm (divide and conquer)
+		- choose one attribute as a root of the subtree
+		- divide the data according to the values of this attribute and add a node for each subset
+		- repeat the steps recursively for any nodes that do contain data from at least two different classes
+	- how to choose the attribute
+		- we use Shannon entropy $H=-\sum_c p_c\log_2p_c$
+			- $p_c$ … probability of occurrence of class $c$ (relative frequency of class $c$ in the data)
+			- by definition, $0\log_2 0=0$
+			- note that $\log_2 x=\frac{\log_{10} x}{\log_{10} 2}=\frac{\log_{10} x}{0.301}$
+		- we calculate $H$ for every possible value of the attribute
+		- then we apply weighted average – weights correspond to the frequencies of the values of the attribute in the data
+		- we choose the attribute with the minimum weighted average entropy
+			- se we choose the attribute like this: $\mathrm{argmin}_A \sum_v P(A=v) H(v)$
+			- where $H(v)=-\sum_c p_c\log_2 p_c$
+			- $p_c=P(C=c\mid A=v)$
+			- obviously, we always consider probability $P$ estimated for the subset of the data that belongs to the current node
+	- it is useful to perform early stopping (by the principle of Occam’s razor)
+	- time complexity: $O(np\log p)$
+		- $n$ … number of attributes
+		- $p$ … number of training data
+- ID3 algorithm
+	- boolean output (only two classes)
+	- greedy top-down method
+	- divides the nodes until there is a single class or there are no attributes (or data) left
+	- uses information gain = entropy reduction
+		- $\mathrm{gain}(A)=H-\sum_v P(A=v)H(v)$
+		- where $H$ is the entropy of the node, $H(v)$ is the entropy of the child node containing samples s.t. $A=v$
+- C4.5, C5.0
+	- modifications of the ID3 algorithm
+	- C4.5
+		- missing attribute values are ignored during tree construction; they are estimated from the other data during prediction (probably just by using mode?)
+		- continuous data – categorized according to the values in the training set
+		- pruning
+			- train/validation split
+			- subtree is replaced by a leaf (with majority vote) if the new tree does not perform worse on the validation set than the original one
+			- in a similar fashion, a whole subtree can be raised (the most frequently used one)
+		- rule post-pruning
+			- rules can be extracted from the tree
+			- then, the rules can be generalized (pruned) and ordered by their expected accuracy (then used in this order instead of the original tree)
+			- quite radical pruning
+			- the rules are transparent and easy to understand
+		- estimates confidence interval for accuracy of rules and trees
+		- uses information gain ratio as criterion for data division
+			- $\mathrm{argmax}_A\,\frac{\mathrm{gain}(A)}{-\sum_v P(A=v)\log_2 P(A=v)}$
+			- in the denominator, we have *SplitInformation*, which is the same formula as entropy if we consider the attribute values to be “classes”
+			- this penalizes excessive branching
+	- C5.0
+		- commercial version of C4.5 for large databases
+		- improved generation of rules
+		- higher accuracy is achieved using *boosting*
+			- we gradually construct an ensemble of several classifiers (trees)
+			- every new tree tries to improve the accuracy of the ensemble
+				- the (previously) incorrectly classified data points are assigned larger weights → the tree knows they have high priority
+			- majority vote is used
+- classification and regression trees (algorithm CART)
+	- generates *binary* trees
+		- chooses a value of an attribute it can use to split data into the two subtrees (usually it's a threshold)
+	- uses entropy or Gini index to choose the best decision attribute
+	- measure of “goodness” of the data division
+		- $\phi(v|t)=2P_LP_R\sum_c |P(c|t_L)-P(c|t_R)|$
+			- $P_L$ probability that a sample belongs to the left subtree
+			- $P(c|t_L)$ probability that a sample in the left subtree belongs to class $c$
+		- we want the children to be both balanced and pure
+		- we use the value $v^*=\mathrm{argmax}_v\ \phi(v|t)$
+	- characteristic properties of CART
+		- order of the attributes corresponds to their impact during classification
+		- missing data is ignored
+		- stopping criterion: there's no way to divide the node in order to improve the classification accuracy
+		- high accuracy achieved on the training set does not have to reflect the accuracy on the test data
+- algorithm CHAID
+	- chi-square automatic interaction detection
+	- $\chi^2$ criterion for branching
+	- values of the categorical attributes are gradually grouped together (by $\chi^2$ “similarity”) → there remain only two groups
 - bagging
-	- reduces the variance
+	- bootstrapped aggregating
+	- reduces the variance of the classifier
+	- if we consider an ensemble of $k$ i.i.d. classifiers with variance $\sigma^2$ each, the ensemble has variance $\sigma^2/k$
+	- decision are an ideal choice for bagging – they have low bias and high variance (if they are sufficiently deep)
+	- bagging does not reduce bias (it may even worsen accuracy if bias is the main problem)
+	- to get classifiers that are i.i.d. (independent and identically distributed) to some extent, we perform *bootstrapping*
+		- the data points are sampled uniformly from the original data with replacement
+		- this way, the new dataset contains roughly $1-(1-1/n)^n\approx 1-1/e\approx 63.2\%$ distinct data points
 - random forests
-	- deal with problems of pairwise correlation of models constructed using bagging
+	- *we use bagging*
+		- problem: pairwise correlation of models constructed using bagging
+	- solution: we limit the number of features that can be used for splitting
+		- at each node, only a random subset of features is available
+	- this speeds up training due to fewer features to search over at each stage and there is no need to prune the trees
+	- reduced variance does not negatively affect the bias
+	- two parameters
+		- number of features to be sampled
+		- number of trees to be built
 - boosting
-	- reduces the bias
+	- classifiers are built one by one based on a weighted dataset
+		- misclassified data points tend to have larger weights
+	- each new tree depends on the previous ones
+		- it is trained on a dataset with different weights (it focuses on the misclassified data points)
+	- in the end, we get a weighted combination of the classifiers
+	- the ensemble has a lower overall bias
+	- disadvantage: outliers may hurt the overall performance of the model
+- random forests vs. boosting
+	- random forests: fast (can run in parallel, use a small set of features at each stage)
+	- boosting: sequential, can be expensive, but outperforms random forests
