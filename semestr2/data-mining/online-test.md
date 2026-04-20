@@ -237,24 +237,25 @@
 
 ## Cluster analysis
 
-- cluster analysis
-	- we want to divide the observed patterns into groups of mutually similar patterns
-	- assumption: we can measure the distance between patterns
-	- Minkovski metrics $L_z(x_1,x_2)=\sqrt[z]{\sum_j (x_{1j}-x_{2j})^z}$
-		- Hamming distance … $L_1$
-		- Euclidean distance … $L_2$
-		- Chebyshev distance … $L_\infty$
-	- Mahalanobis distance – useful if the quantities have different variance
-		- uses the covariance matrix
-		- $d(x_1,x_2)=(x_1-x_2)^TS^{-1}(x_1-x_2)$
-- distance between two clusters
-	- method of the nearest neighbor
-	- method of the farthest neighbor
-	- method of average distance (we compute the mean distance of two arbitrary samples – one from each cluster)
-	- centroid method (distance between the centers of the clusters)
+- cluster analysis, assumpations
+	- we want to divide the observed samples into groups of mutually similar ones
+	- assumption: we can measure the distance between samples (or between clusters)
+	- distance between two samples
+		- Minkovski metrics $L_z(x_1,x_2)=\sqrt[z]{\sum_j (x_{1j}-x_{2j})^z}$
+			- Hamming distance … $L_1$
+			- Euclidean distance … $L_2$
+			- Chebyshev distance … $L_\infty$
+		- Mahalanobis distance – useful if the quantities have different variance
+			- uses the covariance matrix
+			- $d(x_1,x_2)=(x_1-x_2)^TS^{-1}(x_1-x_2)$
+	- distance between two clusters
+		- method of the nearest neighbor
+		- method of the farthest neighbor
+		- method of average distance (we compute the mean distance of two arbitrary samples – one from each cluster)
+		- centroid method (distance between the centers of the clusters)
 - centroid
 	- compute the average over all the features
-	- but such pattern may not be in the data at all
+	- but such point may not be in the data at all
 - k-means clustering
 	- Lloyd
 		- divide the points randomly into $k$ clusters
