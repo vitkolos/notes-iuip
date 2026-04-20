@@ -400,6 +400,10 @@
 			- quite radical pruning
 			- the rules are transparent and easy to understand
 		- estimates confidence interval for accuracy of rules and trees
+			- for a given rule, we can evaluate training accuracy $\hat p=$ correctly classified samples ÷ all samples processed by the rule
+			- we assume binomial distribution
+			- for the confidence interval computed at the 95% confidence level, the lower accuracy bound for new data will correspond to $$\hat p-1.96\cdot\underbrace{\sqrt{\frac{\hat p(1-\hat p)}{N}}}_{\text{std dev}}$$
+				- where $N$ is the total number of samples
 		- uses information gain ratio as criterion for data division
 			- $\mathrm{argmax}_A\,\frac{\mathrm{gain}(A)}{-\sum_v P(A=v)\log_2 P(A=v)}$
 			- in the denominator, we have *SplitInformation*, which is the same formula as entropy if we consider the attribute values to be “classes”
