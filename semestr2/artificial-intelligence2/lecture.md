@@ -250,4 +250,47 @@
 	- univariate linear regression
 		- $L_2$ loss
 		- we can use an analytical solution – set derivatives equal to zero
-		- or we can use gradient descent
+		- or we can use gradient descent (works even if the hypotheses are non-linear)
+- linear classifiers
+	- linear separator
+	- perceptron learning rule
+	- logistic threshold function
+- non-parametric models
+	- $k$-nearest neighbors
+		- majority vote
+		- ($k$ should be odd)
+		- we need to measure distance – usually $L_p$ norm (Minkowski distance)
+			- Manhattan distance, Euclidean distance
+			- special case: for boolean attribute values, we have Hamming distance (number of attributes where the data points differ)
+			- we have to be careful about the scale, it's common to apply normalization for the individual attributes (to zero mean, unit variance)
+		- the curse of dimensionality
+			- in low-dimensional spaces with plenty of data, nearest neighbors work well
+			- as the number of dimension rises, the nearest neighbors may actually be quite far away
+			- with more dimensions, we need more data
+		- looking for neighbors
+			- table lookup… $O(N)$
+			- binary tree … $O(\log N)$
+			- hash table … $O(1)$
+				- we need the hash function to have some special property
+	- regression: simple approaches
+		- we get a piece-wise linear function if we connect all the known points
+		- 3-nearest neighbors average
+		- 3-nearest neighbors linear regression (we fit a model to the three points closest to our input)
+		- locally weighted regression – data points are weighted by their distance
+	- support vector machines (SVM)
+		- three properties
+			- maximum margin separator
+				- provides good generalization
+				- can be found using quadratic programming
+				- is defined by the points closest to the boundary
+			- kernel trick (solves the problem of the data not being linearly separable)
+				- we map the data points to a higher-dimensional space where they are linearly separable
+			- it is nonparametric
+- ensemble learning
+	- we are using multiple hypotheses to perform predictions (they vote)
+	- boosting
+		- $k$ rounds
+		- in every round we generate a hypothesis based on the data, then we increase weights of the misclassified samples (and decrease points of the correctly classified ones)
+		- the following hypotheses are generated based on the weighted data
+		- even if the underlying algorithm is weak, we can get quite a good classifier
+		- AdaBoost algorithm
