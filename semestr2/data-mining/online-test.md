@@ -235,7 +235,7 @@
 	- for normal distributions, we only need to estimate the means and the covariance matrices to get the discriminant functions
 		- the decision boundary is located where the distribution curves intersect
 
-## Cluster analysis
+## Cluster Analysis
 
 - cluster analysis, assumpations
 	- we want to divide the observed samples into groups of mutually similar ones
