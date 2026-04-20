@@ -430,3 +430,51 @@
 	- trik: můžeme použít symetrie
 	- ale všechny nohy se nemůžou pohybovat stejně
 - statická × dynamická chůze – podle toho, jestli je těžiště stále nad mnohoúhelníkem dotyku noh
+- mlok – dva způsoby pohybu (plavání a chůze)
+- propojené generátory řídicích signálů (tzv. CPG)
+- další experimenty
+	- Sony – pes Aibo
+	- Honda – humanoid ASIMO
+- někteří roboti se dovedou přestavět – změnit svoji morfologii
+	- např. rozdělit se na menší roboty nebo metamorfovat
+	- ukázka s modulárními polokostkami/poloválci
+	- M-TRAN
+	- zase generátory signálů – každý modul má svůj CPG, které spolu komunikují
+	- příklad robota popsaného tak, že se na něj dá použít evoluční algoritmus
+
+## Evoluční učení neuronových sítí
+
+- mozek se vyvinul evolučně
+- sekvenční úlohy z rozhodování
+- temporal difference reinforcement learning
+	- Q-učení
+	- neuroevoluce je jiná
+- neuroevoluce = „odložené učení“?
+- dosud jsme měli optimalizaci vah a pevnou architecturu = konvenční neuroevoluce
+	- pokročilejší: optimalizace architektury
+- základní metody neuroevoluce
+	- máme pevnou topologii (obvykle pevné propojení)
+	- evolučně se vyvíjejí váhy sítě (nepoužívá se algoritmus zpětného šíření)
+	- …
+	- problémy
+		- předčasná konvergence
+		- různé kódy odpovídají stejným sítím (liší se jenom permutace neuronů)
+			- křížení pak vytváří málo nových jedinců
+- pokročilá neuroevoluce s pevnou architekturou sítě
+	- symbiotická adaptivní neuroevoluce (SANE)
+		- jedna skrytá vrstva, vyvíjejí se jednotlivé skryté neurony
+		- při vyhodnocení se z nich vybere $k$ neuronů a složí se síť
+		- to se opakuje, aby byl každý neuron vyhodnocený aspoň 10×
+		- fitness neuronu je průměrná fitness přes všechny testy, kde jsme ho použili
+		- takže se neurony specializují a fungují v symbióze s ostatními
+		- každý neuron má 5 spojů, ty můžou vést ze vstupní vrstvy nebo do výstupní vrstvy (o tom rozhoduje parametr, který je součástí genetického kódu)
+		- porovnání symbiotické a standardní evoluce – u standardní rychle klesá diverzita
+		- příklad: cartpole
+	- vynucené subpopulace / enforced sub-populations (ESP)
+		- neurony jsou rozdělené na druhy – vyvíjejí se v rámci druhů
+		- jeden skrytý neuron odpovídá jedné populaci
+	- kooperativní synaptická neuroevoluce (CoSyNE)
+		- máme subpopulace pro váhy
+		- váhy pro $i$-tou synapsi jsou v subpopulaci $P_i$
+		- sloupec $x_i$ jsou hodnoty vah pro všechny synapse v síti
+		- kooperativní koevoluce pro každou subpopulaci odděleně
