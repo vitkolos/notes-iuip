@@ -236,3 +236,38 @@
 	- deal with problems of pairwise correlation of models constructed using bagging
 - boosting
 	- reduces the bias
+
+## Association Rules
+
+- market basked analysis (MBA)
+	- *what items occur together in the basket?*
+		- (how are the items usually associated)
+	- we want to express this in the form of rules
+	- application
+		- planning and layout of shops
+		- offer of coupons, limited discounts
+		- grouping of goods in bundles
+	- association rules should be applicable and easy to understand
+	- they should not be trivial or inexplicable
+	- it may be useful to add *virtual items* identifying the shop etc.
+- measures (criteria) of rules
+	- support
+	- confidence
+	- lift
+- main steps of MBA
+- choice of appropriate items
+- virtual items
+	- can contain information about the transaction
+	- can be used to track the brands
+- pruning
+- we could use brute force to generate possible rules (and then find the best ones)
+- algorithm apriori
+	- generation of the association rules
+		- looking for frequent item-sets
+		- (better than brute force)
+- dissociation rules
+- time series analysis
+- (dis)advantages of MBA
+- multiple minsups model
+	- support difference constraint
+- minsup of a rule

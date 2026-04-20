@@ -242,9 +242,10 @@
 	- assumption: we can measure the distance between samples (or between clusters)
 	- distance between two samples
 		- Minkovski metrics $L_z(x_1,x_2)=\sqrt[z]{\sum_j (x_{1j}-x_{2j})^z}$
-			- Hamming distance … $L_1$
+			- Manhattan distance … $L_1$
 			- Euclidean distance … $L_2$
 			- Chebyshev distance … $L_\infty$
+		- Hamming distance – number of positions at which $x_1$ and $x_2$ differ
 		- Mahalanobis distance – useful if the quantities have different variance
 			- uses the covariance matrix
 			- $d(x_1,x_2)=(x_1-x_2)^TS^{-1}(x_1-x_2)$
@@ -305,7 +306,7 @@
 	- merge neighboring *dense* hyper-cubes (cells) to get clusters
 		- there is a threshold which tells us if the hyper-cube is dense
 - density-based algorithms
-	- core point: there at least $\tau$ points closer than $\varepsilon$
+	- core point: there are at least $\tau$ points closer than $\varepsilon$
 	- border point: there is at least one core point closer than $\varepsilon$
 	- noise point: otherwise
 	- DBSCAN
