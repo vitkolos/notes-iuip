@@ -246,7 +246,7 @@
 
 ## Cluster Analysis
 
-- cluster analysis, assumpations
+- cluster analysis, assumptions
 	- we want to divide the observed samples into groups of mutually similar ones
 	- assumption: we can measure the distance between samples (or between clusters)
 	- distance between two samples

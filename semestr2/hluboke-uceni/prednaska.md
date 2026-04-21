@@ -416,3 +416,23 @@
 	- BPE algoritmus k tvoření podslov (subwords)
 		- alternativa: WordPieces (moc se nepoužívá)
 - transformer je super silný, takže potřebujeme hodně dat, aby neoverfittoval (nebo musíme hodně řešit regularizaci)
+
+## Transformer
+
+- multi-head self-attention
+	- vezmeme queries, keys a values a nakrájíme je na několik stejných dílů (počet dílů je mocnina dvojky)
+	- pozor, každý kus vidí všechny dimenze původního embeddingu – jakoby jsme uřízli jenom ty váhové matice
+	- chceme mít víc hlav, protože chceme, aby jedno slovo koukalo na víc slov ve větě – kdyby ta hlava byla jedna, tak by se jí toho dosahovalo blbě, protože to nejvýraznější slovo by snadno stáhlo veškerou její pozornost na sebe
+	- ale chci, aby jedna hlava mohla ovlivnit celý výstup – proto concatované výstupy hlav ještě proženu lineární vrstvou
+- reziduální blok, pre-LN konfigurace (trénuje se snáz než post-LN)
+- používá se RMSNorm, protože je rychlejší (neřeší centrování, tedy neupravuje bias)
+- v dekodéru chci maskovat self-attention, ale dělám to až před softmaxem (protože tam potřebujeme minus nekonečna, nuly by v softmaxu měly jiný význam!)
+- v encoder-decoder attention se požívají queries z dekodéru a keys & values z enkodéru
+- neplýtváme pamětí? používají se FlashAttention, což je efektivní implementace
+- embeddingy můžou být: 1) trénované, 2) sinusoidy
+	- sinusoidy mají hezké vlastnosti – lineární transformace nám umožňuje udělat relativní posun (aby attention mohla koukat např. o dvě pozice doleva)
+- dropout tady dává smysl 0.1, abychom neztráceli kapacitu
+- trénuje se adamem, asi chceme používat menší beta2 (0.98)
+- dělá se warmup – začíná se s malým learning ratem, pak se postupně zvětšuje (aby model nezdivergoval na začátku tréninku)
+- ELMo – konkatuju dvě reprezentace (dopřednou a zpětnou)
+	- mám několik vrstev, ty váženě posčítám
