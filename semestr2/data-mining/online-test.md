@@ -221,11 +221,20 @@
 	- non-linear – example: logistic regression
 		- if the dependent variable is categorical
 		- we use log (conditional) odds to model the conditional probability
-			- $x=\ln\frac{P}{1-P}$
-			- so $P=\frac 1{1+e^{-x}}$ (sigmoid)
-			- where $x=\alpha+\sum_j\beta_j x_j$
+			- $s_i=\ln\frac{P}{1-P}$
+			- so $P=\frac 1{1+e^{-s_i}}$ (sigmoid)
+			- where $s_i=\alpha+\beta x_i=\alpha+\sum_j\beta_j x_{ij}$
 		- we estimate the parameters using *maximum likelihood*
-		- (see the slides for more formulas 😬)
+			- $L=\prod_i P(y_i\mid x_i)=\prod_i p_i^{y_i}(1-p_i)^{1-y_i}$
+				- $p_i=\sigma(s_i)=\frac1{1+e^{-\alpha-\beta x_i}}$
+				- note that $1-p_i=1-\sigma(s_i)=\sigma(-s_i)$
+			- we minimize negative log-likelihood (= cross-entropy loss)
+				- $E=-\sum_i(y_i\log p_i+(1-y_i)\log(1-p_i))$
+		- gradient descent is then applied like this
+			- $\beta_j\leftarrow\beta_j-\eta\sum_i(\sigma(\alpha+\beta x_i)-y_i)x_{ij}$
+			- $\alpha\leftarrow\alpha-\eta\sum_i(\sigma(\alpha+\beta x_i)-y_i)$
+			- $\eta$ … learning rate
+			- note that $\sigma'(s_i)=\sigma(s_i)(1-\sigma(s_i))$
 - discriminant analysis
 	- classification into classes
 	- we consider a discriminant function $f_t$ for every class $c_t$
