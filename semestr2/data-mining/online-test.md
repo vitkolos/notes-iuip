@@ -177,7 +177,7 @@
 	- one-sided or two-sided version
 	- we get the $p$-value directly: what is the probability of this or more extreme table if we assume fixed column and row totals?
 		- for the two-sided version, we need to compute the expected frequencies $e_{k\ell}$
-		- probability of this table: $$p=\frac{r_1!\cdot r_2!\cdot s_1!\cdot s_2}{n!\cdot a!\cdot b!\cdot c!\cdot d!}$$
+		- probability of this table: $$p=\frac{r_1!\cdot r_2!\cdot s_1!\cdot s_2!}{n!\cdot a!\cdot b!\cdot c!\cdot d!}$$
 			- $a,b,c,d$ … values of the cells
 			- $r_i,s_j$ … row and column totals respectively
 		- probability of some more extreme table $T_i$ – we consider values $a-i,\ b+i,\ c+i,\ d-i$ instead
@@ -448,7 +448,7 @@
 	- bootstrapped aggregating
 	- reduces the variance of the classifier
 	- if we consider an ensemble of $k$ i.i.d. classifiers with variance $\sigma^2$ each, the ensemble has variance $\sigma^2/k$
-	- decision are an ideal choice for bagging – they have low bias and high variance (if they are sufficiently deep)
+	- decision trees are an ideal choice for bagging – they have low bias and high variance (if they are sufficiently deep)
 	- bagging does not reduce bias (it may even worsen accuracy if bias is the main problem)
 	- to get classifiers that are i.i.d. (independent and identically distributed) to some extent, we perform *bootstrapping*
 		- the data points are sampled uniformly from the original data with replacement
