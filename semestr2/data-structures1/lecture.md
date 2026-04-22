@@ -863,6 +863,19 @@
 	- then $\mathcal H\bmod m$ is $(2,4c)$-independent
 	- or $(2,2c)$-independent if $r\geq 4m$
 - the weaker version has been proved above
+- stronger version
+	- lemma
+		- let $\mathcal H'$ be $(k,c)$-independent faimly of $h':\mathcal U\to[r],\ r\geq 2km$
+		- then $\mathcal H=\mathcal H'\bmod m$ is $(k,2c)$-independent
+	- proof (we don't need to know this for the exam)
+		- let's have $x_1,\dots,x_k$ distinct, $i_1,\dots,i_k\in[m]$ (not necessarily distinct)
+		- $$P_{h\in\mathcal H}(\forall j:h(x_j)=i_j)=\sum_{\forall j:\ell_j\equiv i_j\bmod m}P(\forall j:h'(x_j)=\ell_j)$$
+		- $\leq\sum_{\ell_j}\frac c{r^k}\leq\lceil\frac rm\rceil^k\frac c{r^k}\leq\frac c{r^k}(\frac{r+m}m)^k=\frac c{m^k}(1+\frac mr)^k$
+			- we use $\lceil\frac rm\rceil\leq\frac{r+m-1}m$
+		- $\leq\frac c{m^k}e^{km/r}$
+			- as $1+x\leq e^x$
+		- $\leq\frac{2c}{m^k}$
+			- we use $r\geq 2km$ (so $km/r\leq 1/2$)
 - example
 	- $\mathcal L=\mathcal P_2\bmod m=\set{h_{a,b}\mid a,b\in\mathbb Z_p},\ h_{a,b}:\mathbb Z_p\to [m]$
 	- $h_{a,b}(x)=((ax+b)\bmod p)\bmod m$

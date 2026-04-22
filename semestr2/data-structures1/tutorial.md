@@ -213,3 +213,5 @@
 			- because $h(x_4)=h(x_1)\oplus h(x_2)\oplus h(x_3)$
 				- we use the fact that $a\oplus a=0$
 			- this also applies for larger blocks (if we consider the same values $x^1,x^2,\dots,x^t$)
+- stronger composition lemma
+	- 
