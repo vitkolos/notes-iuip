@@ -947,7 +947,7 @@
 			- so if there are $10^6$ items and we want $\varepsilon=0.01$, we need 100 Mb to store the filter
 - $k$-way Bloom filter
 	- we take a conjunction of $k$ Bloom filters
-	- we need $h_1,\dots,h_k$ to be independently $c$-universal
+	- we need $h_1,\dots,h_k$ to be independently chosen function from a $c$-universal family
 	- $P(y\text{ is }FP)\leq\prod_{i=1}^k\frac{cn}m=\frac1{2^k}\leq\varepsilon$
 		- if $c=1$ and $m=2n$
 	- $k:=\lceil\log 1/\varepsilon\rceil$

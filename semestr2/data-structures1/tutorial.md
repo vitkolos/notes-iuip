@@ -214,4 +214,35 @@
 				- we use the fact that $a\oplus a=0$
 			- this also applies for larger blocks (if we consider the same values $x^1,x^2,\dots,x^t$)
 - stronger composition lemma
-	- 
+- homework: find duplicates
+	- file of strings
+	- some strings appear multiple times
+	- list strings which appear multiple times, print them only once
+	- duplicates fit in the memory
+	- the point is to use a Bloom filter
+		- it gives us candidates of duplicates
+		- we can fit them in the memory
+	- so in the second pass, we can report the duplicates
+	- we want to use bytearray (or some different bit array)
+- single-band Bloom filter
+	- we have $h_1,\dots,h_k$
+	- when we insert an element, we set ones for every $h_i$
+	- for find, we require that there are ones for every $h_i$
+- for $k$-band Bloom filter, we can keep $P(FP)\leq\varepsilon$ for $M=mk=2n\lceil\log(1/\varepsilon)\rceil$
+- for single-band filter, we need $h_i$ to be totally random
+	- $x_1,\dots,x_n$ inserted → $\leq nk$ bits set to one
+	- $y$ distinct
+	- for fixed $i$
+		- $p=P(B[i]=0)=(1-1/m)^{nk}\approx e^{-nk/m}$
+		- we use the assumption of $h_i$ being totally random
+		- we also use $1+x\approx e^x$
+	- for a target $p$
+		- $k=-(m/n)\cdot\ln p$
+	- $P(FP)=P(\forall i: B[h(y)]=1)\approx (1-p)^k$
+		- the bits are kind of independent
+	- $=e^{-\ln(1-p)\ln p(m/n)}$
+		- the function is minimized for $p=1/2$
+	- we want $P(FP)\leq\varepsilon$
+		- so we need $m\approx 1.44n\lceil\log(1/\varepsilon)\rceil$
+		- the improvement in the constant comes from the functions being totally random
+		- theoretical lower bound: $n\lceil\log(1/\varepsilon)\rceil$
