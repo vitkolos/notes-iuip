@@ -858,3 +858,100 @@
 			- $\mathbb E[|R|]\leq 3\cdot 1+\sum_{\ell\geq 0}2^{\ell+3} P(|R|\in[2^{\ell+2},2^{\ell+3}))$
 			- $\leq 3+12\cdot 8\cdot \sum_{\ell\geq 1}iq^i$
 			- $q\lt 1$ so we get $O(1)$
+- lemma
+	- let $\mathcal H$ be $(2,c)$-independent family of $h:\mathcal U\to [r],\ r\geq m$
+	- then $\mathcal H\bmod m$ is $(2,4c)$-independent
+	- or $(2,2c)$-independent if $r\geq 4m$
+- the weaker version has been proved above
+- example
+	- $\mathcal L=\mathcal P_2\bmod m=\set{h_{a,b}\mid a,b\in\mathbb Z_p},\ h_{a,b}:\mathbb Z_p\to [m]$
+	- $h_{a,b}(x)=((ax+b)\bmod p)\bmod m$
+	- from the lemma, we get $(2,4)$-independence, $(2,2)$-independence if $p\geq 4m$
+- hashing of strings
+	- $x=(x_0,\dots,x_{d-1})\in\mathbb Z_p^d$
+	- we can pick $t\in\mathbb Z_p^d$
+	- then $h_t(x)=x\cdot t=\sum_{i=0}^{d-1} x_it_i\bmod p$
+	- we know that $\mathcal S=\set{h_t\mid t\in\mathbb Z_p^d}$ is $1$-universal
+	- but applying modulo can lead to the lost of universality
+- lemma
+	- let $\mathcal F$ be a $c$-universal family of $f:\mathcal U\to[r],\ r\geq m$
+	- $\mathcal G$ is $(2,d)$-independent family of $g:[r]\to[m]$
+	- then $\mathcal H=\mathcal F\circ\mathcal G=\set{f\circ g\mid f\in\mathcal F,\ g\in\mathcal G}$ is $(2,c')$-independent where $c'=(\frac{cm}r+1)d$
+		- where $(f\circ g)(x)=g(f(x))$
+- example
+	- $\mathcal S\circ\mathcal L$ is $(2,8)$-independent, $(2,\frac 52)$-independent if $p\geq 4m$
+- proof
+	- $x_1,x_2\in\mathcal U,\ x_1\neq x_2,\ i_1,i_2\in[m]$
+	- $P_{f\in\mathcal F,g\in\mathcal G}(g(f(x_1))=i_1\land g(f(x_2))=i_2)$
+		- = “match” event $M$
+	- collision event $C$
+		- $f(x_1)=f(x_2)$
+	- $P(M)=\underbrace{P(M|\neg C)}_{2\text{-ind.}}\underbrace{P(\neg C)}_{\leq 1}+\underbrace{P(M|C)}_{1\text{-ind.}}\underbrace{P(C)}_{c\text{-univ.}}$
+		- $P(M| C)=0$ if $i_1\neq i_2$, otherwise $1$-independence?
+	- $\leq \frac{d}{m_2}\cdot 1+\frac dm\cdot\frac cr=\frac{c'}{m^2}$
+- rolling hashing
+	- we know $h_t(x)=\sum_{i=0}^{k-1} t_ix^i\bmod p$
+		- $\mathcal P_k=\set{h_t\mid t\in\mathbb Z_p^k}$
+	- let's consider $h_a(x)=\sum_{i=0}^{d-1} x_ia^i\bmod p$
+		- so $x\in\mathbb Z_p^d$
+		- $\mathcal R=\set{h_a\mid a\in\mathbb Z_p}$
+	- lemma: $\mathcal R$ is $d$-universal for $d\geq 1$, $p$ prime
+	- proof
+		- $x\neq y$
+		- $P_a(h_a(x)=h_a(y))=P_a(\sum_{i=0}^{d-1}(x_i-y_i)a^i=0)\leq\frac dm$
+			- a polynomial of degree $d-1$ has at most $d-1$ roots (which is $\leq d$)
+	- $\mathcal R\circ\mathcal L$ is $(2,\frac 52)$-independent if $p\geq 4dm$
+	- Rabin-Karp substring search
+		- we keep a window of length $d$
+		- we compute hash of the window and compare it with hash of the searched substring
+		- if we have a suitable hash function, we can shift the window and recompute its hash in constant time
+			- $h_a(x)=x_0+x_1a+x_2a^2+\dots+x_{d-1}a^{d-1}$
+			- $h_a(x')=x_1+x_2a+\dots+x_{d-1}a^{d-2}+x_da^{d-1}=\frac{h_a(x)-x_0}a+x_da^{d-1}$
+		- if we have a small alphabet, we may want to group the characters by three (?)
+		- if the substring we want to search for is shorter than $d$, we can pad it with zeros
+
+### Bloom Filters
+
+- consider testing for disease = “filter”
+	- assume there are zero false negatives (sensitivity = 100%)
+	- assume that there is as little false positives as possible (high specificity)
+- Bloom filter is a filter for set representation with zero false negatives
+	- consider a database and a query (Find $x$)
+	- you first ask the bloom filter – if the filter responds “no”, we don't need to ask the database
+	- of course, Insert $x$ has to change both the filter and the database
+	- the larger memory we have available, the smaller the probability of false positives
+- simple Bloom filter
+	- bit array $[m]$, $h\in\mathcal H$ is $c$-universal
+	- Insert $x$ … $B[h(x)]\leftarrow 1$
+	- Find $x$ = Yes $\iff B[h(x)]=1$
+	- we have no false negatives
+	- probability of false positivity
+		- consider that there are already distinct $x_1,\dots,x_n$ present in the filter
+		- consider $y$ distinct
+		- $P_h(y\text{ is }FP)=P(\exists i:h(y)=h(x_i))\leq\sum_{i=1}^n P_h(h(x_i)=h(y))\leq\frac{cn}m$
+		- let's consider that $c=1$ and that we want $P(FP)\leq \varepsilon$
+			- we set $m:=\lceil n/\varepsilon\rceil$ (number of required bits)
+			- so if there are $10^6$ items and we want $\varepsilon=0.01$, we need 100 Mb to store the filter
+- $k$-way Bloom filter
+	- we take a conjunction of $k$ Bloom filters
+	- we need $h_1,\dots,h_k$ to be independently $c$-universal
+	- $P(y\text{ is }FP)\leq\prod_{i=1}^k\frac{cn}m=\frac1{2^k}\leq\varepsilon$
+		- if $c=1$ and $m=2n$
+	- $k:=\lceil\log 1/\varepsilon\rceil$
+	- $M=mk=2n\lceil\log 1/\varepsilon\rceil$
+	- now for $n=10^6$ and $\varepsilon=0.01$, we need $k=7$ and $M=14$ Mb
+		- for $\varepsilon=0.001$, we need $k=7$ and $M=20$ Mb
+- single-band Bloom filter
+	- but we set $k$ bits using $k$ hash functions that are chosen independently
+	- if the hash functions are totally random, we may get results similar to the $k$-way filter
+- how to delete elements?
+	- if we set the bit to zero, we delete all the elements with this hash value
+	- instead of bits, we could use counters → counting filter
+		- $b$ bits → at most $t:=2^b-1$ elements can be hashed to the same position at the filter
+		- Insert/Delete just increment/decrement the value in the filter
+		- Find returns yes if the filter is not zero
+		- problems
+			- when we reach $t$, the counter is “stuck” (cannot be increased, cannot be decreased), so there's a new kind of false positives
+				- for a fixed bucket $i$ and totally random $h$, we have $P(B[i]\geq t)\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
+					- we use ${n\choose t}\leq(\frac{ne}t)^t$
+				- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
