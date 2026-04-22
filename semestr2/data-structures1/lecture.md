@@ -950,8 +950,8 @@
 		- $b$ bits → at most $t:=2^b-1$ elements can be hashed to the same position at the filter
 		- Insert/Delete just increment/decrement the value in the filter
 		- Find returns yes if the filter is not zero
-		- problems
-			- when we reach $t$, the counter is “stuck” (cannot be increased, cannot be decreased), so there's a new kind of false positives
-				- for a fixed bucket $i$ and totally random $h$, we have $P(B[i]\geq t)\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
-					- we use ${n\choose t}\leq(\frac{ne}t)^t$
-				- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
+		- problem: when we reach $t$, the counter is “stuck” (cannot be increased, cannot be decreased), so there's a new kind of false positives
+			- for a fixed bucket $i$ and totally random $h$, we have $P(B[i]\geq t)\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
+				- we use ${n\choose t}\leq(\frac{ne}t)^t$
+			- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
+			- if we have $m=10^9$ counters, the probability that any is stuck is $\leq 3.06\cdot 10^{-5}$
