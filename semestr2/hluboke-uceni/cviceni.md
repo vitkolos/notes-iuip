@@ -77,3 +77,23 @@
 	- když používáme normální Adam pro embeddingovou matici, tak se nám u nepoužívaných slov sbírá momentum
 	- jakmile to slovo jednou najdeme, tak to může „bouchnout“
 	- takže dává smysl používat SparseAdam pro embeddingovou matici – nepoužívaných slov si nevšímá
+- speech recognition
+	- nejjednodušší metoda regularizace – dropout
+		- ostatní nemůžeme snadno použít
+		- můžeme dropoutovat vstup do LSTM (features) nebo můžeme dropoutovat za každou vrstvou LSTM – nebo oboje
+	- referenční řešení: LSTM
+	- můžeme to zlepšit konvolucí (architektura CNN-LSTM)
+	- nebo bychom mohli používat jenom konvoluci (U-Net)
+	- můžeme dělat MFCC augmentation, masking
+	- je vhodné použít language model, který nám řekne pravděpodobnosti daných posloupností slov
+		- integruje se do beam searche
+		- nebo by se dal integrovat i do lossu, pak se tomu říká RNN-T
+	- je dobré mít i character-level language model, protože ne každé slovo language model zná
+	- v PyTorchi můžeme mít lexikon, takže produkujeme jenom známá slova
+	- alternativní přístup: raw → wav2vec → hlava (s CTC)
+- reading comprehension
+	- RobeCzech dostane kontext a otázku
+	- dá mi reprezentaci
+	- měl by predikovat dvě věci
+		- kde v kontextu začíná odpověď (tzn. logit pro každé slovo z kontextu)
+		- kde v kontextu končí odpověď (zase logit per slovo)
