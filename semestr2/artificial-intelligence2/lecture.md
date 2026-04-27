@@ -294,3 +294,29 @@
 		- the following hypotheses are generated based on the weighted data
 		- even if the underlying algorithm is weak, we can get quite a good classifier
 		- AdaBoost algorithm
+
+### Logical formulation of learning
+
+- current-best-hypothesis
+	- we start with a simple hypothesis (formula $C(x):=\mathrm{True}$; or we could probably use False)
+	- we iterate over the data points and maintain a hypothesis that is consistent with them
+		- we may need to generalize or specialize the hypothesis
+		- when generalizing, we prefer removing an item from a conjunction over adding a disjunction – we want to keep the hypothesis as simple as possible (according to Ockham's razor principle)
+	- after each modification of the hypothesis, we need to check all the previous examples
+		- we may need to backtrack
+		- problem: strong commitment
+- alternative approach: least-commitment search (version space learning)
+	- version space learning algorithm / candidate elimination algorithm
+	- note that if there are two samples with the same attributes but different classes, our version space collapses
+		- it may happen due to noise or if some important attribute is missing from the data
+		- representation of version space using a lower bound and an upper bound
+- inductive logic programming
+	- examples are given like Prolog facts
+	- classifications are given by Prolog facts
+	- we have some background knowledge (in the form of a formula)
+	- we want to learn some hypothesis
+	- top-down learning
+		- we start with an empty clause
+		- we add literals to the body one at a time
+		- system FOIL – it was able to learn quicksort
+	- inverse resolution
