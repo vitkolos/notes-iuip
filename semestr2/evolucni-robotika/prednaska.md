@@ -478,3 +478,32 @@
 		- váhy pro $i$-tou synapsi jsou v subpopulaci $P_i$
 		- sloupec $x_i$ jsou hodnoty vah pro všechny synapse v síti
 		- kooperativní koevoluce pro každou subpopulaci odděleně
+	- CMA-ES
+	- NEAT
+		- začíná se s malou sítí, sítě můžou růst
+		- smysluplné křížení sítí s různou topologií
+		- ochrana inovací pomocí druhů
+		- uzly v síti mají tzv. historické značky – podle nich se párují při mutaci
+		- přidání spoje je mutace
+		- musíme si hlídat, aby měl konkrétní spoj v celé generaci jenom jednu historickou značku
+			- u neuronů to asi nehlídáme
+			- je to taková heuristika, kterou se trochu bráníme proti permutačnímu problému
+		- ochrana inovací
+			- dělíme jedince do druhů
+			- nový druh je po několik generací chráněný – jedinci soutěží jenom mezi sebou
+			- jedinci sdílejí zdroje s ostatními jedinci svého druhu – mají upravenou fitness
+			- rozdělení do druhů můžeme ovládat nastavováním vzdálenostní konstanty v každé generaci
+	- cellular encoding
+
+## Od simulace k realitě
+
+- Karl Sims
+	- kvádroví roboti
+- L-systém
+	- jako bezkontextová gramatika, akorát v každém kroku musím přepsat všechny neterminály najednou
+	- generuje se konstrukční jazyk podobný jako jazyk Logo
+- GOLEM
+- projekt ERO
+- soft robots
+	- HyperNEAT
+- growing soft-bodied creatures
