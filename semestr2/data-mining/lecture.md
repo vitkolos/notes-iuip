@@ -271,3 +271,7 @@
 - multiple minsups model
 	- support difference constraint
 - minsup of a rule
+- …
+- sequences
+- FP-Growth
+	- FP-Tree
