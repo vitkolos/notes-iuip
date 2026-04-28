@@ -436,3 +436,21 @@
 - dělá se warmup – začíná se s malým learning ratem, pak se postupně zvětšuje (aby model nezdivergoval na začátku tréninku)
 - ELMo – konkatuju dvě reprezentace (dopřednou a zpětnou)
 	- mám několik vrstev, ty váženě posčítám
+
+## LLMka
+
+- BERT
+- RoBERTa
+- KV cache
+- multi-query attention, grouped-query attention
+- FlashAttention
+	- potřebujeme kvadratický čas, ale vystačíme si s lineárním prostorem
+- mixture of experts
+- rotary positional embeddings
+- instruction finetuning
+
+## Reinforcement learning
+
+- hrací automaty
+- MDP
+- algoritmus Reinforce
