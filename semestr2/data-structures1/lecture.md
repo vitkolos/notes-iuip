@@ -968,3 +968,81 @@
 				- we use ${n\choose t}\leq(\frac{ne}t)^t$
 			- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
 			- if we have $m=10^9$ counters, the probability that any is stuck is $\leq 3.06\cdot 10^{-5}$
+
+## Suffix Arrays
+
+- substring search
+- text $\alpha$, $|\alpha|=n$, substring $\beta$, $|\beta|=m$
+	- $p$ … number of occurences
+- RK … $O(nm)$ worst case
+- KMP … $O(m+n)$
+- AC … $O(m+n)$
+- KMP, AC … for fixed $\beta$, any $\alpha$
+- idea: build DS for fixed $\alpha$ in $O(n)$, any $\beta$, query in $O(m\log n+p)$
+	- then $O(m+\log n+p)$
+- notation
+	- characters in $\alpha$ indexed from $0$ to $n-1$
+	- slicing like in Python
+	- $\alpha\leq\beta$ … lexicographic order
+		- $\alpha$ is a prefix of $\beta$ or $\exists i:\alpha[i]\lt\beta[i]\land \alpha[{:}i]=\beta[{:}i]$
+- sorted suffixes of $\alpha=$ *bananas*, their starting position
+	0. $\varepsilon$, 7
+	1. ananas, 1
+	2. anas, 3
+	3. as, 5
+	4. bananas, 0
+	5. nanas, 2
+	6. nas, 4
+	7. s, 6
+- so we get a table with columns $i$, $\alpha[S[i]{:}]$, $S[i]$
+- $S$ is a mapping from the lexicographic order to the position in $\alpha$
+- so $n=7$, consider $\beta=$ na, $m=2$
+	- we need to find the interval corresponding to *na*
+	- we get *nanas*, *nas* → 2, 4
+	- these are the positions of $\beta$ in $\alpha$
+- we will add two more arrays $R,L$
+- definitions
+	- the suffix array for $\alpha$ is a permutation $S[0,\dots,n]$ s.t. $\forall (0\leq i\lt n):\alpha[S[i]{:}]\lt\alpha[S[i+1]{:}]$
+	- the rank array $R[0,\dots,n]$ is an inverse permutation to $S$
+		- $R[i]$ … number of suffixes that are lex. smaller than $\alpha[i{:}]$
+		- it's a mapping inverse to $S$ (position → lexicographic order)
+	- the LCP-array $L[0,\dots,n-1]$
+		- $L[i]$ … length of the longest common prefix of $i$-th suffix and $(i{+}1)$-th suffix (in the lex. order)
+- observation: $\forall(0\leq i\lt j\leq n):\mathrm{LCP}(\alpha[S[i]{:}],\alpha[S[j]{:}])=\min(L[i],L[i+1],\dots,L[j-1])$
+	- let's say that the right side is $k$
+	- then the LCP of $i,j$ has to be at least $k$
+	- the sequence of characters at $k+1$ position is non-decreasing
+		- the chars are the same (if their LCP is greater than $k$) or they differ (here we use the lex. order)
+	- so the LCP of $i,j$ has to be $\leq k$
+- RMQ (range minimum query) in $O(\log n)$ using 1-D trees
+	- we can easily find the minimum of the LCPs in the array
+	- note: if we use LCP-LR, we can do it in $O(1)$
+- idea
+	- we have a *current range* $[i{:}j]$
+	- assume $\ell:=\mathrm{LCP}(\beta,\alpha[S[i]{:}])$
+	- we know that the character $\ell+1$ in $i$-th (lex.) suffix of $\alpha$ is strictly smaller than the character in $\beta$ (because of the range being $[i{:}j]$)
+	- consider $m:=\lceil(i+j)/2\rceil$
+	- what is LCP between $i,m$?
+		- if it's smaller than $\ell$, we need to continue in the first half (range $[i{:}m]$)
+		- if it's greater than $\ell$, we need to continue in the first half (range $[m{:}j]$)
+		- if it equals $\ell$, then we compare $\beta$ and $m$-th (lex.) suffix from the position $\ell+1$
+	- if we use RMQ, it takes $O(m+\log^2 n)$ time
+		- or $O(m+\log n)$ when using LCP-LR
+		- $\log n$ … we always halve the interval
+		- $m$ … we go through the entire $\beta$ only once (in the “equality” part)
+- histogram of all $k$-grams (might be useful for classifying a language or a species based on its DNA)
+	- we can find it in linear time by going through LCP array
+	- if the current LCP is below $k$, we reached a new $k$-gram
+- longest repeating substring (redundancy measure)
+	- find a maximum in the LCP array
+- longest common substring in $\alpha,\beta$
+	- we build a LCP array for $\alpha\#\beta$
+	- …
+- $S,R\to L$
+	- Kasai's algorithm
+	- observation: if $k=L[R[p-1]]$, then $L[R[p]]\geq k-1$
+		- because if we remove the first character from the $R[p{-}1]$-th (lex.) suffix, we get the $R[p]$-th suffix
+	- algorithm
+		- …
+		- (check out BuildLCP)
+	- runs in $O(n)$
