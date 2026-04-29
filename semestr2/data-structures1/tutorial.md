@@ -246,3 +246,20 @@
 		- so we need $m\approx 1.44n\lceil\log(1/\varepsilon)\rceil$
 		- the improvement in the constant comes from the functions being totally random
 		- theoretical lower bound: $n\lceil\log(1/\varepsilon)\rceil$
+- trie
+- compressed trie
+- suffix tree
+	- trie of suffixes (including the empty suffix)
+- finding distinct $k$-grams using suffix tree
+	- just cut the tree at depth $k$
+- longest common substring – suffix tree
+	- build a tree for $\alpha\#\beta$
+	- find the deepest inner node such that it contains branches both with and without hash in its subtree
+- constructing $R$ (we can easily construct $S$ based on $R$)
+	- $R[i]$ … lex. rank of substring starting at $i$
+	- $R_k[i]$ … number of positions $j$ s.t. $\alpha[j:j+k]\lt\alpha[i:i+k]$
+	- we can compute $R_{2k}[i]$ as the number of positions $j$ s.t. $R_k[j]\lt R_k[i]$ or $R_k[j]=R_k[i]\land R_k[j+k]\lt R_k[i+k]$
+	- we want to sort triples $(R_k[i],R_{k}[i+k],i)$
+		- we can use bucket sort in $O(n)$
+	- $R_n=R$
+	- we need $O(n\log n)$ for the initial step (if the alphabet is large and we cannot rely on the bucket sort)

@@ -1033,6 +1033,7 @@
 - histogram of all $k$-grams (might be useful for classifying a language or a species based on its DNA)
 	- we can find it in linear time by going through LCP array
 	- if the current LCP is below $k$, we reached a new $k$-gram
+	- we need to check that $S[i]$ is not too large (so that it truly is a $k$-gram – it should not be shorter than $k$)
 - longest repeating substring (redundancy measure)
 	- find a maximum in the LCP array
 - longest common substring in $\alpha,\beta$
