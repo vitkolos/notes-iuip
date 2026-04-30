@@ -97,3 +97,11 @@
 	- měl by predikovat dvě věci
 		- kde v kontextu začíná odpověď (tzn. logit pro každé slovo z kontextu)
 		- kde v kontextu končí odpověď (zase logit per slovo)
+- jak se trénuje obrovský model
+	- můžeme rozsekat batch, prohnat každou část jiným akcelerátorem
+		- pak musíme průměrovat gradient napříč, u všech aktualizovat hyperparametry
+	- můžeme rozdělit vrstvy sítě mezi několik akcelerátorů
+		- kdybychom dělali jenom forward pass a backward pass, tak by se většinu času na většině karet nic nedělo → pouští se postupně víc malých batchí, navzájem se vhodně propletou
+- 3D recognition
+	- baseline: 3D resnet
+	- ale můžeme použít předtrénované modely

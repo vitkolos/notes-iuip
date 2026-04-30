@@ -30,3 +30,18 @@
 	- single – closest points
 	- average
 	- ward
+- domácí úkol
+	- bayesovský klasifikátor
+	- používáme laplaceovské vyhlazování, abychom vyřešili situaci, kdy se nějaká kombinace atributů vůbec nevyskytuje
+	- jak by vypadaly vzorce pro klasifikátor, kde může jeden atribut záviset na dvou jiných?
+		- uvažujeme situaci, kdy $x_i$ závisí na $x_{i-p}$ a $x_{i-q}$, kde $p,q$ jsou kladná přirozená čísla
+- prezentace
+	- jedna prezentace na 10–15 minut
+	- pro velký projekt budou dvě po sobě (takže dohromady 20–30 minut)
+	- prezentace v posledním týdnu semestru by default
+	- během zkouškového budou aspoň dva termíny prezentací
+- projekt
+	- poslat krátký návrh včetně odkazu/popisu, jak získáme data
+	- cílem je aplikovat DM metodu na reálná data
+	- data, která už byla mnohokrát analyzována na internetu, nejsou vhodná
+	- můžeme použít metodu, kterou jsme našli na internetu, na naše data, to je v pohodě
