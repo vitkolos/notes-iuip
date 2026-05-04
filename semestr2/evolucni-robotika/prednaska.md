@@ -505,5 +505,14 @@
 - GOLEM
 - projekt ERO
 - soft robots
-	- HyperNEAT
+	- přímé kódování nefunguje dobře
+	- HyperNEAT funguje líp
 - growing soft-bodied creatures
+- electrophysiological soft robots
+
+## Robotické roje
+
+- mravenci – feromony
+- znaky robotických rojů, technologické motivace
+	- superlineárnost – roboti mají dohromady větší schopnosti než prostý součet jejich jednotlivých schopností
+- potenciálová metoda (naučit!)
