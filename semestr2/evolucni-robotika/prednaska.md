@@ -515,4 +515,10 @@
 - mravenci – feromony
 - znaky robotických rojů, technologické motivace
 	- superlineárnost – roboti mají dohromady větší schopnosti než prostý součet jejich jednotlivých schopností
-- potenciálová metoda (naučit!)
+- chceme projít všechny vrcholy grafu
+	- potenciálová metoda (naučit!)
+- chceme projít všechny hrany grafu
+	- každý uzel má směrovku
+
+## Pokročilé evoluční NS
+
