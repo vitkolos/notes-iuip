@@ -275,3 +275,27 @@
 - sequences
 - FP-Growth
 	- FP-Tree
+
+## Bayesian Classification, ELM
+
+- naive Bayesian classifier
+	- we want to find the most probable hypothesis $H^*$ when observing events $E_1,\dots,E_K$
+	- $H^*=\mathrm{argmax}_H\, P(H)\cdot \prod_{k=1}^K P(E_k\mid H)$
+	- $H$ might be possible classes, $E_k$ may be attributes of the data point (which we want to classify)
+- extreme learning machine
+	- architektura podobná jako MLP s jednou skrytou vrstvou
+	- parametry skryté vrstvy generuji náhodně
+	- parametry výstupní vrstvy trénuji v jednom kroku (pomocí LMS?)
+		- takže se nedá dělat dodatečný finetuning
+
+## SVM
+
+- Kuhn-Tucker conditions
+- primal formulation: $L_P=\frac 12w^2-\sum\alpha_i[y_i(wx_i+b)-1]$
+- dual formulation
+	- $\frac{\partial L_P}{\partial w_j}=w_j-\sum\alpha_i y_i x_{ij}$
+		- $\frac{\partial L_P}{\partial w_j}=0$
+		- so $w_j=\sum\alpha_i y_ix_{ij}$
+	- $\frac{\partial L_P}{\partial b}=-\sum a_iy_i$
+		- again $\sum\alpha_i y_i=0$
+	- $L_D=\frac 12\sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j-\sum_{ij}\alpha_iy_i\alpha_jy_j x_ix_j-\sum\alpha_i y_i b+\sum\alpha_i=$ $\sum\alpha_i-\frac12 \sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j$

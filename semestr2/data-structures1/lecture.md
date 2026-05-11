@@ -1047,3 +1047,17 @@
 		- …
 		- (check out BuildLCP)
 	- runs in $O(n)$
+- constructing $R$ (we can easily construct $S$ based on $R$) – using doubling
+	- $R[i]$ … lex. rank of substring starting at $i$
+	- $R_k[i]$ … number of positions $j$ s.t. $\alpha[j:j+k]\lt\alpha[i:i+k]$
+	- we can compute $R_{2k}[i]$ as the number of positions $j$ s.t. $R_k[j]\lt R_k[i]$ or $R_k[j]=R_k[i]\land R_k[j+k]\lt R_k[i+k]$
+	- we want to sort triples $(R_k[i],R_{k}[i+k],i)$
+		- we can use bucket sort in $O(n)$
+	- $R_n=R$
+	- we need $O(n\log n)$ for the initial step (if the alphabet is large and we cannot rely on the bucket sort)
+
+---
+
+Geometric data structures: range queries, k-d search trees, range trees (6. 5.)
+
+---
