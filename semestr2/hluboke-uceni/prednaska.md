@@ -454,3 +454,9 @@
 - hrací automaty
 - MDP
 - algoritmus Reinforce
+
+## VAE, GAN
+
+## Diffusion
+
+- 

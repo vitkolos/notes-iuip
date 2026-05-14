@@ -104,4 +104,10 @@
 		- kdybychom dělali jenom forward pass a backward pass, tak by se většinu času na většině karet nic nedělo → pouští se postupně víc malých batchí, navzájem se vhodně propletou
 - 3D recognition
 	- baseline: 3D resnet
+		- WideNet-like architektura s preaktivovanými residual bloky s 3D konvolucemi
 	- ale můžeme použít předtrénované modely
+	- diskrepance v rozložení tříd v train a dev setu – některé třídy měly relativně míň vzorků v train setu
+		- nemusí to být problém, pokud model vybíráme podle dev setu
+		- dá se to řešit taky samplingem – samplovat položky z train setu podle distribuce labels v dev setu
+		- nebo si můžeme namnožit samply v méně reprezentovaných třídách (dát je tam několikrát)
+			- to se dá simulovat tím, že budeme vážit gradienty (místo duplikování obrázku budeme jeho loss vážit dvěma)
