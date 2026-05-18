@@ -522,3 +522,16 @@
 
 ## Pokročilé evoluční NS
 
+- NEAT
+- nepřímé kódování
+	- analogové genetické kódování (AGE)
+- HyperNEAT
+- ES-HyperNEAT
+- pravidelné a modulární sítě
+- deceptive tasks, jejich řešení
+- novelty search
+- curiosity search
+- metoda s dominancí a frontami
+- kreativní myšlení
+	- curiosity search na vnitřních stavech (skrytých neuronech)
+- skončili jsme na slajdu 61
