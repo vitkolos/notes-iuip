@@ -1061,3 +1061,102 @@
 Geometric data structures: range queries, k-d search trees, range trees (6. 5.)
 
 ---
+
+## Parallel DS
+
+- consistency, reliability, fault-tolerance, memory management, realistic HW assumptions
+- types
+	- **blocking** (locks)
+	- obstruction-free – I succeed, everyone else halts
+	- **lock-free** – some process succeeds
+	- wait-free – all processes succeed
+	- bounded wait-free – we have an upper bound in number of processes
+- lock (mutex)
+	- one per DS
+	- one per item
+		- locks bring some overhead
+		- only works if there is not too much “structure” in the data structure
+	- one per part
+		- e.g. bucket in hash table (for hashing with chaining) + one global lock (for rehashing)
+- executing `Move(A, B, x)` and `Move(B, A, y)` may lead to deadlock
+	- if the first operation locks A, then B, and the second operation locks first B, then A
+	- solution: locks are ordered (we need partial ordering)
+- binary search tree
+	- just adding a leaf without (unbalanced tree)
+		- we go from root to the new leaf, we lock each node on the path (we unlock it after locking its child)
+		- the new leaf does not need to be locked as nobody else knows about it
+		- partial ordering = by levels
+	- balancing
+		- we need to keep the whole path locked
+		- the root is locked → nobody else can use the tree
+- $(a,2a)$-tree
+	- top-down splitting and merging
+	- $a-1\leq$ number of keys $\leq 2a-1$
+	- we go top down and maintain the invariant that the current node can accept one key
+	- → we don't need to go back
+	- we only need to have two locks at the same time – the current node and its parent
+	- for deleting, we may need to lock siblings
+- problems: deadlock (ordering is not always available or possible to use), fairness, inverse priorities, fault-tolerance
+
+### Lock-free DS
+
+- HW assumptions
+	- atomic registers: read, write, (exchange), (test & set bit)
+	- load linked (LL) / store conditional (SC)
+		- not always available, only for limited number of registers
+	- compare & swap (CAS)
+		- `CAS(address, x, y)`
+		- atomically performs the following
+			- load *value* from *address*
+			- if *value* equals *x*, store *y* at *address*
+			- return *value*
+		- often available
+- lock-free stack
+	- node: atomic pointer to next
+	- global: atomic pointer to head
+	- Push(n):
+		- loop
+			- h ← head
+			- n.next ← h
+			- if CAS(head, h, n) == h
+				- return
+	- Pop:
+		- loop
+			- h ← head
+			- n ← h.next
+			- if CAS(head, h, n) == h
+				- return h
+	- it does not work :(
+		- for Pop, we are checking only the head – the next item might have been removed in the mean time
+			- ABA-problem
+		- possible solutions
+			- use LL/SC
+			- double CAS (atomic) … only theoretical solution
+				- if DCAS((head, h.next), (h, n), (n, n)) == (n, n)
+			- wide CAS (atomic)
+				- we can use pointer versioning
+				- if WCAS((head, version), (h, ver), (n, ver+1)) == (h, ver)
+				- theoretical problem: overflow (does not happen in practice)
+			- restrictive memory management
+		- another problem: if someone pops and deallocates head before we read h.next (after storing h)
+		- memory management
+			- freelist
+				- list of memory pieces that are ready to be deallocated
+				- we deallocate only if we are sure that nobody uses them
+				- how to be sure
+					- synchronization points
+					- reference counting
+					- hazard pointers – signal to the garbage collector that I am using the pointer
+						- we store h in the hazard pointer
+						- then we check if h still equals head (otherwise we need to continue into the next loop)
+					- amortize scanning the freelist
+						- scan only if freelist $\geq 2pr$ items
+						- $p$ … number of processes
+						- $r$ … number of hazard pointers per processor
+						- this releases $\geq pr$
+						- so scan can be accounted to the adding
+- more problems
+	- if we assign `x = 1` and later `a = x`, the compiler may reduce it to `a = 1` (but there may be some other process changing `x` in between)
+		- solution: setting `x` as volatile (in C)
+	- order of instructions may be changed if the compiler considers them to be independent
+		- solution: barriers
