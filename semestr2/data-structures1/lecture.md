@@ -1096,6 +1096,7 @@ Geometric data structures: range queries, k-d search trees, range trees (6. 5.)
 	- → we don't need to go back
 	- we only need to have two locks at the same time – the current node and its parent
 	- for deleting, we may need to lock siblings
+		- note that if we delete a key from a node, we need to lock its subtree (we use the successor as a replacement) – this problem does not occur if we use B+ trees (store data in leaves only)
 - problems: deadlock (ordering is not always available or possible to use), fairness, inverse priorities, fault-tolerance
 
 ### Lock-free DS

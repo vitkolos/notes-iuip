@@ -263,3 +263,16 @@
 		- we can use bucket sort in $O(n)$
 	- $R_n=R$
 	- we need $O(n\log n)$ for the initial step (if the alphabet is large and we cannot rely on the bucket sort)
+
+---
+
+- inserting elements into multidimensional range trees
+	- we need to add the element into each tree for the next coordinates
+	- keeping it balanced
+		- $s(\ell),s(r)\leq\alpha\cdot s(u)$
+		- $\frac12\lt\alpha\lt 1$
+		- the constant hides in the $O$
+		- we always rebuild the subtree which does not satisfy the condition
+		- potential analysis can be calculated
+			- every inserted node needs to pay $O(\log n)$ coins – one to each of its parents
+	- $BB[\alpha]$-tree
