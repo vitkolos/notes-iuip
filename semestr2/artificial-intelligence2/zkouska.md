@@ -161,42 +161,68 @@
 		- personal note: for proprioceptive sensors, $E_t$ depends on $X_t$ and $X_{t-1}$
 	- first-order Markov assumption: the state variables contain all the information needed to characterize the next time slice (its distribution)
 		- what if it does not hold?
-		- increase the order of the Markov process model
-		- or enlarge the set of state variables
-		- note: increasing the order can be reformulated as an increase in set of state variables
-	- reasoning in this Bayesian network
-		- can be done but is not efficient (too many time steps)
+			- increase the order of the Markov process model or enlarge the set of state variables
+			- note: increasing the order can be reformulated as an increase in set of state variables
+- inference
+	- transition and sensor models can be described using a Bayesian network
+		- reasoning in this Bayesian network can be done but is not efficient (too many time steps)
 	- basic inference tasks: filtering, prediction, smoothing, most likely explanation
 		- these tasks can be performed efficiently without a Bayesian network
-		- filtering
-			- we want to have a recursive estimation – estimate the current distribution based on the observation and previous distribution
-		- prediction
-			- idea: perform filtering, then use the transition model
-			- after some time (mixing time) the distribution converges to the stationary distribution of the Markov process and remains constant
-		- smoothing
-			- we use both filtering (forward message passing) and backward message passing
-		- most likely explanation/sequence
+		- filtrování (filtering) – znám minulá pozorování, zajímá mě přítomný stav
+			- $P(X_{t+1}\mid e_{1:t+1})=P(X_{t+1}\mid e_{1:t},e_{t+1})$
+				- použijeme Bayesovo pravidlo
+			- $=\alpha\cdot P(e_{t+1}\mid X_{t+1},e_{1:t})\cdot P(X_{t+1}\mid e_{1:t})$
+				- použijeme *sensor Markov assumption*
+			- $=\alpha\cdot P(e_{t+1}\mid X_{t+1})\cdot P(X_{t+1}\mid e_{1:t})$
+			- $=\alpha\cdot P(e_{t+1}\mid X_{t+1})\cdot \sum_{x_t}P(X_{t+1}\mid x_t,e_{1:t}) P(x_t\mid e_{1:t})$
+			- $=\alpha\cdot P(e_{t+1}\mid X_{t+1})\cdot \sum_{x_t}P(X_{t+1}\mid x_t) P(x_t\mid e_{1:t})$
+			- užitečný filtrovací algoritmus si musí udržovat odhad současného stavu, jelikož je vzorec rekurzivní
+			- používá se *forward* algoritmus
+		- předpověď (prediction) – znám minulá pozorování, zajímají mě budoucí stavy
+			- vlastně jako filtering, akorát nepřidávám další pozorování (měření) – používám jenom přechodový model
+			- $P(X_{t+k+1}\mid e_{1:t})=\sum_{x_{t+k}} P(X_{t+k+1}\mid x_{t+k}) P(x_{t+k}\mid e_{1:t})$
+			- po určitém čase (*mixing time*) distribuce předpovědí konverguje ke stacionárnímu rozdělení daného markovského procesu a zůstane konstantní
+		- vyhlazování (smoothing) – znám minulá pozorování, zajímají mě minulé stavy
+			- $P(X_k\mid e_{1:t})=P(X_k\mid e_{1:k},e_{k+1:t})$
+				- použijeme Bayesovo pravidlo
+			- $=\alpha\cdot P(X_k\mid e_{1:k})\cdot P(e_{k+1:t}\mid X_k,e_{1:k})$
+				- použijeme *sensor Markov assumption*
+			- $=\alpha\cdot P(X_k\mid e_{1:k})\cdot P(e_{k+1:t}\mid X_k)$
+			- přitom levý člen známe z filteringu (je to „dopředný směr“), pravý je „zpětný směr“ z naměřených hodnot *v budoucnosti* (relativně vůči danému okamžiku)
+				- dostaneme $P(e_{k+1:t}\mid X_k)=\sum_{x_{k+1}} P(e_{k+1}\mid x_{k+1})P(e_{k+2:t}\mid x_{k+1})P(x_{k+1}\mid X_k)$
+			- používá se *forward-backward* algoritmus
+		- nejpravděpodobnější vysvětlení (most likely explanation) – znám minulá pozorování, zajímá mě nejpravděpodobnější posloupnost minulých stavů
+			- hledáme posloupnost $X_{1:t}$ takovou, že má největší $P(X_{1:t+1}\mid e_{1:t+1})$
+			- opět existuje rekurzivní vzorec – podíváme se na pravděpodobnosti předchozích stavů a na nejpravděpodobnější „cesty“ do těchto stavů
+			- používá se *Viterbiho* algoritmus
 			- we could do smoothing for every time slice and select the most probable state at the given time
 				- but this might lead to a sequence with very low probability (e.g. if there are two states with low transition probability)
-			- again, forward message passing algorithm
 			- we don't need to normalize if we only want the maximum (but the numbers get smaller)
-			- Viterbi algorithm
-	- hidden Markov models
-		- single discrete random variable & single evidence variable → it's a hidden Markov model
-		- we can use matrix implementation of all the basic algorithms
-		- full smoothing
-			- we don't need to run smoothing $t$ times in order to smooth the whole sequence
-			- we can use dynamic programming (store the forward/backward values) – but we need more memory then
-				- we need to store the whole sequence of forward distributions
-			- idea: remember only the current forward distribution, apply operation to get the previous one
-				- we can exploit matrix multiplication – use the inverse matrices $(T^T)^{-1},O^{-1}$ if possible (for the $O$ matrix it's always possible as it's a diagonal matrix)
-		- smoothing with a fixed time lag
-			- $P(X_{t-d}\mid e_{1:t})$
-			- forward: simple
-			- backward: keep the multiplied matrix without multiplying by the vector $b$
-				- then the product of matrices can be modified incrementally
-- dynamic Bayesian networks, Kalman filter
-	- …
+			- most likely path to a given state … most likely path to some previous state followed by a transition to the given state
+				- $\max_{x_1,\dots,x_t} P(x_1,\dots,x_t,X_{t+1}\mid e_{1:t+1})=$ $\alpha P(e_{t+1}\mid X_{t+1})\max_{x_t} (P(X_{t+1}\mid x_t)\max_{x_1,\dots,x_{t-1}} P(x_1,\dots,x_t\mid e_{1:t}))$
+				- forward message passing
+- hidden Markov models
+	- single discrete random variable & single evidence variable → it's a hidden Markov model
+	- we can use matrix implementation of all the basic algorithms
+	- transition model … $S\times S$ matrix $T$ s.t. $T_{ij}=P(X_t=j\mid X_{t-1}=i)$
+	- sensor model … diagonal matrix $O_t$ s.t. $O_{t\, ii}=P(E_t=e_t\mid X_t=i)$
+		- we know the value of the evidence variable $e_t$
+	- full smoothing
+		- we don't need to run smoothing $t$ times in order to smooth the whole sequence
+		- we can use dynamic programming (store the forward/backward values) – but we need more memory then
+			- we need to store the whole sequence of forward distributions
+		- idea: remember only the current forward distribution, apply operation to get the previous one
+			- we can exploit matrix multiplication – use the inverse matrices $(T^T)^{-1},O^{-1}$ if possible (for the $O$ matrix it's always possible as it's a diagonal matrix)
+	- smoothing with a fixed time lag
+		- $P(X_{t-d}\mid e_{1:t})$
+		- forward: simple
+		- backward: keep the result in the matrix form
+			- then the product of matrices can be modified incrementally (again using inverse matrices)
+			- convert it to vector just when using it
+
+## Dynamic Bayesian Networks, Kalman Filter
+
+- …
 
 ## Utility theory
 
