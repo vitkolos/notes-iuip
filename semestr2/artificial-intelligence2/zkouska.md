@@ -616,9 +616,26 @@
 
 ## Supervised Learning
 
-- hypotheses consistent with the training set
-- Ockham's razor
-	- sometimes, we may even prefer a simple hypothesis that does not perfectly fit all the data
+- strojové učení
+	- způsob, jak zlepšit budoucí chování agenta
+	- co učení zvládá lépe než přímé programování chování
+		- scénáře, na které programátor nemyslel
+		- změny v prostředí
+		- někdy není jasné, jak agenta naprogramovat
+	- zpětná vazba, z nichž se agenti učí
+		- učení bez učitele (unsupervised learning) – agent se učí vzory ve vstupu, aniž by měl nějakou explicitní zpětnou vazbu
+		- zpětnovazební učení (reinforcement learning) – agent dostává odměny nebo tresty
+		- učení s učitelem (supervised learning) – agent se učí funkci, která mapuje vstupy na výstupy
+- učení s učitelem (supervised learning)
+	- máme vstupy a výstupy
+	- chceme najít funkci (její aproximaci), která mapuje vstupy na výstupy
+	- hledáme hypotézu (funkci $h$) z prostoru hypotéz
+	- hypotéza je konzistentní s $i$-tým příkladem, pokud $h(x_i)=y_i$
+	- princip Occamovy břitvy – preferujeme nejjednodušší hypotézu
+		- např. $n$ bodů určuje polynom stupně $n-1$, ale pokud body leží na přímce, tak nejjednodušší hypotéze je prostě ta přímka
+	- typy úloh
+		- klasifikace – u nečíselných funkcí, data rozdělujeme do množin
+		- regrese – u číselných funkcí
 - decision trees
 	- for binary variables … $2^n$ possible input vectors, each can be mapped to 0 or 1
 		- so we get $2^{2^n}$ hypotheses
@@ -636,7 +653,7 @@
 		- missing data
 			- usually, we use the most frequent value (mode) to fill the missing one
 		- multivalued attributes
-			- (traditionally, we consider nominal attributes with several possible values – what if we have integers or real numbers?)
+			- traditionally, we consider nominal attributes with several possible values – what if we have integers or real numbers?
 			- find a threshold
 			- for real values, we may want to sort the samples and look at the points where the class changes
 	- can be used for regression
@@ -647,14 +664,20 @@
 		- $L_2$ loss
 		- we can use an analytical solution – set derivatives equal to zero
 		- or we can use gradient descent (works even if the hypotheses are non-linear)
+	- multivariate linear regression
+		- similar to univariate
+		- again, analytical solution or gradient descent
 - linear classifiers
-	- linear separator
-	- perceptron learning rule
-	- logistic threshold function
+	- linear separator – “passing the linear function $wx$ through a threshold function”
+	- perceptron learning rule … $w_i\leftarrow w_i+\alpha(y-h_w(x))\cdot x_i$
+	- logistic threshold function … $\sigma(z)=\frac 1{1+e^{-z}}$
 - non-parametric models
+	- “let the data speak for themselves”
+	- table lookup
+		- the simplest way to learn a function
+		- just find the $x$ in the table (if it exists) and return the corresponding $y$
 	- $k$-nearest neighbors
-		- majority vote
-		- ($k$ should be odd)
+		- majority vote ($k$ should be odd)
 		- we need to measure distance – usually $L_p$ norm (Minkowski distance)
 			- Manhattan distance, Euclidean distance
 			- special case: for boolean attribute values, we have Hamming distance (number of attributes where the data points differ)
@@ -666,21 +689,28 @@
 		- looking for neighbors
 			- table lookup… $O(N)$
 			- binary tree … $O(\log N)$
+				- note that the neighbors might be at different branches
+				- works fine if the number of examples is exponential in the number of attributes
 			- hash table … $O(1)$
-				- we need the hash function to have some special property
+				- we need the hash function to have some special property (locally-sensitive hash)
 	- regression: simple approaches
 		- we get a piece-wise linear function if we connect all the known points
 		- 3-nearest neighbors average
 		- 3-nearest neighbors linear regression (we fit a model to the three points closest to our input)
 		- locally weighted regression – data points are weighted by their distance
+			- resulting curve looks quite smooth actually
 	- support vector machines (SVM)
 		- three properties
 			- maximum margin separator
 				- provides good generalization
-				- can be found using quadratic programming
+				- can be found using quadratic programming (via dual representation)
 				- is defined by the points closest to the boundary
+					- for all the other points, the weights $\alpha_j$ are zero
+				- separator … $h(x)=\mathrm{sign}(\sum_j\alpha_j y_j(xx_j)-b)$
 			- kernel trick (solves the problem of the data not being linearly separable)
-				- we map the data points to a higher-dimensional space where they are linearly separable
+				- we map the data points via $F$ to a higher-dimensional space where they are linearly separable
+				- it turns out that we can often compute $F(x_j)F(x_k)$ without computing $F(x_j),F(x_k)$ separately
+					- e.g. polynomial kernel $(1+x_jx_k)^d$ … $F$ would be a mapping producing polynomial features of degree $\leq d$
 			- it is nonparametric
 - ensemble learning
 	- we are using multiple hypotheses to perform predictions (they vote)
@@ -691,7 +721,7 @@
 		- even if the underlying algorithm is weak, we can get quite a good classifier
 		- AdaBoost algorithm
 
-### Logical formulation of learning
+## Logical Formulation of Learning
 
 - current-best-hypothesis
 	- we start with a simple hypothesis (formula $C(x):=\mathrm{True}$; or we could probably use False)
@@ -716,3 +746,7 @@
 		- we add literals to the body one at a time
 		- system FOIL – it was able to learn quicksort
 	- inverse resolution
+
+## Learning Probabilistic Models
+
+## Reinforcement Learning
