@@ -562,7 +562,7 @@
 		- $b_i\leq v_i$
 	- jak se pozná dobrý mechanismus aukce
 		- maximalizuje výnos pro prodejce
-		- vítěz aukce je agent, který si věci nejvíc cení
+		- vítěz aukce je agent, který si věci nejvíc cení (mechanismus je *efektivní*)
 		- zájemci by měli mít dominantní strategii – obvykle je to truth-revealing strategie (zájemce nabízí $b_i=v_i$)
 - typy aukcí
 	- anglická aukce (ascending-bid)
@@ -574,6 +574,11 @@
 			- nepůjdu do aukce s někým hodně bohatým
 				- to je problém i pro prodejce, protože to může vést k situaci, kdy se věc prodá za $b_\text{min}$
 			- lidi musejí být ve stejnou chvíli na stejném místě (nebo komunikovat rychle a bezpečně)
+			- collusion = an unfair or illegal agreement by two ore more bidders to manipulate prices
+				- example: Mannesman and T-Mobile (they both got half of the available blocks)
+	- holandská aukce
+		- začíná se vyšší cenou, snižuje se, dokud ji někdo nepřijme
+		- je rychlá
 	- obálková aukce
 		- největší nabídka vítězí
 		- neexistuje jednoduchá dominantní strategie
