@@ -723,29 +723,63 @@
 
 ## Logical Formulation of Learning
 
+- logical formulation of learning
+	- attributes → unary predicates
+	- classification is given by literal using the goal predicate
+	- hypothesis: $\forall x:\mathrm{Goal}(x)\iff C_j(x)$
+		- $C_j$ … extension of the predicate (this is what we consider to be our hypothesis from now on)
+	- hypothesis space … set of all hypothesis
+		- hypotheses that are not consistent with the examples can be ruled out
+		- two ways to be inconsistent: false negative, false positive
 - current-best-hypothesis
 	- we start with a simple hypothesis (formula $C(x):=\mathrm{True}$; or we could probably use False)
 	- we iterate over the data points and maintain a hypothesis that is consistent with them
-		- we may need to generalize or specialize the hypothesis
+		- we may need to generalize the hypothesis (if there is a false negative) or specialize it (if there is a false positive)
 		- when generalizing, we prefer removing an item from a conjunction over adding a disjunction – we want to keep the hypothesis as simple as possible (according to Ockham's razor principle)
 	- after each modification of the hypothesis, we need to check all the previous examples
-		- we may need to backtrack
+		- we may need to backtrack (if no simple modification of the hypothesis is consistent with all the data)
 		- problem: strong commitment
+			- we have to choose a single hypothesis
 - alternative approach: least-commitment search (version space learning)
 	- version space learning algorithm / candidate elimination algorithm
+	- we process the individual examples and move the boundaries of the version space accordingly
+		- $G$ … most general boundary (initially True)
+		- $S$ … most specific boundary (initially False)
+		- both are sets of hypotheses
+	- update (for each example)
+		- false negative for $S_i$ → replace $S_i$ in the $S$-set by all its immediate generalizations
+		- false positive for $S_i$ → throw $S_i$ out of the $S$-set
+		- false positive for $G_i$ → replace $G_i$ in the $G$-set by all its immediate specializations
+		- false negative for $G_i$ → throw $G_i$ out of the $G$-set
+	- stopping condition
+		- we have exactly one hypothesis left
+		- or the version space collapses (one of the boundaries becomes empty)
+		- or we run out of examples and have several hypothesis remaining in the version space
+			- → disjunction of hypotheses
+			- if they disagree in classification (?), we can perform majority vote
 	- note that if there are two samples with the same attributes but different classes, our version space collapses
 		- it may happen due to noise or if some important attribute is missing from the data
-		- representation of version space using a lower bound and an upper bound
+	- if we allow unlimited disjunctions in the hypothesis space
+		- $S$-set will always contain a single most-specific hypothesis (disjunction of positive examples)
+		- $G$-set will always contain the negation of the disjunction of the negative samples
+		- solution: generalization hierarchy (e.g. $\mathrm{WaitEstimate}(x,30\dots 60)\lor \mathrm{WaitEstimate}(x,\gt 60)$ can be replaced by $\mathrm{LongWait}(x)$)
 - inductive logic programming
 	- examples are given like Prolog facts
 	- classifications are given by Prolog facts
 	- we have some background knowledge (in the form of a formula)
 	- we want to learn some hypothesis
 	- top-down learning
-		- we start with an empty clause
-		- we add literals to the body one at a time
+		- we start with an empty clause (as general as possible, needs to be specialized)
+		- we add literals to the body one at a time (according to our examples)
+			- we need to add them in a way that our clause covers the positive examples and no negative examples
+			- we prefer the specialization that classifies correctly more examples
+			- the choice of literal can be based on information gain
 		- system FOIL – it was able to learn quicksort
 	- inverse resolution
+		- we are trying to construct the resolution tree backwards
+		- it involves a search, each step is non-deterministic (e.g. we may choose more or less general assignments of variables)
+		- first step (last in the resolution) – empty resolvent and the negation of the goal (as $C_2$)
+			- we need to find $C_1$ which resolves with $C_2$ into $\square$
 
 ## Learning Probabilistic Models
 
