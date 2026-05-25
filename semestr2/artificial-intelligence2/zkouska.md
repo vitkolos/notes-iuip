@@ -312,67 +312,200 @@
 		- detection failure (no observation reporeted for a real object)
 		- new and disappearing objects (set of objects is not fixed)
 
-## Utility theory
+## Utility Theory
 
-- utility function $U(s)$
-- rational agent maximizes its expected utility
-- rational preferences
-- often there is uncertainty about what is really being offered
-	- every possible outcome has a probability
-	- “lottery”
-- rational preferences should obey certain constraints
-	- orderability
-	- transitivity (violating it can lead to irrational behavior)
-	- continuity
-	- substitutability
-	- monotonicity
-	- decomposability
-- normalized utility function $\in[0,1]$
-	- how can we assign it?
-	- trick with a lottery (with $1-p$ you get the worst output, with $p$ you get the best output)
-- utility of money
-- human judgment
+- užitek (utility)
+	- pro každý stav známe utility function (funkci užitku) … $U(s)$
+	- očekávaný užitek (expected utility, EU) akce $a$, máme-li pozorování $e$
+		- $EU(a\mid e)=\sum_s P(\text{Result}(a)=s\mid a,e)\cdot U(s)$
+	- maximální očekávaný užitek (maximum expected utility, MEU)
+		- $\text{argmax}_a EU(a\mid e)$
+	- princip maximálního očekávaného užitku: racionální agent by si měl zvolit akci, která maximalizuje očekávaný užitek agenta
+- teorie užitku
+	- očekávaný užitek náhodné volby (loterie) … $\sum_i p_i u_i$
+		- $p_i$ … pravděpodobnost $i$-té volby
+		- $u_i$ … užitek $i$-té volby
+	- často známe preference agenta spíše než přesné hodnoty utility funkce
+		- $A \lt B$ … agent preferuje B oproti A
+		- $A \sim B$ … agent nerozlišuje mezi A a B (nemá favorita, je indiferentní)
+	- rational preferences should obey certain constraints
+		- orderability
+			- agent buď preferuje jednu z voleb, nebo je indiferentní
+		- transitivity (violating it can lead to irrational behavior)
+		- continuity
+			- pokud $A\lt B\lt C$, pak můžeme $A,C$ namíchat v takovém poměru, aby platilo, že je agent indiferentní mezi $B$ a touto novou loterií
+		- substitutability
+			- pokud $A\sim B$, tak můžeme v loterii nahradit výsledek $A$ výsledkem $B$ a agent bude indiferentní mezi původní a novou loterií
+		- monotonicity
+			- idea: mějme dvě loterie se stejnou množinou výsledků, pak agent preferuje tu, kde má jeho preferovaný výsledek větší pravděpodobnost
+		- decomposability
+			- loterie, kde jeden z výsledků je loterií, se dá zploštit do jedné větší loterie
+	- z prefencí se dá dostat utility
+		- $U(A)\lt U(B)\iff A\lt B$
+		- $U(A)=U(B)\iff A\sim B$
+		- utility funkce zjevně nemusí být jedinečná
+	- alternativní způsob – získáme normalizovanou utility funkci
+		- nejlepšímu možnému stavu $S_\text{max}$ přiřadíme $U(S_\text{max}) = 1$
+		- nejhorší možné katastrofě $S_\text{min}$ přiřadíme $U(S_\text{min}) = 0$
+		- pro každý další stav $S$ necháme agenta rozhodnout se mezi standardní loterií a stavem $S$
+			- standardní loterie … $S_\text{max}$ s pravděpodobností $p$ a $S_\text{min}$ s pravděpodobností $1-p$
+			- upravujeme pravděpodnost $p$, dokud agent není indiferentní mezi $S$ a standardní loterií
+				- pak $U(S):=p$
+- utility of money, human judgement
+	- problem: take one million now or gamble and potentially get 2.5× more (or zero)?
+		- is the expected utility greater in the second case?
+	- utility is not a linear function of the money that an agent has
+		- if you have billions, one million does not matter that much
 	- Allais paradox
-	- certainty effect
-		- nedá se to popsat jako dvě funkce (expected money, risk), z nichž jedna dominuje?
+		- certainty effect – people are attracted to gains that are certain
+		- 80% chance of 4000 USD vs. 100% chance of 3000 USD
+		- 20% chance of 4000 USD vs. 25% chance of 3000 USD
 	- Ellsberg paradox
-	- ambiguity aversion
+		- ambiguity aversion – people prefer the known probability
+		- example with balls in an urn
 	- framing effect
+		- 90% survival rate × 10% death rate (which procedure do you prefer? :D)
 	- anchoring effect
-- multi-attribute utility theory
+		- an expensive product makes cheaper (but still quite expensive) products seem like a good deal
+- multi-attribute utility theory: dominance
 	- sometimes we can use *dominance* to select the best outcome without combining the attribute values
 		- strict dominance
 		- can be used even for uncertained outcomes (instead of individual points, we consider some areas)
 		- stochastic dominance
-- preference structure
+			- best seen by examining the cumulative distribution (does it hold that $\forall t:F_1(t)\leq F_2(t)$?) – for a single variable
+- multi-attribute utility theory: preference structure
+	- if there are $n$ attributes, each with $d$ values, we may need to have utility values for $d^n$  states
+		- but often, there is some level of *regularity*
 	- preference independence
-	- mutually utility independent
-- the value of information (quantitative)
+		- two attributes $X_1,X_2$ are independent of a third attribute $X_3$ if the preference between outcomes $\braket{x_1,x_2,x_3}$ and $\braket{x_1',x_2',x_3}$ does not depend on the particular value $x_3$
+	- mutual preferential independence (MPI)
+		- if each pair of attributes is preferentially independent of any other attribute
+		- then $U(x_1,\dots,x_n)=\sum_i U_i(x_i)$
+			- additive value function
+	- for uncertainty, we need *utility independence*
+		- a set of attributes $X$ is utility independent of a set of attributes $Y$ if preferences between lotteries on the attributes in $X$ are independent of the particular values of the attributes in $Y$
+	- mutually utility independent (MUI) attributes
+		- multiplicative utility function $U=k_1U_1+k_2U_2+k_3U_3+k_1k_2U_1U_2+k_2k_3U_2U_3+k_1k_3U_1U_3+k_1k_2k_3U_1U_2U_3$
+- the value of information
 	- “what questions to ask?”
 	- value of perfect information (VPI)
-		- properties
+		- we consdier expected utility before and after getting the information (expected value over any possible information we could get)
+	- expected value of information
+		- non-negative
+		- not additive
+		- order independent
 	- information gathering – how should rational agent proceed
-- qualitative value of information
-	- information is beneficial if it changes my action
-	- how much do I gain by changing my action?
+		- ask questions in reasonable order
+		- avoid asking irrelevant questions
+		- consider cost of each piece of information and its importance
+		- stop asking when it's appropriate
+	- *qualitative* value of information
+		- information is beneficial if it changes my action
+		- how much do I gain by changing my action?
 
-## Sequential decision problems
+## Sequential Decision Problems
 
-- how to set the utility
-	- goal exit: +1
-	- unwanted exit: -1
-	- other states: -0.04 (to find the shortest path to the goal)
-- optimal policies
-	- do not depend on the initial state
-	- the policy is driven by the current state and the goal
-- we can first assign long-term utilities to states
-	- it's not sufficient to select using argmax, we need to take stochasticity of the actions into account
+- decision network
+	- what it contains
+		- chance nodes – random variables
+		- decision nodes – points where the decision maker has a choice of actions
+		- utility nodes – agent's utility function
+	- evaluating it
+		- we set the evidence variables for the current state
+		- for each possible value of the decision node…
+			- we set the decision node to that value
+			- we calculate the posterior probabilities of the chance nodes
+			- we calculate the resulting utility
+		- we return the action (decision) with the highest utility
+	- multiple utility nodes → multi-attribute utility theory
+	- in practice
+		1. create a causal model
+		2. simplify to a qualitative decision model
+		3. assign probabilities
+		4. assign utilities
+		5. verify and refine the model
+		6. perform sensitivity analysis
+- sequential decision problems
+	- we consider a fully observable environment with unreliable actions (stochastic environment)
+	- *Markov decision process*
+		- transition model $P(s'\mid s,a)$
+			- Markovian (probability does not depend on the history)
+		- utility function depends on a sequence of states
+		- is additive
+	- how to set the utility (example)
+		- goal exit: +1
+		- unwanted exit: -1
+		- other states: -0.04 (to find the shortest path to the goal)
+- solution to an MDP = policy
+	- finite sequence of actions cannot be used in stochastic environment, we need a policy function $\pi(s)$
+	- optimal policy – yields the highest expected utility
+	- a policy describes a simple reflex agent
+	- time horizon – two possibilities (we assume the second one)
+		- finite time horizon
+			- utilities of states could change over time
+			- optimal policy could be nonstationary
+		- infinite horizon
+			- there is no reason for the same state to have different utility at two different moments
+			- optimal policy is stationary
+	- we assume that the utility (agent's preference) does not change
+	- how to assign utilities to sequences
+		- additive rewards: $U(s_0,s_1,s_2,\dots)=R(s_0)+R(s_1)+R(s_2)+\dots$
+		- discounted rewards: $U(s_0,s_1,s_2,\dots)=R(s_0)+\gamma R(s_1)+\gamma^2 R(s_2)+\dots$
+			- discount factor $\gamma\in(0,1)$
+			- rewards in the distant future are viewed as insignificant
+			- *we will use this*
+				- we can work with environments without a terminal state
+	- policy that always reaches a terminal state = proper policy (we can use additive rewards then)
+	- infinite sequences can be compared in terms of average reward obtained per time step
+	- for our infinite situation
+		- policy is driven by the current state and the goal
+		- it does not depend on the initial state of the agent
+	- instead of reward in a given state $R(s)$, it is useful to define the true utility of a state as $U(s)=U^{\pi^*}(s)$ … expected utility of the optimal policy if the agent starts from the state $s$
+- Bellmanova rovnice
+	- opravdový užitek stavu je reward (odměna) stavu ve spojení se střední hodnotou užitku následného stavu → to vede na Bellmanovu rovnici
+	- vezmu reward a discountovaný užitek okolí
+	- akorát nevím, kterou akci provedu, tak vezmu všechny a maximum přes ně (násobím jejich užitek pravděpodobností)
+	- $U(s)=R(s)+\gamma\max_a\sum_{s'}P(s'\mid s,a)\ U(s')$
+- iterace hodnot, iterace strategií
+	- předpoklad: známe reward $R$ a transition model $P$
+		- chceme najít užitek $U$ nebo optimální strategii $\pi$
+	- soustava Bellmanových rovnic není lineární – obsahuje maximum
+		- můžeme je řešit aproximací
+		- použijeme iterativní přístup
+			- nastavíme nějak užitky – třeba jako nuly
+			- provedeme update – aplikujeme Bellmanovu rovnici
+			- iterujeme, dokud to nezkonverguje
+		- → **value iteration**
+		- proč to funguje?
+			- ta funkce („aplikace Bellmanovy rovnice“) má jeden pevný bod
+			- s každou iterací se chyba zmenší aspoň o $\gamma$
+	- strategie se ustálí dřív než užitky (užitky nemusíme znát přesně, abychom dovedli říct, který stav je lepší)
+		- policy loss … vzdálenost mezi užitkem optimální a současné strategie
+		- můžeme iterativně zlepšovat policy, dokud to jde
+		- → **policy iteration**
+		- z rovnic nám zmizí maximum (protože akci nám fixuje policy) → máme lineární rovnice
+			- policy evaluation = nalezení řešení těchto rovnic (tak najdeme utilities stavů)
+			- gaussovka je $O(n^3)$
+			- u velkých stavových prostorů dává smysl k policy evaluation použít value iteration
+		- algoritmus doběhne, protože policies je jenom konečně mnoho (pro konečný stavový prostor) a vždycky hledáme tu lepší
 - POMDP
-	- belief state = probability distribution (before, it was just a set of possible states)
-	- POMDP can be reduced to a continuous-space MDP
+	- máme přechodový model $P(s'\mid s,a)$, akce $A(s)$ i odměny $R(s)$
+	- navíc nám přibude sensor model $P(s\mid e)$
+	- místo reálných stavů můžeme používat ty domnělé (belief states)
+		- pravděpodobnostní distribuce
+	- nový belief state $b'$ po použití akce $a$ se spočítá pomocí filteringu
+	- policy je funkce, která pro daný belief state $b$ vrátí akci
+	- reward … $r(b)=\sum_s b(s) R(s)$
+	- POMDP can be reduced to a continuous-space MDP (which is usually multi-dimensional)
+		- $P(b'\mid b,a)$ and  $r(b)$ define an observable MDP
+		- there are infinitely many states (each MDP state corresponds to one possible belief state of the POMDP)
 	- value iteration can be modified for POMDPs but it's not very efficient
 	- dynamic Bayesian networks and look-ahead techniques are more efficient
+		- modely přechodů a senzorů jsou reprezentovány dynamickou bayesovskou sítí
+		- přidáme rozhodování a užitky, čímž dostaneme dynamickou *rozhodovací* síť
 		- *expected minimax* algorithm
+			- generujeme si stromeček, kde se střídají vrstvy akcí a belief states
+			- depth of search tree can be determined by the discount factor
 
 ## Game theory, mechanism design
 
