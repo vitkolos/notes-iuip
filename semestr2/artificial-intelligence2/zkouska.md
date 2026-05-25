@@ -507,11 +507,109 @@
 			- generujeme si stromeček, kde se střídají vrstvy akcí a belief states
 			- depth of search tree can be determined by the discount factor
 
-## Game theory, mechanism design
+## Game Theory, Mechanism Design
 
-- …
+- základy teorie her
+	- jednou z úloh teorie her je volba vhodné strategie – tedy návodu, jak hru hrát
+		- uvažujeme hry v normálním tvaru: hru tvoří hráči, jejich akce a užitkové funkce
+		- hráči táhnou zároveň, každý provede jedinou akci
+		- strategie může být čistá (přímo konkrétní akce) nebo smíšená (pravděpodobnostní rozdělení přes akce)
+	- díváme se na optimalitu strategie nebo strategického profilu (množiny strategií všech hráčů) z různých úhlů pohledu
+		- strategie $s_1$ dominuje strategii $s_2$, pokud při volbě $s_1$ získá hráč větší užitek než při volbě $s_2$ nehledě na strategie ostatních hráčů
+			- strategie je dominantní, pokud dominuje všechny ostatní strategie
+			- když má každý hráč dominantní strategii, jejich kombinace se nazývá *dominant strategy equilibrium*
+		- *Nashovo ekvilibrium* je takový strategický profil, že by žádný hráč neměnil svou strategii, kdyby znal strategie ostatních
+			- existuje v každé hře
+		- strategický profil $s$ *Pareto dominuje* profil $s'$, pokud si změnou z $s'$ na $s$ žádný hráč nepohorší, ale aspoň jeden hráč si polepší
+			- strategický profil je *Pareto optimální*, pokud neexistuje profil, který by ho Pareto dominoval
+		- další zajímavým typem ekvilibria je korelované ekvilibrium
+	- vězňovo dilema
+		- dva hráči (vězni)
+		- vězeň může vypovídat (testify/defect) nebo odmítnout vypovídat (refuse/cooperate)
+			- oba vypovídají → oba ztrácejí málo (užitek -5)
+			- jeden vypovídá, druhý ne → jeden neztratí nic (užitek 0), druhý hodně ztratí (užitek -10)
+			- oba odmítnou → oba ztrácejí velmi málo (užitek -1)
+		- *vypovídat* je čistá dominantní strategie
+			- ale když vypovídají oba hráči, tak vyhrála policie – lepší by bylo, kdyby oba odmítli vypovídat
+			- našli jsme Nashovo ekvilibrium – nikdo neprofituje ze změny strategie, pokud druhý hráč zůstane u stejné strategie
+- maximin
+	- dvouprstá Morra nemá čistou strategii
+	- jak najít optimální smíšenou strategii?
+		- technika **maximin** (vyvinul ji von Neumann)
+		- nejdříve si představíme, jak by se hra hrála, kdyby se hráči střídali a kdyby hráli čistou strategii (obě varianty – podle toho, který hráč začíná)
+		- minimaxem vyhodnotíme strom hry
+		- získáme spodní a horní mez pro skóre
+		- teď si představíme, že hráči mají smíšenou strategii s nějakou pravděpodobností $p$, a uděláme to samé
+		- spočítáme lineární rovnice
+		- tak najdeme Nashovo ekvilibrium
+			- v případě Morry bychom s pravděpodobností 7/12 měli ukázat jeden prst a s pravděpodobností 5/12 dva prsty
+			- lichý hráč je na tom lépe
+- opakované hry
+	- známe historii tahů, payoff se sčítá
+	- strategie pro opakované vězňovo dilema
+		- pokud víme, která hra je poslední, vede to na podobnou situaci jako u jedné hry
+		- pokud nevíme, která hra je poslední
+			- perpetual punishment – hráč odmítá vypovídat, právě když druhý hráč nikdy nevypovídal
+			- tit-for-tat – hráč nejprve odmítá vypovídat, pak zrcadlí pohyby protivníka
+				- velmi robustní a efektivní strategie
+- mechanism design (inverse game theory)
+	- mechanism consist of…
+		- language for describing the set of strategies that agents may adopt
+		- center (a distinguished agent) – collects reports of strategy choices from the remaining agents
+		- outcome rule – used to determine the payoffs given strategy choices
+	- aukce obecně
+		- každý agent $i$ přiřazuje věci hodnotu $v_i$, nabízí za ni $b_i$ (bid)
+		- $b_i\leq v_i$
+	- jak se pozná dobrý mechanismus aukce
+		- maximalizuje výnos pro prodejce
+		- vítěz aukce je agent, který si věci nejvíc cení
+		- zájemci by měli mít dominantní strategii – obvykle je to truth-revealing strategie (zájemce nabízí $b_i=v_i$)
+- typy aukcí
+	- anglická aukce (ascending-bid)
+		- začnu s $b_\text{min}$, pokud je to nějaký zájemce ochotný zaplatit, tak se ptám na $b_\text{min}+d$
+		- strategie: přihazuju, dokud cena není vyšší než moje hodnota
+			- jednoduchá dominantní strategie
+		- má to problémy
+			- není truth-revealing: u vítěze známe jenom dolní odhad jeho $v_i$
+			- nepůjdu do aukce s někým hodně bohatým
+				- to je problém i pro prodejce, protože to může vést k situaci, kdy se věc prodá za $b_\text{min}$
+			- lidi musejí být ve stejnou chvíli na stejném místě (nebo komunikovat rychle a bezpečně)
+	- obálková aukce
+		- největší nabídka vítězí
+		- neexistuje jednoduchá dominantní strategie
+			- pokud věříš, že maximum ostatních nabídek je $b_0$, tak bys měl nabídnout $b_0+\varepsilon$, pokud je to menší částka než tvoje $v_i$
+		- agent s nejvyšší $v_i$ již nemusí vyhrát aukci
+			- aukce je „kompetitivnější“
+	- obálková second-price aukce (Vickrey)
+		- vyhraje ten první, platí druhou cenu
+		- dominantní strategie je tam dát svoji hodnotu $v_i$
+			- lze to ukázat rozborem případů, zda je $v_i-b_0$ větší nebo menší než nula (vždycky je optimální nabídnout $v_i$)
+			- $b_0$ … druhá nejlepší nabídka
+- problém sdílení společných zdrojů
+	- znečišťování životního prostředí
+		- pokračovat ve znečišťování je levnější než implementovat potřebné změny
+	- „tragedy of commons“ (tragédie občiny)
+		- když nikdo nemusí platit za sdílený zdroj, může to vést k jeho využívání tím způsobem, že se snižuje utilita pro všechny agenty
+		- podobné vězňovu dilematu
+- mechanismus Vickrey-Clarke-Groves (VCG)
+	- příklad: rozdělení (a zdanění) společného zboží
+	- princip
+		- každý agent nahlásí svoji hodnotu (nabídku)
+		- centrální autorita přiřadí zboží podmnožině agentů tak, aby se maximalizoval celkový nahlášený užitek
+		- každý vítězný agent platí daň odpovídající nejvyšší nahlášené hodnotě mezi těmi, kdo prohráli
+	- dominantní strategie je opravdu nabídnout svoji hodnotu
+	- VCG lze použít i ve velmi obecných případech
+		- obecně: výše platby odpovídá tomu, jakou ztrátu sociálního zisku způsobuje $i$-tý zájemce ostatním (tzn. o kolik poklesne součet $v_i$ pro ostatní vítězné agenty, když se $i$-tý agent přidá do aukce)
+	- problém: je nezbytné mít centrální autoritu
+	- vede to k optimálnímu výsledku?
+		- vítězové jsou šťastní, protože platí méně než $v_i$
+		- poražení jsou šťastní, protože jejich $v_i$ je nižší, než by museli platit
+	- je to truth-revealing?
+		- chci maximalizovat $v_i+\sum_{j\neq i}b_j-W_{-i}$
+		- ale $W_{-i}$ (tj. celkovou utilitu bez hráče $i$) nemůžu ovlivnit
+		- pak chci maximalizovat $v_i+\sum_{j\neq i}b_j$, což přesně maximalizuje alokační pravidlo, pokud $b_i=v_i$
 
-## Supervised learning
+## Supervised Learning
 
 - hypotheses consistent with the training set
 - Ockham's razor
