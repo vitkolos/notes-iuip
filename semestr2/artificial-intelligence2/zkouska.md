@@ -104,6 +104,8 @@
 		- příklad: $P(b\mid j,m)=\alpha\sum_e\sum_a P(b)P(e)P(a\mid b,e)P(j\mid a)P(m\mid a)$
 			- $=\alpha P(b)\sum_e P(e)\sum_a P(a\mid b,e) P(j\mid a)P(m\mid a)$
 			- tohle můžeme přímo převést na výpočty s *faktory*
+				- $P(a\mid b,e)$ odpovídá faktoru $f_3(A,B,E)$
+				- $P(j\mid a)$ odpovídá faktoru $f_4(A)$, protože hodnotu $j$ známe, tak ji můžeme zafixovat (faktor pak obsahuje tolik čísel, kolik je možných hodnot $A$)
 	- we can use factors (tables constructed from CPTs)
 		- multiplication: we can (pointwise) multiply the rows that have the same values of the shared variables
 		- elimination: we sum the rows that are almost the same (differ only in the value of the variable we want to eliminate)
@@ -222,7 +224,93 @@
 
 ## Dynamic Bayesian Networks, Kalman Filter
 
-- …
+- skryté Markovské modely (HMM) vs. dynamické Bayesovské sítě
+	- skryté Markovovy modely
+		- předpokládejme, že stav procesu je popsán jedinou diskrétní náhodnou proměnnou $X_t$ (a máme jednu proměnnou $E_t$ odpovídající pozorování)
+		- pak můžeme všechny základní algoritmy (filtering, prediction, smoothing, …) implementovat maticově
+	- dynamická bayesovská síť
+		- umožňuje popsat víc náhodných proměnných
+		- reprezentuje časový pravděpodobnostní model
+		- zachycuje vztah mezi minulým a současným časovým okamžikem (minulou a současnou vrstvou)
+		- každá stavová proměnná má rodiče ve stejné vrstvě nebo v předchozí (podle Markovova předpokladu)
+			- stačí nám zachytit jeden slice – prior $P(X_0)$, přechodový model $P(X_1\mid X_0)$, senzorový model $P(E_1\mid X_1)$
+	- dynamická bayesovská síť (DBN) vs. skrytý Markovův model (HMM)
+		- skrytý Markovův model je speciální případ dynamické bayesovské sítě
+		- dynamická bayesovská síť může být kódovaná jako skrytý Markovův model
+			- jedna náhodná proměnná ve skrytém Markovově modelu je n-tice hodnot stavových proměnných v dynamické bayesovské síti
+			- v HMM vlastně celý stav světa komprimujeme do jedné náhodné proměnné – v DBN jich můžeme mít víc
+		- vztah mezi DBN a HMM je podobný jako vztah mezi běžnými bayesovskými sítěmi a tabulkou s *full joint probability distribution*
+			- DBN je výrazně úspornější
+			- např. přechodový model u DBN s 20 binárními stavovými proměnnými, kde každá má tři rodiče, obsahuje $20\cdot 2^3=160$ pravděpodobností
+			- přechodový model u takového HMM by obsahoval $2^{20}\cdot 2^{20}\approx 10^{12}$ pravděpodobností
+- přesná inference v DBNs
+	- mohli bychom „rozrolovat“ DBN to plné bayesovské sítě
+	- můžeme použít inkrementální přístup – pamatovat si pouze dva slicy (proměnné z minulých sliců můžeme vysčítat)
+	- potíž je v tom, že prostor potřebný k uložení největšího faktoru bude exponenciální vzhledem k počtu stavových proměnných … $O(d^{n+k})$
+		- $n$ … počet proměnných
+		- $k$ … maximální počet rodičů libovolné stavové proměnné
+		- $d$ … velikost domény
+- přibližná inference v DBNs
+	- samplujeme skryté proměnné v síti v topologickém pořadí pomocí likelihood weighting
+		- najednou samplujeme $N$ vzorků, procházíme sítí
+	- vzorky se generují nezávisle na měření, takže můžou mít hodně nízké váhy a ty s časem klesají
+	- abychom udrželi přesnost, musíme počet vzorků exponenciálně zvětšovat v závislosti na $t$
+	- chceme se při samplování zaměřit na oblasti sample space s velkou pravděpodobností → použijeme particle filtering
+- particle filtering
+	- populace $N$ vzorků se vyrobí samplováním z prioru $P(X_0)$
+	- každý vzorek se propaguje dopředu tak, že samplujeme pomocí přechodového modelu
+	- každý vzorek se váží (likelihood weighting)
+	- nakonec resamplujeme populaci vzorků – vyrobíme nevážená vzorky, přičemž každý vzorek vybereme z původní populace tak, že pravděpodobnost jeho výběru je úměrná jeho váze
+- sensor failures
+	- fully accurate → sensor model is an “identity matrix”
+	- Gaussian error model – models measurement noise
+	- transient failures × persistent failures
+	- sensor transient failure model – we use some inertia that helps to overcome temporary blips in the readings
+	- sensor persistent failure model – we use additional state variable that describes the status of the sensor (is it broken?)
+- continuous variables
+	- so far we assumed discrete random variables (probability distributions can be captured by tables)
+	- how to handle continuous variables
+		- discretization → loss of accuracy, large CPTs
+		- standard families of probability density functions – e.g. normal (Gaussian) distribution
+			- $f(x)=\frac 1{\sigma\sqrt{2\pi}}e^{-\frac12(\frac{x-\mu}{\sigma})^2}$
+- conditional probability tables for continuous variables
+	- dependence of continuous on continuous
+		- can be described using a linear Gaussian distribution – mean value as a linear function of the parent, standard deviation is fixed
+	- dependence of continuous on discrete
+		- specify parameters of standard distribution for each value of the discrete variable
+	- dependence of discrete on continuous
+		- “soft” threshold function
+		- examples
+			- probit (probability unit) distribution
+				- $\Phi(x)$
+				- often a better fit to real situations (the underlying decision process has a hard threshold, but the precise location of the threshold is subject to random Gaussian noise)
+			- logit (logistic function) distribution
+				- log-odds, inverse of sigmoid
+				- has longer tails, may be easier to deal with mathematically
+- Kalman filters
+	- we use dynamic Bayesian network to model a problem (e.g. localization), we use linear Gaussian distributions both in the transition model and in the sensor model
+	- then, everything is Gaussian
+	- we can use message passing technique for filtering, prediction, and smoothing
+	- what if the model is non-linear?
+		- example: bird is heading straight for a tree trunk (linear model predicts a collision)
+		- standard solution: switching Kalman filter
+		- we run multiple Kalman filters in parallel, each uses a different model of the system
+		- we use a weighted sum of predictions – depending on how they fit the current data
+		- this is a special case of DBN obtained by adding another discrete state variable to the network (“which filter to use”)
+- keeping track of many objects
+	- which object generated which observation?
+	- exact reasoning → consider all possible assignments ($n!$ mappings for a single time slice)
+	- approximate methods
+		- choose a single best assignment at each time step
+			- naive: nearest-neighbor filter (which observation is the closest to this prediction)
+			- better: maximize the joint probability of the current observations gtiven the predicted positions (the Hungarian algorithm)
+			- but these methods fail under more difficult conditions (they commit to a single best assignment which may subsequently become clear to be wrong)
+		- particle filtering – maintains a large collection of possible current assignments
+		- MCMC – explores the space of possible current assignments
+	- problems with real applications
+		- false alarm (an observation is not caused by a real object)
+		- detection failure (no observation reporeted for a real object)
+		- new and disappearing objects (set of objects is not fixed)
 
 ## Utility theory
 
