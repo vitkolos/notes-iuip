@@ -783,4 +783,149 @@
 
 ## Learning Probabilistic Models
 
+- Bayesian learning
+	- we observe values $d$
+	- we have some hypotheses and we know $P(d\mid h_i)$ and $P(h_i)$ for each of them
+		- $P(h_i)$ … hypothesis prior
+		- $P(d\mid h_i)$ … likelihood of the data
+	- then we can make prediction about an unknown quantity $X$
+		- $P(X\mid d)=\sum_i P(X\mid d,h_i)\ P(h_i\mid d)=\sum_i P(X\mid h_i)\ P(h_i\mid d)$
+		- where $P(h_i\mid d)=\alpha P(d\mid h_i)\ P(h_i)$
+	- Bayesian prediction eventually agrees with the hypothesis – posterior probability of any false hypothesis vanishes (for large amounts of observations)
+	- Bayesian prediction is optimal (whether the dataset is small or large) – any other prediction is expected to be correct less often
+	- for real learning problems, the hypothesis space is usually very large or infinite
+		- → we need some approximate or simplified methods
+- MAP learning
+	- we make prediction based on a single most probable hypothesis (maximum a posteriori)
+	- $h_{MAP}=\mathrm{argmax}_{h_i}\ P(h_i\mid d)=\mathrm{argmax}_{h_i}\ P(d\mid h_i)\ P(h_i)$
+	- we assume that $P(X\mid d)\approx P(X\mid h_{MAP})$
+	- at some point, we solve a maximization problem (instead of large summation or integration problem which is solved in Bayesian learning)
+- overfitting
+	- Bayesian and MAP learning use the prior to penalize complexity (more complex hypotheses have a lower prior probability)
+	- if $H$ contains only deterministic hypotheses ($P(d\mid h_i)$ can only be one or zero), then $h_{MAP}$ is the simplest logical theory that is consistent with the data (= Ockham's razor)
+- MDL learning
+	- $h_{MAP}=\mathrm{argmax}_{h_i}\ P(d\mid h_i)\ P(h_i)=\mathrm{argmin}_{h_i}(-\log_2 P(d\mid h_i)-\log_2 P(h_i))$
+	- $-\log_2 P(h_i)$ … number of bits required to specify the hypothesis $h_i$
+	- $-\log_2 P(d\mid h_i)$ … number of bits required to specify the data given the hypothesis
+	- MAP learning = choosing the hypothesis that provides maximum compression of data
+	- a more direct approach: minimum description length (MDL) learning method
+		- we count the bit in binary encoding of the hypotheses and data and select the hypothesis with the smallest number of bits
+- maximum-likelihood hypothesis (ML learning)
+	- we assume a uniform prior, we only maximize $P(d\mid h_i)$
+	- provides a good approximation to Bayesian and MAP learning when the dataset is large (but has a problem with small datasets)
+- maximum-likelihood parameter learning
+	- we have a Bayesian network with a given structure
+	- we want to fill the CPTs correctly
+	- we write down an expression for the likelihood of the data as a function of the parameters
+		- differentiate the likelihood (or log likelihood usually) with respect to each parameter
+		- find the parameter values s.t. the derivatives are zero (this leads to numerical optimization or gradient descent etc.)
+	- ML parameter learning problem for a Bayesian network decomposes into separate learning problems – one for each parameter
+- naïve Bayes model
+	- can be represented as a Bayesian network where *class* $C$ is the root and *attributes* $X_i$ are the leaves (direct descendants of the root)
+	- for Boolean variables, we have two parameters per leaf + one parameter in the root
+		- $P(C=\mathrm{True})$
+		- $\forall i:P(X_i=\mathrm{True}\mid C=\mathrm{True})$
+		- $\forall i: P(X_i=\mathrm{True}\mid C=\mathrm{False})$
+	- $P(C\mid x_1,\dots,x_n)=\alpha P(C)\prod_i P(x_i\mid C)$
+	- properties
+		- scales well to large models
+		- no difficulty with noisy or missing data
+		- gives probabilistic predictions
+- importance of hidden variables
+	- example: medical records include the observed symptoms, the diagnosis, and the treatment applied, they seldom contain a direct observation of the disease itself
+	- could we construct a model without the hidden variable (disease, in our example)?
+		- yes, but it would dramatically increase the number of parameters
+- EM algorithm
+	- learning the conditional distribution of the hidden variable without knowing the value of that variable
+	- steps
+		- pretend that we know the parameters of the model
+		- infer the expected values of hidden variables to complete the data
+		- update the parameters to maximize likelihood of the model
+		- iterate until convergence
+	- example
+		- candies from two bags, Bag is a hidden variable, we have a naïve Bayes model
+		- at the beginning, we somehow initialize the parameters of the model
+		- repeat
+			- according to the parameters, we compute the expected number of candies in each bag (we also need to compute the expected number of candies with given attributes)
+				- e.g. $N(c)=\sum_i P(c\mid \mathrm{attributes}_i)$
+				- where $\mathrm{attributes}_i$ … attributes of the $i$-th item in the dataset
+			- we update all the parameters according to the computed expected numbers (to maximize likelihood of the model)
+				- e.g. $P(c)=N(c)/N$
+
 ## Reinforcement Learning
+
+- návrhy agentů
+	- utility-based agent – naučí se užitkovou funkci, používá ji k volbě akcí
+	- Q-learning agent – naučí se Q-funkci („užitek akce“)
+	- reflexní agent – naučí se policy, která pro stav vrací akci
+- pasivní zpětnovazební učení
+	- uvažujeme agenta, který se účastní MDP (markovského rozhodovacího procesu)
+	- pasivní učení – známe strategii $\pi$ (je pevně daná) a učíme se, jak je dobrá (učíme se utility funkci)
+	- agent nezná přechodový model ani reward function
+	- jak najít užitkovou funkci: přímý odhad, ADP, TD
+	- přímý odhad utility
+		- máme trace (běh) mezi stavy, z toho počítáme utility function
+		- odhadujeme užitky jednotlivých stavů
+			- užitek stavu = *reward-to-go* (tedy střední hodnota odměny tohoto a všech budoucích stavů)
+			- odměny z budoucích stavů bychom mohli zohledňovat s discount faktorem $\gamma$ (viz výše)
+		- užitky pro jednotlivé stavy prostě průměrujeme
+		- v podstatě učení s učitelem – na vstupu je stav, na výstupu užitek stavu (neboli *reward-to-go*)
+		- nevýhoda
+			- utilities nejsou nezávislé, ale řídí se Bellmanovými rovnicemi
+			- hledáme v prostoru hypotéz, který je výrazně větší, než by musel být (obsahuje spoustu funkcí, co porušují Bellmanovy rovnice) → algoritmus konverguje pomalu
+	- adaptivní dynamické programování (ADP)
+		- agent se učí přechodový model a *odměny* $R(s)$
+		- přechodový model odhaduje přímo z pozorovaných přechodů
+		- utilitu $U$ počítá z Bellmanových rovnic třeba pomocí value iteration
+			- využíváme toho, že užitky nejsou nezávislé
+		- ADP zajišťuje, že jsou odhady užitků konzistentní
+	- temporal-difference (TD) learning
+		- upravuje stav, aby odpovídal aktuálně pozorovanému následníkovi
+		- když dojde k přechodu ze stavu $s$ do stavu $s'$, tak na $U^\pi(s)$ použijeme update: $U^\pi(s)\leftarrow U^\pi(s)+\alpha\cdot (R(s)+\gamma\cdot U^\pi(s')-U^\pi(s))$
+			- $\alpha$ je learning rate
+		- vlastnosti
+			- nepotřebuju přechodový model (je to model-free metoda)
+			- konverguje to pomaleji než ADP
+			- provádíme jemné lokální updaty (proto máme learning rate)
+- aktivní zpětnovazební učení: obecný princip
+	- uvažujeme agenta, který se účastní MDP (markovského rozhodovacího procesu)
+	- aktivní učení – agent se učí strategii (policy; jak se rozhodovat) a taky utility funkci
+	- mohli bychom použít ADP, tím vznikne hladový agent, který opakuje zažité vzory (nezkouší nové věci)
+	- jak může volba optimální akce vést k suboptimálním výsledkům?
+		- naučený model není stejný jako reálné prostředí
+		- akce nejsou pouze zdrojem odměn, ale také přispívají k učení – ovlivňují vstupy
+		- zlepšováním modelu se postupně zvětšují odměny, které agent získává
+	- je potřeba najít optimum mezi exploration a exploitation
+		- pure exploration – agent nepoužívá naučené znalosti
+		- pure exploitation – riskujeme, že bude agent pořád dokola opakovat zažité vzory
+		- základní myšlenka: na začátku preferujeme exploration, později lépe rozumíme světu, takže nepotřebujeme tolik prozkoumávat
+- aktivní zpětnovazební učení: exploration policies
+	- první možná exploration policy: agent si zvolí náhodnou akci s pravděpodobností $\frac1t$ (kde $t$ je čas), jinak se řídí hladovou strategií
+		- nakonec to konverguje k optimální strategii, ale může to být extrémně pomalé
+	- rozumnější přístup je přiřadit vyšší odhad utility akcím, které agent ještě dostatečně nevyzkoušel
+		- použijeme optimistický odhad utility $U^+(s)\leftarrow R(s)+\gamma\max_a f(\sum_{s'}P(s'\mid s,a)\ U^+(s'),N(s,a))$
+		- $f(u,n)$ … exploration function (určuje trade-off mezi zvědavostí a hladem)
+			- např. by od určitého počtu navštívení mohla vracet $u$ a do té doby by mohla vracet nejlepší možnou odměnu, která by se mohla někde v grafu objevit (aby nás motivovala navštívit všechny stavy)
+		- vpravo taky používáme $U^+$ – to nám samo o sobě zajišťuje, že je „utility krajina“ dostatečně hladká a že se informace o atraktivitě neprozkoumaných polí dostane i do těch, která už agent mnohokrát prošel (např. blízko startu)
+	- existuje alternativní TD metoda, říká se jí Q-learning
+		- $Q(s,a)$ označuje hodnotu toho, že provedeme akci $a$ ve stavu $s$
+		- q-hodnoty jsou s utilitou ve vztahu $U(s)=\max_a Q(s,a)$
+		- můžeme napsat omezující podmínku $Q(s,a)=R(s)+\gamma\sum_{s'} P(s'\mid s,a)\cdot \max_{a'}Q(s',a')$
+			- tohle vyžaduje, aby se model naučil i $P(s'\mid s,a)$
+		- Q-learning ale nevyžaduje model přechodů – je to bezmodelová (model-free) metoda, potřebuje akorát q-hodnoty
+		- $Q(s,a)\leftarrow Q(s,a)+\alpha\cdot (R(s)+\gamma\cdot\max_{a'}Q(s',a')-Q(s,a))$
+			- počítá se, když je akce $a$ vykonána ve stavu $s$ a vede do stavu $s'$
+	- state-action-reward-state-action (SARSA)
+		- je to varianta Q-learningu
+		- $Q(s,a)\leftarrow Q(s,a)+\alpha\cdot (R(s)+\gamma\cdot Q(s',a')-Q(s,a))$
+			- pravidlo se aplikuje na konci pětice $s,a,r,s',a'$, tedy po aplikaci akce $a'$
+		- pro hladového agenta (který volí podle největšího $Q$) jsou algoritmy SARSA a základní Q-learning stejné
+			- rozdíl je vidět až u agenta, který není úplně hladový, ale provádí i průzkum (exploration)
+		- u SARSA se bere v úvahu reálně zvolená akce
+			- SARSA je on-policy – jeho strategie se upravuje přímo za běhu algoritmu
+			- Q-learning je off-policy – algoritmus se učí optimální strategii, ale během učení se může používat úplně jiná strategie
+	- Q-učení a SARSA jsou pomalejší než ADP agent – lokální updaty nezajišťují konzistenci q-hodnot
+	- je lepší mít model?
+		- historicky se výzkum v oblasti AI zaměřoval na knowledge-based přístup (tzn. vytváříme si model prostředí)
+		- vidíme ale, že můžou fungovat i model-free metody (třeba Q-učení)
+		- intuitivně se zdá, že u dostatečně komplexních prostředí převažují výhody modelu
