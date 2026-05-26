@@ -24,3 +24,4 @@ Master of Computer Science – Artificial Intelligence ([some notes are in Engli
 #### Praha
 
 - [Data Mining (online test)](semestr2/data-mining/online-test.md)
+- [Umělá inteligence 2](semestr2/artificial-intelligence2/zkouska.md)
