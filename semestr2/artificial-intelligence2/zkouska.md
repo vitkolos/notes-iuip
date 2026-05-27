@@ -811,7 +811,7 @@
 	- $-\log_2 P(d\mid h_i)$ … number of bits required to specify the data given the hypothesis
 	- MAP learning = choosing the hypothesis that provides maximum compression of data
 	- a more direct approach: minimum description length (MDL) learning method
-		- we count the bit in binary encoding of the hypotheses and data and select the hypothesis with the smallest number of bits
+		- we count the bits in binary encoding of the hypotheses and data and select the hypothesis with the smallest number of bits
 - maximum-likelihood hypothesis (ML learning)
 	- we assume a uniform prior, we only maximize $P(d\mid h_i)$
 	- provides a good approximation to Bayesian and MAP learning when the dataset is large (but has a problem with small datasets)
@@ -871,6 +871,8 @@
 			- užitek stavu = *reward-to-go* (tedy střední hodnota odměny tohoto a všech budoucích stavů)
 			- odměny z budoucích stavů bychom mohli zohledňovat s discount faktorem $\gamma$ (viz výše)
 		- užitky pro jednotlivé stavy prostě průměrujeme
+			- tzn. na konci každého běhu pro konkrétní výskyt stavu $s$ v tom běhu vezmeme všechny odměny od tohoto výskytu dál a posčítáme je
+			- výsledek započteme do running average (pro $s$)
 		- v podstatě učení s učitelem – na vstupu je stav, na výstupu užitek stavu (neboli *reward-to-go*)
 		- nevýhoda
 			- utilities nejsou nezávislé, ale řídí se Bellmanovými rovnicemi
