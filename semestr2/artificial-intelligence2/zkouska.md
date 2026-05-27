@@ -244,7 +244,7 @@
 			- např. přechodový model u DBN s 20 binárními stavovými proměnnými, kde každá má tři rodiče, obsahuje $20\cdot 2^3=160$ pravděpodobností
 			- přechodový model u takového HMM by obsahoval $2^{20}\cdot 2^{20}\approx 10^{12}$ pravděpodobností
 - přesná inference v DBNs
-	- mohli bychom „rozrolovat“ DBN to plné bayesovské sítě
+	- mohli bychom „rozrolovat“ DBN do plné bayesovské sítě
 	- můžeme použít inkrementální přístup – pamatovat si pouze dva slicy (proměnné z minulých sliců můžeme vysčítat)
 	- potíž je v tom, že prostor potřebný k uložení největšího faktoru bude exponenciální vzhledem k počtu stavových proměnných … $O(d^{n+k})$
 		- $n$ … počet proměnných
@@ -260,7 +260,7 @@
 	- populace $N$ vzorků se vyrobí samplováním z prioru $P(X_0)$
 	- každý vzorek se propaguje dopředu tak, že samplujeme pomocí přechodového modelu
 	- každý vzorek se váží (likelihood weighting)
-	- nakonec resamplujeme populaci vzorků – vyrobíme nevážená vzorky, přičemž každý vzorek vybereme z původní populace tak, že pravděpodobnost jeho výběru je úměrná jeho váze
+	- nakonec resamplujeme populaci vzorků – vyrobíme nevážené vzorky, přičemž každý vzorek vybereme z původní populace tak, že pravděpodobnost jeho výběru je úměrná jeho váze
 - sensor failures
 	- fully accurate → sensor model is an “identity matrix”
 	- Gaussian error model – models measurement noise
@@ -309,7 +309,7 @@
 		- MCMC – explores the space of possible current assignments
 	- problems with real applications
 		- false alarm (an observation is not caused by a real object)
-		- detection failure (no observation reporeted for a real object)
+		- detection failure (no observation reported for a real object)
 		- new and disappearing objects (set of objects is not fixed)
 
 ## Utility Theory
@@ -389,7 +389,7 @@
 - the value of information
 	- “what questions to ask?”
 	- value of perfect information (VPI)
-		- we consdier expected utility before and after getting the information (expected value over any possible information we could get)
+		- we consider expected utility before and after getting the information (expected value over any possible information we could get)
 	- expected value of information
 		- non-negative
 		- not additive
@@ -751,7 +751,7 @@
 		- false positive for $S_i$ → throw $S_i$ out of the $S$-set
 		- false positive for $G_i$ → replace $G_i$ in the $G$-set by all its immediate specializations
 		- false negative for $G_i$ → throw $G_i$ out of the $G$-set
-	- stopping condition
+	- in the end…
 		- we have exactly one hypothesis left
 		- or the version space collapses (one of the boundaries becomes empty)
 		- or we run out of examples and have several hypothesis remaining in the version space
