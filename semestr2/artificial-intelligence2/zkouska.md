@@ -436,7 +436,7 @@
 		- goal exit: +1
 		- unwanted exit: -1
 		- other states: -0.04 (to find the shortest path to the goal)
-- solution to an MDP = policy
+- solution to a MDP = policy
 	- finite sequence of actions cannot be used in stochastic environment, we need a policy function $\pi(s)$
 	- optimal policy – yields the highest expected utility
 	- a policy describes a simple reflex agent
