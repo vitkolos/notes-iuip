@@ -647,7 +647,9 @@
 	- chance of overfitting increases with the number of hypotheses
 	- decision tree pruning
 		- bottom-up approach, $\chi^2$ test
-			- can it be used when constructing the decision tree as an early-stopping condition?
+			- take a test node that has only leaf nodes as descendants
+			- null hypothesis: there is no underlying pattern (the node is testing an irrelevant attribute)
+		- can it be used when constructing the decision tree as an early-stopping condition?
 			- no, there are cases where we need a combination of attributes to classify (e.g. XOR) but individual attributes would fail $\chi^2$
 	- problems
 		- missing data
