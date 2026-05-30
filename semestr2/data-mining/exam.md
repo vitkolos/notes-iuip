@@ -1,0 +1,657 @@
+# Exam
+
+## Introduction
+
+- data mining from databases
+	- non-trivial process of gaining implicit, previously not known, but potentially useful information from the data
+	- originated in the 90s (there was not enough data before)
+	- knowledge discovery in databases (KDD)
+	- data mining (DM) – business intelligence (BI) and big data
+- foundations
+	- artificial intelligence, machine learning methods
+	- database systems (to store large data sets), information retrieval
+	- statistics – modeling and analysis of dependencies found in the data
+	- \+ how to use the results for decision-making
+- data mining is an interactive and iterative process
+	- data preparation – we build one table containing all the relevant data
+		- selection (of useful attributes), preprocessing, transformation
+	- the actual “data mining” – we find *patterns* in the data
+	- interpretation – found knowledge shall be evaluated from the point of view of the end user (manager, customer, etc.)
+- PoV of a manager
+	- there’s a topical issue
+	- goal of the data mining process is to obtain as much information as possible that is relevant to solving the problem
+	- example
+		- find groups of customers of a department store to offer special services to
+		- the found groups can be interpreted as segments in the given market area
+	- steps
+		- form a team: data analyst, domain expert, expert on databases, …
+		- specify the problem
+		- obtain all data available
+			- we should also obtain the external data describing the environment of the analyzed processes (time period of the year, advertising, political issues, weather, …)
+		- select the methods
+			- clustering, classification, exploratory data analysis, association rules, decision trees, genetic algorithms, Bayesian networks, neural networks
+			- visualization methods – helpful for presentation
+		- preprocess the data
+		- mine the data
+		- interpret the results
+			- we may need to create an analytical report
+			- make the results easy to understand
+			- the output can also mean to carry out a reasonable action
+- tasks
+	- classification and prediction
+		- goal: predict a continuous or discrete value based on some attributes
+		- interpretation may be challenging
+		- prediction: weather forecast, stock prices, …
+		- we should be able to cover the entire domain (all the data may be useful for a reasonable prediction)
+	- description
+		- goal: find a dominant structure or relationships
+		- we may ignore some of the information; the extracted knowledge does not need to be that precise (but it should be easily understandable)
+	- looking for “nuggets”
+		- goal: find some interesting knowledge (does not have to fully cover the given concept)
+- real tasks (examples)
+	- segmentation and classification of bank clients
+	- causes of failures in telecommunication networks
+	- causes of change of service provider
+	- prediction of power consumption
+	- analysis of the patient database in a hospital
+		- Florence Nightingale
+		- Ignaz Semmelweis
+	- market basket analysis
+
+## Methodologies
+
+- goal, popular methodologies
+	- goal: provide the users with a unified framework; guide data mining applications regardless of industry
+	- it’s necessary to have high-quality data; the steps are usually iterative
+	- popular methodologies: 5A, SEMMA, CRISPR-DM
+- SEMMA
+	- sample – select data for modeling
+		- may include sampling, imputation (adding other useful information, e.g. adding seasons of the year to the data about the sales), partitioning (train-test-validation split)
+	- explore – visual exploration and dimensionality reduction
+	- modify – prepare the objects, values, and variables for data modeling; transform the data
+	- model – apply data mining techniques (decision trees, regression models, NNs, …)
+		- create models providing relevant outcome
+	- assess – evaluate the results of modeling (assess their reliability and usefulness)
+		- so that the manager can understand
+- CRISP-DM
+	- cross-industry standard process for data mining; a robust general-purpose model
+		- software-independent
+	- 6 phases (their order is not strict)
+		- business understanding
+			- determine our business objective
+			- assess our present situation, what resources and data we have
+			- risk assessment
+			- setting KPIs
+		- data understanding
+			- collect and describe initial data; explore and visualize it
+			- verify the quality of the data
+		- data preparation
+			- cleaning, integration (merging), aggregation, …
+			- make the dataset ready for further analysis and modeling
+		- modeling
+			- select the modeling technique
+			- generate test design
+			- build the model
+			- assess the model
+		- evaluation
+			- evaluate the results – from the point of view of the manager
+			- review the process
+			- determine the next steps
+		- deployment
+			- results should be presented in a simple and comprehensible way
+			- plan the deployment (what steps should be done)
+			- final report, review the project
+				- to preserve knowledge
+	- ciritique
+		- little support for project management
+		- what to do if there are problems?
+		- → IBM released Analytics Solutions Unified Method for Data Mining (ASUM)
+- ASUM
+	- phases
+		1. analyze – define the needs (desired features, performance, usability, …), obtain agreement
+		2. design – define solution components, identify resources, clarify requirements
+		3. configure & build – including testing and validation
+		4. deploy – create a plan to run and maintain the solution
+		5. operate & optimize – preserve the health
+		- \+ project management – there are processes that help to monitor the progress and maintain the project
+	- benefits
+		- minimized risk
+		- scalable and enterprise-ready
+		- comprehensive
+		- product-specific implementation roadmaps
+		- users can replicate previous software implementations
+
+## Data Analysis
+
+- types of attributes
+	- interval-scaled attributes – their values are real number following a linear scale
+	- ratio-scaled attributes – follow an exponential scale → need to be log-transformed ($\log x_i$) before treating them like interval-scaled attributes
+	- a nominal attribute can be transformed to a series of binary attributes (one-hot encoding)
+	- ordinal attributes are sometimes treated as interval-scaled attributes
+- data standardization of interval-scaled attributes
+	- decimal scaling – divide the data by the smallest power of 10 to get them to the interval $[-1,1]$ (while maintaining the mutual relations)
+	- range standardization
+		- to $[0,1]$ … $\frac{x-\mathrm{min}}{\mathrm{max}-\mathrm{min}}$
+		- to $[-1,1]$ … $2\cdot \frac{x-\mathrm{min}}{\mathrm{max}-\mathrm{min}}-1$
+	- Z-score standardization … $\frac{x-\mu}{\sigma}$
+		- $\mu$ … mean
+		- $\sigma$ … corrected sample standard deviation
+			- $\sigma=\sqrt{\frac1{n-1}\sum_{i=1}^n(x_i-\mu)^2}$
+		- or we can use the *corrected* sample standard deviation
+	- standardization according to the mean absolute difference
+		- $\frac{x-\mu}{s}$
+		- where $s=\frac1n\sum_{i=1}^n|x_i-\mu|$
+- range, quartiles, outliers
+	- range = difference between the highest and the lowest value in the set
+	- quartiles – values $Q_1,Q_2,Q_3$
+		- 25% of the observations below $Q_1$ (lower quartile)
+		- 50% below $Q_2$ (median)
+		- 75% below $Q_3$ (upper quartile)
+	- interquartile range $IQR=Q_3-Q_1$
+	- formulas (for discrete data)
+		- $Q_1=x_{\lceil n/4 \rceil}$
+		- $Q_3=x_{\lceil 3n/4 \rceil}$
+		- but if $x_{n/4}$ or $x_{3n/4}$ exists ($n$ is divisible by 4), we need to average this value with the next one $($$x_{n/4+1}$ or $x_{3n/4+1}$)
+	- outlier is any value $\notin[Q_1-1.5\cdot IQR,\ Q_3+1.5\cdot IQR]$
+	- box plot
+		- box … between $Q_1$ and $Q_3$ with a mark (line) representing the median
+		- two other lines … boundaries for outliers (or the extrema that are not outliers)
+		- other marks outside … individual outliers
+- contingency table
+	- relationship between two categorical quantities (may be binary)
+	- cell … how many observations have this combination of attributes
+	- there are also column and row totals
+	- we get an expected frequency of combination if we multiply the column total with the row total and divide it by the total number of observations
+		- intuition: we take the number of elements in the column and multiply it by the (observed) probability that any sample belongs to the given row (has this value of the attribute)
+- $\chi^2$-test
+	- $\chi^2=\sum_k\sum_\ell\frac{(a_{k\ell}-e_{k\ell})^2}{e_{k\ell}}$
+		- where $a_{k\ell}$ is the value of the cell (number of observation with this combination of attributes)
+		- $e_{k\ell}$ is the expected frequency as described above: $e_{k\ell}=\frac{r_k\cdot s_\ell}n$
+	- $\chi^2$ distribution has $(R-1)(S-1)$ degrees of freedom (the last row and column are somehow determined by the rest of the table)
+	- we choose a level of significance $\alpha$ (usually 0.05) = probability of rejecting a true null hypothesis
+	- we reject $H_0$ if our $\chi^2$-statistic is greater than the value of the $\chi^2$ distribution (for the given DoF and $\alpha$)
+	- it can be used only for large-enough frequencies – when $\forall k,\ell:e_{k\ell}\geq 5$
+		- if the frequencies are too low and the contingency table contains only 4 fields, we can use Fisher’s test
+- Fisher’s test
+	- for a contingency table with only 4 fields (two binary attributes)
+	- one-sided or two-sided version
+	- we get the $p$-value directly: what is the probability of this or more extreme table if we assume fixed column and row totals?
+		- for the two-sided version, we need to compute the expected frequencies $e_{k\ell}$
+		- probability of this table: $$p=\frac{r_1!\cdot r_2!\cdot s_1!\cdot s_2!}{n!\cdot a!\cdot b!\cdot c!\cdot d!}$$
+			- $a,b,c,d$ … values of the cells
+			- $r_i,s_j$ … row and column totals respectively
+		- probability of some more extreme table $T_i$ – we consider values $a-i,\ b+i,\ c+i,\ d-i$ instead
+		- the probabilities of the tables need to be summed up to get the $p$-value
+	- null hypothesis: independence of the attributes
+		- we reject for $p$-value $\leq \alpha$
+
+## Regression Analysis
+
+- motivation
+	- it may be costly to obtain output values
+	- input values are known earlier than the output (we want to estimate the output)
+	- controlling input variables may lead to the desired behavior of the output
+	- we want to find a (causal) relationship between the input and the output
+- linear regression
+	- what are the parameters of the linear relationship between two numerical quantities?
+	- $y=\beta x+\alpha \textcolor{gray}{+ \varepsilon}$
+	- least squares method
+		- find parameters $\alpha,\beta$
+		- we minimize $SSE=\sum_i(y_i-f(x_i))^2$ (sum of squared errors)
+		- set partial derivatives of SSE equal to zero, we get two equations:
+			- $n\alpha+\beta\sum_i x_i=\sum_i y_i$
+				- or $\alpha=\bar y-\beta\bar x$
+			- $\alpha\sum_i x_i+\beta\sum_i x_i^2=\sum_i x_iy_i$
+		- so $(\bar y-\beta\bar x)\sum_i x_i+\beta\sum_i x_i^2=\sum x_iy_i$
+		- we get $\beta=\frac{\sum_i (x_i-\bar x)(y_i-\bar y)}{\sum_i(x_i-\bar x)^2}$
+			- and $\alpha=\bar y-\beta\bar x$
+- correlation analysis
+	- is there a linear relationship between two numerical quantities?
+	- correlation coefficient $\rho(x,y)=\frac{\text{cov}(x,y)}{\sigma_x\sigma_y}\in[-1,1]$
+		- corrected sample covariance $\text{cov}(x,y)=\frac{1}{n-1}\sum_i(x_i-\bar x)(y_i-\bar y)$
+		- corrected sample standard deviation $\sigma_x=\sqrt{\frac1{n-1}\sum_i(x_i-\bar x)^2}$
+			- similar for $\sigma_y$
+- multi-dimensional regression
+	- linear → least-squares method in matrix form
+		- $y=X\beta$
+		- $X$ … matrix of input samples
+			- before the $x$ values of the sample, there is $1$ (so that we don’t need to keep the constant $\alpha$)
+		- so $\beta=(X^TX)^{-1}(X^Ty)$
+		- may be computationally expensive → approximate solutions
+	- non-linear – example: logistic regression
+		- if the dependent variable is categorical
+		- we use log (conditional) odds to model the conditional probability
+			- $s_i=\ln\frac{P}{1-P}$
+			- so $P=\frac 1{1+e^{-s_i}}$ (sigmoid)
+			- where $s_i=\alpha+\beta x_i=\alpha+\sum_j\beta_j x_{ij}$
+		- we estimate the parameters using *maximum likelihood*
+			- $L=\prod_i P(y_i\mid x_i)=\prod_i p_i^{y_i}(1-p_i)^{1-y_i}$
+				- $p_i=\sigma(s_i)=\frac1{1+e^{-\alpha-\beta x_i}}$
+				- note that $1-p_i=1-\sigma(s_i)=\sigma(-s_i)$
+			- we minimize negative log-likelihood (= cross-entropy loss)
+				- $E=-\sum_i(y_i\log p_i+(1-y_i)\log(1-p_i))$
+		- gradient descent is then applied like this
+			- $\beta_j\leftarrow\beta_j-\eta\sum_i(\sigma(\alpha+\beta x_i)-y_i)x_{ij}$
+			- $\alpha\leftarrow\alpha-\eta\sum_i(\sigma(\alpha+\beta x_i)-y_i)$
+			- $\eta$ … learning rate
+			- note that $\sigma'(s_i)=\sigma(s_i)(1-\sigma(s_i))$
+- discriminant analysis
+	- classification into classes
+	- we consider a discriminant function $f_t$ for every class $c_t$
+		- conditional (a posteriori) probability of classifying $x$ to the class
+	- for two classes, we get $f(x)=f_1(x)-f_2(x)=P(x|c_1)P(c_1)-P(x|c_2)P(c_2)$
+		- (there should be a normalization constant $\alpha$ maybe)
+	- for normal distributions, we only need to estimate the means and the covariance matrices to get the discriminant functions
+		- the decision boundary is located where the distribution curves intersect
+
+## Cluster Analysis
+
+- cluster analysis, assumptions
+	- we want to divide the observed samples into groups of mutually similar ones
+	- assumption: we can measure the distance between samples (or between clusters)
+	- distance between two samples
+		- Minkovski metrics $L_z(x_1,x_2)=\sqrt[z]{\sum_j (x_{1j}-x_{2j})^z}$
+			- Manhattan distance … $L_1$
+			- Euclidean distance … $L_2$
+			- Chebyshev distance … $L_\infty$
+		- Hamming distance – number of positions at which $x_1$ and $x_2$ differ
+		- Mahalanobis distance – useful if the quantities have different variance
+			- uses the covariance matrix
+			- $d(x_1,x_2)=(x_1-x_2)^TS^{-1}(x_1-x_2)$
+	- distance between two clusters
+		- method of the nearest neighbor
+		- method of the farthest neighbor
+		- method of average distance (we compute the mean distance of two arbitrary samples – one from each cluster)
+		- centroid method (distance between the centers of the clusters)
+- centroid
+	- compute the average over all the features
+	- but such point may not be in the data at all
+- k-means clustering
+	- Lloyd
+		- divide the points randomly into $k$ clusters
+		- repeat until convergence
+			- compute the centroids
+			- assign each point to its closest centroid
+	- alternative initializations
+		- pronounce the first $k$ points to be centroids
+		- k-means++ … sample $k$ points (to be used as centroids) with probability proportional to their squared distance to the closest existing centroid
+		- LocalSearch++ … start with k-means++, then sample some more points (in the same way) one by one and replace some of the existing centroids if they cover the distribution (points) better
+- k-medians
+	- just use Manhattan distance instead of Euclidean
+	- → centroid = median (independently along each dimension)
+		- the representative may not exist in the dataset
+	- median is less sensitive to the presence of outliers than the mean
+- hierarchical clustering
+	- bottom-up approach
+	- we get a dendrogram
+		- a clustering corresponds to some “cut” in the dendrogram
+	- algorithm
+		- initialization: each point is its own cluster
+		- repeat: merge the two closest clusters
+- learning vector quantization (LVQ)
+	- for *supervised* clustering
+	- we consider several weight vectors (representatives)
+		- each weight vector corresponds to a single class
+	- first, we need to initialize the weight vectors
+	- then, for every sample, we update the closest weight vector
+		- if the class of the vector corresponds to the class of the sample, we move the vector closer to the sample: $w\leftarrow w+\mu(x-w)$
+		- otherwise, we move it further from the sample: $w\leftarrow w-\mu(x-w)$
+	- $\mu$ … learning rate (usually some constant divided by the number of the epoch)
+	- no guarantee of convergence
+- k-medoids
+	- uses a similarity measure instead of averaging
+	- we try to find $k$ best representatives $Y_1,\dots,Y_k$ (from the dataset)
+		- so the medoids are real data points
+	- objective function: $O=\sum_{i=1}^n(\min_j\mathrm{Dist}(X_i,Y_j))$
+	- more robust to outliers than k-means
+	- sometimes, we cannot easily compute average (or it does not make sense)
+	- possible strategy
+		- randomly select $r$ pairs $(X_i,Y_j)$ for a possible exchange
+		- the pair with the best improvement of the objective function is exchanged
+		- requires time proportional to $rn$
+- grid-based methods
+	- e.g. MAFIA
+	- which cells of the grid are densely covered by the data?
+	- merge neighboring *dense* hyper-cubes (cells) to get clusters
+		- there is a threshold which tells us if the hyper-cube is dense
+- density-based algorithms
+	- core point: there are at least $\tau$ points closer than $\varepsilon$
+	- border point: there is at least one core point closer than $\varepsilon$
+	- noise point: otherwise
+	- DBSCAN
+		- connectivity graph
+		- nodes = core points
+		- nodes are connected if the core points are closer than $\varepsilon$
+		- clusters = connected components
+		- border points still belong to the corresponding clusters
+		- noise points are reported as outliers
+	- another algorithm: DENCLUE
+- scalable approaches – for lots of data
+	- k-medoids are expensive to compute
+	- CLARA
+		- based on *partitioning around medoids* (PAM) – a variant of k-medoids
+			- all possible $k(n-k)$ pairs of medoids and non-medoids are tested for an exchange
+			- the pair with the best improvement of the objective function is exchanged
+			- $O(kn^2d)$ time per iteration for a $d$-dimensional dataset
+		- we apply the algorithm to a smaller sample set of size $fn$ where $f\in(0,1)$
+			- the remaining data points are assigned to the medoids found in the smaller sample
+			- we repeat this multiple times and use the best found clustering
+			- $O(kf^2n^2d+k(n-k))$ time
+		- the main problem occurs when the preselected samples do not include a good choice of medoids
+	- CLARANS
+		- k-medoids, but uses the entire dataset
+		- finds several locally optimal solutions and uses the best one
+		- finding a locally optimal solution
+			- randomly initialize $k$ medoids
+			- repeat: take a random pair of a medoid and a non-medoid, swap them if this improves the objective function
+			- if a certain number of unsuccessful exchanges is reached, we consider the solution to be locally optimal
+	- CURE (clustering using representatives) – agglomerative hierarchical algorithm
+		- sample $s$ points, divide them into $p$ equal partitions
+		- cluster each partition independently using hierarchical merging to $k'$ clusters
+		- perform hierarchical clustering over the $k'p$ clusters across all partitions to get the desired number of clusters ($k$)
+		- assign each point to its closest cluster
+
+## Decision Trees
+
+- decision tree, (dis)advantages
+	- each inner node is labeled by an attribute
+	- each edge is labeled by a predicate applicable to the attribute of the parent node
+	- each leaf has a class label
+	- there’s a stopping criterion – e.g. all the training data in the node belong to the same class
+	- advantages: easy to implement and interpret, efficient, extract simple rules, applicable to large datasets
+	- disadvantages
+		- difficult to process continuous data (decision trees divide the features space into rectangular regions)
+		- difficult to process for missing data
+		- overfitting (solved by pruning)
+		- mutual correlations among the attributes are not considered
+			- problem if the decision boundary looks like $y=x$ (we would need to check a value of one attribute relatively to another attribute)
+- top down induction of decision trees (TDIDT)
+	- top-down method
+	- algorithm (divide and conquer)
+		- choose one attribute as a root of the subtree
+		- divide the data according to the values of this attribute and add a node for each subset
+		- repeat the steps recursively for any nodes that do contain data from at least two different classes
+	- how to choose the attribute
+		- we use Shannon entropy $H=-\sum_c p_c\log_2p_c$
+			- $p_c$ … probability of occurrence of class $c$ (relative frequency of class $c$ in the data)
+			- by definition, $0\log_2 0=0$
+			- note that $\log_2 x=\frac{\log_{10} x}{\log_{10} 2}=\frac{\log_{10} x}{0.301}$
+		- we calculate $H$ for every possible value of the attribute
+		- then we apply weighted average – weights correspond to the frequencies of the values of the attribute in the data
+		- we choose the attribute with the minimum weighted average entropy
+			- se we choose the attribute like this: $\mathrm{argmin}_A \sum_v P(A=v) H(v)$
+			- where $H(v)=-\sum_c p_c\log_2 p_c$
+			- $p_c=P(C=c\mid A=v)$
+			- obviously, we always consider probability $P$ estimated for the subset of the data that belongs to the current node
+	- it is useful to perform early stopping (by the principle of Occam’s razor)
+	- time complexity: $O(np\log p)$
+		- $n$ … number of attributes
+		- $p$ … number of training data
+- ID3 algorithm
+	- boolean output (only two classes)
+	- greedy top-down method
+	- divides the nodes until there is a single class or there are no attributes (or data) left
+	- uses information gain = entropy reduction
+		- $\mathrm{gain}(A)=H-\sum_v P(A=v)H(v)$
+		- where $H$ is the entropy of the node, $H(v)$ is the entropy of the child node containing samples s.t. $A=v$
+- C4.5, C5.0
+	- modifications of the ID3 algorithm
+	- C4.5
+		- missing attribute values are ignored during tree construction; they are estimated from the other data during prediction (probably just by using mode?)
+		- continuous data – categorized according to the values in the training set
+		- pruning
+			- train/validation split
+			- subtree is replaced by a leaf (with majority vote) if the new tree does not perform worse on the validation set than the original one
+			- in a similar fashion, a whole subtree can be raised (the most frequently used one)
+		- rule post-pruning
+			- rules can be extracted from the tree
+			- then, the rules can be generalized (pruned) and ordered by their expected accuracy (then used in this order instead of the original tree)
+			- quite radical pruning
+			- the rules are transparent and easy to understand
+		- estimates confidence interval for accuracy of rules and trees
+			- for a given rule, we can evaluate training accuracy $\hat p=$ correctly classified samples ÷ all samples processed by the rule
+			- we assume binomial distribution
+			- for the confidence interval computed at the 95% confidence level, the lower accuracy bound for new data will correspond to $$\hat p-1.96\cdot\underbrace{\sqrt{\frac{\hat p(1-\hat p)}{N}}}_{\text{std dev}}$$
+				- where $N$ is the total number of samples
+		- uses information gain ratio as criterion for data division
+			- $\mathrm{argmax}_A\,\frac{\mathrm{gain}(A)}{-\sum_v P(A=v)\log_2 P(A=v)}$
+			- in the denominator, we have *SplitInformation*, which is the same formula as entropy if we consider the attribute values to be “classes”
+			- this penalizes excessive branching
+	- C5.0
+		- commercial version of C4.5 for large databases
+		- improved generation of rules
+		- higher accuracy is achieved using *boosting*
+			- we gradually construct an ensemble of several classifiers (trees)
+			- every new tree tries to improve the accuracy of the ensemble
+				- the (previously) incorrectly classified data points are assigned larger weights → the tree knows they have high priority
+			- majority vote is used
+- classification and regression trees (algorithm CART)
+	- generates *binary* trees
+		- chooses a value of an attribute it can use to split data into the two subtrees (usually it's a threshold)
+	- uses entropy or Gini index to choose the best decision attribute
+	- measure of “goodness” of the data division
+		- $\phi(v|t)=2P_LP_R\sum_c |P(c|t_L)-P(c|t_R)|$
+			- $P_L$ probability that a sample belongs to the left subtree
+			- $P(c|t_L)$ probability that a sample in the left subtree belongs to class $c$
+		- we want the children to be both balanced and pure
+		- we use the value $v^*=\mathrm{argmax}_v\ \phi(v|t)$
+	- characteristic properties of CART
+		- order of the attributes corresponds to their impact during classification
+		- missing data is ignored
+		- stopping criterion: there's no way to divide the node in order to improve the classification accuracy
+		- high accuracy achieved on the training set does not have to reflect the accuracy on the test data
+- algorithm CHAID
+	- chi-square automatic interaction detection
+	- $\chi^2$ criterion for branching
+	- values of the categorical attributes are gradually grouped together (by $\chi^2$ “similarity”) → there remain only two groups
+- bagging
+	- bootstrapped aggregating
+	- reduces the variance of the classifier
+	- if we consider an ensemble of $k$ i.i.d. classifiers with variance $\sigma^2$ each, the ensemble has variance $\sigma^2/k$
+	- decision trees are an ideal choice for bagging – they have low bias and high variance (if they are sufficiently deep)
+	- bagging does not reduce bias (it may even worsen accuracy if bias is the main problem)
+	- to get classifiers that are i.i.d. (independent and identically distributed) to some extent, we perform *bootstrapping*
+		- the data points are sampled uniformly from the original data with replacement
+		- this way, the new dataset contains roughly $1-(1-1/n)^n\approx 1-1/e\approx 63.2\%$ distinct data points
+- random forests
+	- *we use bagging*
+	- problem: pairwise correlation of models constructed using bagging
+		- if our $k$ classifiers, each with variance $\sigma^2$, have a positive pairwise correlation $\rho$, then the variance of the averaged prediction will be $\rho\sigma^2+\frac{(1-\rho)\sigma^2}k$
+	- solution: we limit the number of features that can be used for splitting
+		- at each node, only a random subset of features is available
+	- this speeds up training due to fewer features to search over at each stage and there is no need to prune the trees
+	- reduced variance does not negatively affect the bias
+	- two parameters
+		- number of features to be sampled
+		- number of trees to be built
+- boosting
+	- classifiers are built one by one based on a weighted dataset
+		- misclassified data points tend to have larger weights
+	- each new tree depends on the previous ones
+		- it is trained on a dataset with different weights (it focuses on the misclassified data points)
+	- in the end, we get a weighted combination of the classifiers
+	- the ensemble has a lower overall bias
+	- disadvantage: outliers may hurt the overall performance of the model
+- random forests vs. boosting
+	- random forests: fast (can run in parallel, use a small set of features at each stage)
+	- boosting: sequential, can be expensive, but outperforms random forests
+
+## Association Rules
+
+- market basked analysis (MBA)
+	- *what items occur together in the basket?*
+		- = how are the items usually associated?
+		- we want to express this in the form of rules
+	- application
+		- planning and layout of shops
+		- offer of coupons, limited discounts
+		- grouping of goods in bundles
+	- desired properties
+		- association rules should be applicable and easy to understand
+		- they should not be trivial or inexplicable
+			- we are looking for *nuggets*
+	- it may be useful to add *virtual items* identifying the shop etc.
+	- to extract the *association rules*, we usually need a list of all the transactions (baskets)
+		- for each transaction, there is a list of items
+		- we can build a frequency table based on that
+			- there is a number of occurrences for each pair of items (number of transactions where they occur together)
+- measures (criteria) of rules
+	- support
+		- how often we can use the rule
+		- $\mathrm{support}(A\to B)=$ transactions containing $A,B$ / all transactions
+	- confidence
+		- how reliable the rule is
+		- $\mathrm{confidence}(A\to B)=\frac{\mathrm{support}(A\to B)}{\mathrm{support}(A)}=$ transactions containing $A,B$ / transactions containing $A$
+	- lift
+		- $\mathrm{lift}(A\to B)=\frac{\mathrm{support}(A\to B)}{\mathrm{support}(A)\cdot \mathrm{support}(B)}$
+		- $\mathrm{lift}\in [0,\infty)$
+		- $\mathrm{lift}=1\iff A,B$ are independent
+		- $\mathrm{lift}<1\implies$ we should negate the rule to get better results
+	- leverage
+		- $\mathrm{leverage}(A\to B)={\mathrm{support}(A\to B)}-{\mathrm{support}(A)\cdot \mathrm{support}(B)}$
+		- like lift but additive (interval $[-1,1]$, zero implies independence)
+	- conviction
+		- $\mathrm{conviction}(A\rightarrow B) = \frac{1 - \mathrm{support}(B)}{1 - \mathrm{confidence}(A\rightarrow B)}$
+		- $\mathrm{confidence}\in [0,\infty)$
+		- $\mathrm{confidence}=1\iff A,B$ are independent
+- main steps of MBA
+	- choose appropriate items at an adequate level
+		- the considered items should occur in roughly the same number of transactions
+		- it may be necessary to choose different levels of granularity for different kinds of items (group rare items / categorize common items)
+		- virtual items
+			- can contain information about the transaction
+			- can be used to track the brands
+	- generate rules based on the frequency table
+		- we require support greater than some threshold value
+	- find the best rules
+		- lift should be > 1
+		- reduce the number of generated rules by pruning
+			- according to minimum support
+			- what to do with rare items? two options: elimination or grouping
+- algorithm Apriori
+	- properties
+		- purpose: generation of the association rules
+		- mechanism: looking for frequent itemsets
+		- better than brute force
+	- frequent itemsets
+		- combinations of categories that have frequency greater than a given threshold (minsup)
+		- to form combinations of length $k$, we use known combinations of length $k-1$ (combinations are generated in a breadth-first manner)
+		- before creating the combination $k$, we demand that all the sub-combinations of length $k-1$ fulfill the frequency requirement
+		- for each itemset $C$, we consider all possible rules $A\to B$ s.t. $A\cup B=C$ and $A\cap B=\emptyset$
+	- algorithm *Apriori*
+		- $L_1:=$ categories that reach at least the required frequency
+		- repeat for $k\in\set{2,3,\dots}$ as long as $L_{k-1}\neq\emptyset$
+			- based on $L_{k-1}$, generate a set of candidates $C_k$ using the *Apriori-gen* subroutine:
+				- for every pair $X_1,X_2\in L_{k-1}$ s.t. $X_1,X_2$ match in $k-2$ categories, add $X_1\cup X_2$ to $C_k$
+				- iterate over $C_k$ and check that for every $X\in C_k$, every of its sub-combinations of length $k-1$ is contained in $L_{k-1}$ (otherwise remove $X$ from $C_k$)
+			- assign to $L_k$ all the combinations from $C_k$ that reach at least the required frequency
+- dissociation rules
+	- for each item $A$, we introduce its complement $\neg A$
+	- → every transaction contains either the item or its negation
+	- disadvantages
+		- twice as many items, larger transactions
+		- negated items occur more often than the original ones (and “negative” rules may be harder to exploit)
+- time series analysis
+	- we may be able to analyze a series of transactions using MBA
+		- we need to know they were made by the same customer
+	- how to transfer this problem to MBA
+		- we can introduce new items to transactions to take the previous or following transactions into account
+		- instead of one transaction, we can group multiple transaction over some larger time window and find association rules there
+- multiple minsups model
+	- single minsup – assumes that all items are of the same nature / have similar frequencies
+		- minsup too high → rare items won't be found
+		- minsup too low → combinatorial explosion
+	- alterantive: each item can have a minimum item support (MIS)
+	- we can also prevent very frequent items and very rare items from appearing in the same itemsets using a *support difference constraint*
+		- we set $\varphi\in[0,1]$ (same for all itemsets)
+		- we compute the supports of every item in the itemset → we require that the differents of the maximum and the minimum is at most $\varphi$
+	- minsup of a rule = lowest MIS among the items in the rule
+	- downward closure property = any subsets of a frequent itemset are also frequent itemsets
+		- the key idea for Apriori
+		- does not hold in this new model
+		- example
+			- let's say $\set{1,2}$ with support 9 % is infrequent
+			- but $\set{1,2,3}$ could be frequent enough if $MIS(3)$ is 5 % and there are enough occurrences of $1,2,3$ together
+			- so we cannot discard $\set{1,2}$ inside the new algorithm
+		- solution
+			- sort all items according to their MIS values (ascending)
+			- → MS-Apriori
+- algorithm MS-Apriori
+	- (MS = Multiple Minimum Supports)
+	- sort items by MIS (ascending)
+	- first pass
+		- find the support of each item
+		- find the first item (with the lowest MIS) that fulfills the MIS requirement
+		- $L\leftarrow$ items fulfilling the MIS requirement *of that first item*
+			- = “seeds”
+		- $F_1\leftarrow$ items fulfilling their own MIS requirement
+	- second pass
+		- we consider every pair $(\ell,h)\in L^2$ s.t. $h$ is after $\ell$ (has greater MIS)
+		- if supports of both items are $\geq MIS(\ell)$ and the difference is $\leq\varphi$, then the candidate $\set{\ell,h}$ is inserted into $C_2$
+		- then we compute supports of candidates in $C_2$
+		- $F_2\leftarrow$ itemsets from $C_2$ which fulfill the MIS requirement (MIS of an itemset = MIS of any rule formed by the itemset)
+	- $k$-th pass
+		- we consider every pair of frequent itemsets $f_1,f_2\in F_{k-1}$ that differ only in the last item
+		- join step: if the difference of supports of the two last items is $\leq\varphi$, we join them and add the resulting itemset $c$ into $C_k$
+		- pruning step: we require that every $k{-}1$-subset of $c$ either is in $F_{k-1}$ or does not contain any item with the MIS of the itemset
+		- again, compute supports of candidates in $C_k$ and set $F_k$ according to MIS
+- how to assign MIS values
+	- one option: use the actual support of the item and multiply it by $\lambda\in [0,1]$
+	- another option: group items into clusters of similar frequencies; assign the same MIS to all items in the cluster
+	- if we set the MIS values for some items to 100 %, the algorithm does not generate any rules that involve only these items
+- rule generation using MS-Apriori
+	- it may not be possible to get the confidence for some rules generated from the obtained itemsets if the item with the lowest MIS value is in the consequent of the rule
+	- so we not only need to compute the support of each itemset $c$ but also the support of $c\setminus\set{\ell}$ where $\ell$ is the first item
+- CAR
+	- each transaction contains a set of items $X\subseteq I$; it is labeled with a class $y$
+	- we want to find *class association rules* (CARs) of the form $X\to y$
+	- unlike usual association rules, CARs can be mined directly in one step
+		- we need to find all rule-items with a support above minsup
+		- rule-item … $X\to y$
+		- we can use a modification of the Apriori algorithm
+	- we can also use MS-Apriori
+- sequential pattern mining: basic concepts
+	- example: users visiting pages of a website
+	- sequence = ordered list of itemsets
+	- sequence size = number of elements (itemsets)
+	- sequence length = number of items
+	- items in one itemset don't have any meaningful order – they all belong to the same position in the sequence
+		- they are usually sorted in a lexicographical order
+	- $\braket{\set 3\set{4,5}\set 8}$ is contained in $\braket{\set 6\set{3,7}\set 9\set{4,5,8}\set{3,8}}$ (it's its subsequence)
+	- support of a sequence = fraction of sequences that contains this sequence
+	- goal: find all the sequences that have a user-specified minimum support
+- Generalized Sequential Pattern algorithm (GSP)
+	- $F_1\leftarrow$ single-item sequences satisfying minsup
+	- for every $k\in\set{2,3,\dots}$ as long as $F_{k-1}\neq\emptyset$
+		- generate candidates and store them in $C_k$
+			- join step: take two sequences $s_1,s_2$ from $F_{k-1}$ and join them if possible 
+				- they can be joined if by dropping the first item from $s_1$ and the last item from $s_2$ we get the same subsequence
+				- when $k=2$ and we are joining $\braket{\set x}$ with $\braket{\set y}$, we need to generate both $\braket{\set{x,y}}$ and $\braket{\set x\set y}$
+			- prune step: a candidate sequence is pruned if any of its $k{-}1$-subsequences is infrequent (according to minsup)
+		- $F_k\leftarrow$ items from $C_k$ satisfying minsup
+- FP-Growth
+	- FP-Tree
+
+## Bayesian Classification, ELM
+
+- naive Bayesian classifier
+	- we want to find the most probable hypothesis $H^*$ when observing events $E_1,\dots,E_K$
+	- $H^*=\mathrm{argmax}_H\, P(H)\cdot \prod_{k=1}^K P(E_k\mid H)$
+	- $H$ might be possible classes, $E_k$ may be attributes of the data point (which we want to classify)
+- extreme learning machine
+	- architektura podobná jako MLP s jednou skrytou vrstvou
+	- parametry skryté vrstvy generuji náhodně
+	- parametry výstupní vrstvy trénuji v jednom kroku (pomocí LMS?)
+		- takže se nedá dělat dodatečný finetuning
+
+## SVM
+
+- Kuhn-Tucker conditions
+- primal formulation: $L_P=\frac 12w^2-\sum\alpha_i[y_i(wx_i+b)-1]$
+- dual formulation
+	- $\frac{\partial L_P}{\partial w_j}=w_j-\sum\alpha_i y_i x_{ij}$
+		- $\frac{\partial L_P}{\partial w_j}=0$
+		- so $w_j=\sum\alpha_i y_ix_{ij}$
+	- $\frac{\partial L_P}{\partial b}=-\sum a_iy_i$
+		- again $\sum\alpha_i y_i=0$
+	- $L_D=\frac 12\sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j-\sum_{ij}\alpha_iy_i\alpha_jy_j x_ix_j-\sum\alpha_i y_i b+\sum\alpha_i=$ $\sum\alpha_i-\frac12 \sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j$
