@@ -576,8 +576,7 @@
 		- solution
 			- sort all items according to their MIS values (ascending)
 			- → MS-Apriori
-- algorithm MS-Apriori
-	- (MS = Multiple Minimum Supports)
+- algorithm MS-Apriori (MS = Multiple Minimum Supports)
 	- sort items by MIS (ascending)
 	- first pass
 		- find the support of each item
@@ -629,8 +628,50 @@
 				- when $k=2$ and we are joining $\braket{\set x}$ with $\braket{\set y}$, we need to generate both $\braket{\set{x,y}}$ and $\braket{\set x\set y}$
 			- prune step: a candidate sequence is pruned if any of its $k{-}1$-subsequences is infrequent (according to minsup)
 		- $F_k\leftarrow$ items from $C_k$ satisfying minsup
-- FP-Growth
-	- FP-Tree
+- FP-Growth vs. Apriori
+	- Apriori uses a generate-and-test approach (generates candidate itemsets, tests if they are frequent)
+		- generation of candidate itemsets is expensive (both in space and time)
+		- support counting is expensive (subset checking, multiple database scans)
+	- FP-Growth allows frequent itemset discovery without candidate itemset generation
+		- first, FP-Tree is built using 2 passes over the dataset
+		- then, frequent itemsets can be directly extracted from the FP-Tree
+		- disadvantages
+			- the tree may not fit in memory
+			- expensive to build
+			- pruning can only be done on single items
+			- support can be only calculated after the entire dataset is added to the FP-Tree
+- FP-Tree: basic principles
+	- nodes correspond to items and have a counter
+	- each transactions corresponds to one path in the tree
+	- order of items is fixed → paths can overlap when the transactions share items (the prefix)
+		- more overlapping → better compression
+	- counters are incremented for every item in the transaction
+	- pointers are maintained between nodes containing the same item (→ singly linked lists)
+	- size of the tree depends on the order of the items
+		- ordering by decreasing support is typically used but it's just a heuristic (it does not always lead to the smallest tree)
+- FP-Tree: construction
+	- pass 1
+		- scan data and find support for each item
+		- discard infrequent items
+		- sort frequent items according to their support (descending)
+			- this order is used then to insert the transactions
+	- pass 2
+		- for each transaction, we increment the counters along its path and create the nodes if needed; we also add the pointers if such items already exist elsewhere in the tree
+- FP-Tree: frequent itemset generation
+	- bottom-up algorithm from the leaves towards the root
+	- first, extract prefix path subtrees ending with an item
+		- we can use the linked lists for that
+	- each prefix path subtree is then processed recursively to extract the frequent itemsets (solutions are then merged)
+		- example: prefix path subtree for $e$ can be used to extract frequent itemsets ending in $e$ ($e,de,ce,be,cde,bde,\dots$)
+		- we check if $e$ fulfills minsup (we sum up all the counters over the linked list)
+			- it does → $\set{e}$ is extracted as a frequent itemset
+		- then we proceed to obtain the conditional FP-Tree for $e$
+			- update the support counts along the prefix paths to reflect the number of transactions containing $e$
+			- remove the nodes with $e$
+			- remove infrequent items from the prefix paths
+				- again, we need to look at all the counters corresponding to the item
+				- if the item has to be removed, we remove all its nodes (the edges are reconnected)
+		- we then extract prefix path subtree for $de$ etc.
 
 ## Bayesian Classification, ELM
 
