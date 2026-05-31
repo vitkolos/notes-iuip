@@ -675,15 +675,40 @@
 
 ## Bayesian Classification, ELM
 
-- naive Bayesian classifier
+- Bayesian classification
+	- $H$ … hypothesis
+	- $E$ … evidence
+	- $P(H\mid E)=\frac{P(E\mid H)P(H)}{P(E)}$
+	- $H_{MAP}=\mathrm{argmax}_H\ P(H\mid E)=\mathrm{argmax}_H\ P(E\mid H)P(H)$
+		- we can neglect the denominator $P(E)$ (from the previous formula)
+- naïve Bayesian classifier
 	- we want to find the most probable hypothesis $H^*$ when observing events $E_1,\dots,E_K$
+	- assumption: $E_1,\dots,E_K$ are conditionally independent given $H$
+		- “naïve” (rarely fulfilled in real-world tasks)
 	- $H^*=\mathrm{argmax}_H\, P(H)\cdot \prod_{k=1}^K P(E_k\mid H)$
 	- $H$ might be possible classes, $E_k$ may be attributes of the data point (which we want to classify)
+	- advantage: we can classify also incompletely described patterns (there is no example with the given combination of attributes)
+	- problems
+		- $P(E_k\mid H)=0$ if there are no pattens with $E_k$ and class $H$ (or underestimated terms $P(E_k\mid H)$ if there are too few such items)
 - extreme learning machine
-	- architektura podobná jako MLP s jednou skrytou vrstvou
-	- parametry skryté vrstvy generuji náhodně
-	- parametry výstupní vrstvy trénuji v jednom kroku (pomocí LMS?)
-		- takže se nedá dělat dodatečný finetuning
+	- architecture similar to MLP with one hidden layer
+	- output: $f_L(x)=\sum_{i=1}^L\beta_i G(a_i,b_i,x)$
+		- $\beta_i$ … weight between the $i$-th hidden neuron and the output neuron
+		- $x=(x_1,\dots,x_n)$ … input
+	- hidden layer activations
+		- sigmoid … $G(a_i,b_i,x)=g(a_ix+b_i)$
+		- RBF … $G(a_i,b_i,x)=g(b_i\| x-a_i\|)$
+	- $g$ has to be piecewise continuous
+	- parameters of hidden neurons are randomly generated
+	- for each continuous function $f$ and a randomly generated sequence $(a_i,b_i)_{i=1}^L$ it *almost surely* (with probability 1) holds that $\lim_{L\to\infty}\| f(x)-f_L(x)\|=0$
+		- for every $\ell$, we need to set the values of $\beta_i$ in a way that minimizes $\| f(x)-f_\ell(x)\|$
+	- parameters $\beta$ are trained in one step (using LMS?)
+		- $H\beta=T$
+		- $H=(h(x_1),\dots,h(x_N))^T$ … outputs of hidden layer for $N$ data points
+		- $T$ … targets of $N$ data points
+		- $\beta\leftarrow H^+T$
+			- $H^+$ … Moore-Penrose pseudoinverse matrix for $H$
+	- additional fine-tuning cannot be performed
 
 ## SVM
 
