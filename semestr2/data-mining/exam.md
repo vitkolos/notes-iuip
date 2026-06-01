@@ -498,10 +498,10 @@
 - measures (criteria) of rules
 	- support
 		- how often we can use the rule
-		- $\mathrm{support}(A\to B)=$ transactions containing $A,B$ / all transactions
+		- $\mathrm{support}(A\to B)=$ transactions containing $A,B$ ÷ all transactions
 	- confidence
 		- how reliable the rule is
-		- $\mathrm{confidence}(A\to B)=\frac{\mathrm{support}(A\to B)}{\mathrm{support}(A)}=$ transactions containing $A,B$ / transactions containing $A$
+		- $\mathrm{confidence}(A\to B)=\frac{\mathrm{support}(A\to B)}{\mathrm{support}(A)}=$ transactions containing $A,B$ ÷ transactions containing $A$
 	- lift
 		- $\mathrm{lift}(A\to B)=\frac{\mathrm{support}(A\to B)}{\mathrm{support}(A)\cdot \mathrm{support}(B)}$
 		- $\mathrm{lift}\in [0,\infty)$
