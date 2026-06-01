@@ -713,7 +713,7 @@
 			- $C$ … regularization parameter
 	- additional fine-tuning cannot be performed (we can only fit the model on the data all at once)
 
-## SVM, Evaluation, Advanced Preprocessing
+## SVM, Evaluation
 
 - SVM: basic information
 	- invented by Vapnik et al.
@@ -833,6 +833,9 @@
 		- area under ROC curve
 		- random classifier → AUC = 0.5
 		- perfect classifier → AUC = 1
+
+## Advanced Preprocessing
+
 - preprocessing of structured data
 	- temporal data
 		- typical task: predict future values
