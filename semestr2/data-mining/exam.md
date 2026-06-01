@@ -808,6 +808,8 @@
 		- we rank items according to their PE scores and divide the data into $n$ bins
 		- we draw a lift curve according to the number of actual positive examples in each bin
 		- we can analyze this curve and select the appropriate threshold value for the PE
+	- ROC, AUC
+- ROC, AUC
 	- ROC (receiver operating characteristic) curve
 		- plot of the true positive rate against the false positive rate
 		- captures how the properties of a binary classifier change if we move the threshold
@@ -821,5 +823,54 @@
 		- perfect classifier → ROC curve is one point in the upper left corner
 			- FPR = 0, TPR = 1
 	- AUC (area under curve)
-		- plocha pod ROC křivkou
-		- pro náhodný „klasifikátor“ je AUC = 0.5, pro dokonalý klasifikátor to bude AUC = 1
+		- area under ROC curve
+		- random classifier → AUC = 0.5
+		- perfect classifier → AUC = 1
+- preprocessing of structured data
+	- temporal data
+		- typical task: predict future values
+		- it may be useful to transform the data so that a fixed-length sequence of states is the input and the next state is the output
+	- spatial data
+		- e.g. geographic information systems
+	- structural data
+		- e.g. chemical compounds
+	- data with too many objects
+		- the objects would not fit in memory
+		- we need to build more models based on the subsets of objects and combine the models afterwards
+		- the selected objects should be representative enough (they should capture the nature of the data)
+- data with too many attributes
+	- we can either reduce the number of attributes with an expert
+	- or we can proceed automatically
+		- through transformation (e.g. PCA analysis)
+			- new attributes are formed as combinations of the original ones
+			- they may lack a clear interpretation
+			- it's necessary to provide the values of all original attributes (as the transformation function usually does not support “undefined” as a value)
+		- through selection
+			- wrapper methods – build models (using machine learning) that use different subsets of attributes → choose the best one
+				- bottom-up – start with individual attributes, then add more
+				- top-down – start with the complete set of attributes, then remove some attributes
+			- filter methods – how much the attribute contributes to classification?
+				- we can build a contingency table and use $\chi^2$ test
+				- we can use entropy $H(A)$
+				- we can use information measure of dependence $ID(A,C)=\frac{MI(A,C)}{H(C)}$
+					- $A$ … input attribute
+					- $C$ … target attribute
+					- mutual information: $MI(A)=\sum_{a,c} P(a,c)\log_2\frac{P(a,c)}{P(a)P(c)}$
+				- it's difficult to capture how the attributes influence the classification *together*
+- discretization of numeric attributes
+	- discretization to a given number of intervals (of the same length)
+	- discretization according to the class membership of the objects
+		- *fuzzy discretization*
+		- membership function $\mu$ assigns objects to the discrete values
+		- sum of all membership functions should equal 1
+			- sometimes, all the assignment functions are zero except for one
+			- between such segments, there is usually a continuous transition
+- categorical attributes
+	- it may be useful to group values of a categorical attribute
+	- KEX algorithm may be used
+		- groups together the objects that belong to the same class (or most of them belong to the same class – $\chi^2$ can be used)
+- missing values – handling strategies
+	- ignore objects with any of the values missing
+	- replace the missing value by a new value “I don't know”
+	- replace the missing value by an existing attribute value (mode, mean, …)
+	- or we can let our model decide how to deal with missing values (some models handle them themselves)

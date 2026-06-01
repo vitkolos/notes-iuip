@@ -25,3 +25,4 @@ Master of Computer Science – Artificial Intelligence ([some notes are in Engli
 
 - [Data Mining (online test)](semestr2/data-mining/online-test.md)
 - [Umělá inteligence 2](semestr2/artificial-intelligence2/zkouska.md)
+- [Data Mining](semestr2/data-mining/exam.md)
