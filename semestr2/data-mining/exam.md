@@ -710,14 +710,116 @@
 			- $H^+$ … Moore-Penrose pseudoinverse matrix for $H$
 	- additional fine-tuning cannot be performed
 
-## SVM
+## SVM, Evaluation, Advanced Preprocessing
 
-- Kuhn-Tucker conditions
-- primal formulation: $L_P=\frac 12w^2-\sum\alpha_i[y_i(wx_i+b)-1]$
-- dual formulation
-	- $\frac{\partial L_P}{\partial w_j}=w_j-\sum\alpha_i y_i x_{ij}$
-		- $\frac{\partial L_P}{\partial w_j}=0$
-		- so $w_j=\sum\alpha_i y_ix_{ij}$
-	- $\frac{\partial L_P}{\partial b}=-\sum a_iy_i$
-		- again $\sum\alpha_i y_i=0$
-	- $L_D=\frac 12\sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j-\sum_{ij}\alpha_iy_i\alpha_jy_j x_ix_j-\sum\alpha_i y_i b+\sum\alpha_i=$ $\sum\alpha_i-\frac12 \sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j$
+- SVM: basic information
+	- invented by Vapnik et al.
+	- linear classifier – finds a hyperplane to separate two classes of data (positive and negative)
+		- kernel functions are used for non-linear separation
+	- SVMs perform highly accurate classification even for high-dimensional data
+	- goal: find a linear function $f(x)=w^Tx+b$
+		- it should hold that $y_i=1$ if $f(x_i)\geq 0$
+		- and that $y_i=-1$ if $f(x_i)\lt 0$
+	- hyperplane that separates the data points (= decision boundary) … $f(x)=0$
+		- SVM finds the separating hyperplane with the largest margin
+		- in order to minimize the error bound (according to the theory)
+	- issues
+		- categorical attributes need to be converted to numeric values
+		- multi-class classification needs to be somehow converted to two-class
+		- result hard to understand by human users (it's even worse if kernels are used)
+- SVM: linearly separable case
+	- we consider some positive and negative data points that are the closest to the hyperplane $w^Tx+b=0$
+	- we assume that $w^Tx_i+b=y_i$ holds for both of them
+		- e.g. it holds that $w^Tx_i+b=1$ for every closest positive data point (closest to the hyperplane)
+		- this assumption holds as we can rescale $w,b$ arbitrarily
+	- we know that the distance from a point $x_i$ to the hyperplane $w^Tx+b=0$ equals $d=\frac{|w^Tx_i+b|}{\|w\|}$
+		- in our case, $d=\frac{1}{\|w\|}$
+		- so $\mathrm{margin}=2d=\frac{2}{\|w\|}$
+	- to maximize the margin, we need to minimize $\frac12 \|w\|^2$ subject to $\forall i:y_i\cdot (w^Tx_i+b)\geq 1$
+- SVM: constrained minimization
+	- we minimize $\frac12 \|w\|^2$ subject to $\forall i:y_i\cdot (w^Tx_i+b)\geq 1$
+	- Lagrangian method
+	- primal formulation: $L_P=\frac 12\|w\|^2-\sum_i\alpha_i(y_i\cdot (w^Tx_i+b)-1)$
+	- $\alpha_i$ … Lagrange multipliers
+	- optimal solution must satisfy KKT conditions
+		- $\forall j:\frac{\partial L_P}{\partial w_j}=w_j-\sum_i y_i\alpha_i x_{ij}=0$
+			- so $w_j=\sum\alpha_i y_ix_{ij}$
+		- $\frac{\partial L_P}{\partial b}=-\sum_i y_i\alpha_i=0$
+			- again $\sum\alpha_i y_i=0$
+		- $\forall i:y_i\cdot (w^Tx_i+b)-1\geq 0$
+		- $\forall i:\alpha_i\geq 0$
+		- $\forall i:\alpha_i(y_i\cdot (w^Tx_i+b)-1)=0$
+			- this condition means that only the points closest to the decision boundary can have $\alpha_i\gt 0$ (these are called support vectors)
+			- all the other alphas are zero
+		- in general, Kuhn-Tucker conditions are necessary for an optimal solution but not sufficient
+			- convex objective function & linear constraints $\implies$ KKT conditions are both necessary and sufficient
+			- but it's still difficult due to the inequality constraints
+	- dual formulation – easier to solve
+		- we substitute the results from the KKT conditions (see $\partial L_P$) into $L_P$
+		- $L_D=\frac 12\sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j-\sum_{ij}\alpha_iy_i\alpha_jy_j x_ix_j-b\sum_i\alpha_i y_i+\sum_i\alpha_i=$ $\sum_i\alpha_i-\frac12 \sum_{ij}\alpha_i\alpha_j y_iy_j x_ix_j$
+		- we *maximize* $L_D$ subject to $\sum_i \alpha_iy_i=0$ and $\forall i:\alpha_i\geq 0$
+		- “Wolfe dual”
+		- after finding $\alpha_i$, the decision boundary looks like this: $w^Tx+b=\sum_i y_i\alpha_ix_i^Tx+b=0$
+		- prediction for an instance $z$ … $\mathrm{sign}(w^Tz+b)=\mathrm{sign}(\sum_i\alpha_iy_ix_i^Tz+b)$
+- SVM: non-linear separation
+	- transformation of the input space into a feature space
+	- non-linear mapping $\phi:X\to F$
+	- problem with explicit transformation: curse of dimensionality, computationally infeasible to handle
+	- but we only require dot product $\phi(x)^T\phi(z)$ and never the individual mapped vector $\phi(x)$
+	- so we instead consider kernel functions $K$ s.t. $K(x,z)=\phi(x)^T\phi(z)$
+	- Mercer's theorem can be used to check if some $K$ is a kernel function (= it is a dot product in some feature space)
+	- commonly used kernels
+		- polynomial … $K(x,z)=(x^Tz+\theta)^d$
+		- Gaussian RBF … $K(x,z)=e^{-\|x-z\|^2/2\sigma}$
+		- sigmoidal … $K(x,z)=\tanh(kx^Tz-\delta)$
+	- where $d\in \mathbb N,\ \theta,\sigma,k,\delta\in\mathbb R,\ \sigma\gt 0$
+- basic evaluation measures
+	- predictive accuracy (correct classifications ÷ total)
+	- efficiency – time to construct and use the model
+	- robustness – handling noise and missing values
+	- scalability
+	- interpretability
+	- compactness of the model – size of the tree, number of rules, …
+- holdout set, cross validation
+	- two disjoints subsets: training set (for learning a model), test/holdout set (for testing the model)
+		- usual for large datasets
+	- $k$-fold cross validation
+		- used for smaller datasets
+		- data partitioned into $k$ equal-size disjoint subsets
+		- run $k$ times – always consider one subset as the test set (to evaluate the model) and the rest as the training set
+		- then average the accuracies
+		- we can estimate confidence intervals
+		- 10-fold and 5-fold cross validations are common
+		- leave-one-out cross validation
+			- $k$ is equal to the size of the dataset
+	- validation (dev) set is used to find the best hyperparameters
+- classification measures
+	- basic measures
+		- accuracy (correct classifications ÷ total)
+		- error = 1 – accuracy
+		- don't work well for imbalanced classes
+	- precision, $P=\frac{tp}{tp+fp}$
+	- recall, $R=\frac{tp}{tp+fn}$
+	- $F_1$-score
+		- $F_1=\frac{2PR}{P+R}=\frac2{1/p+1/r}$
+		- harmonic mean of precision and recall (tends to be closer to the smaller of the two)
+	- scoring, ranking, lift analysis
+		- score = probability estimate (PE) that the example belongs to the positive class
+		- we rank items according to their PE scores and divide the data into $n$ bins
+		- we draw a lift curve according to the number of actual positive examples in each bin
+		- we can analyze this curve and select the appropriate threshold value for the PE
+	- ROC (receiver operating characteristic) curve
+		- plot of the true positive rate against the false positive rate
+		- captures how the properties of a binary classifier change if we move the threshold
+		- $x$ axis … false positive rate, $\mathrm{FPR}=\frac{fp}{fp+tn}$ (number of all negative instances in the denominator)
+			- FPR = 1 – TNR
+			- TNR = specificity
+		- $y$ axis … true positive rate (recall), $\mathrm{TPR}=\frac{tp}{tp+fn}$ (number of all positive instances in the denominator)
+			- TPR = sensitivity
+		- every point on the curve corresponds to a different threshold
+		- random classifier → ROC curve is diagonal
+		- perfect classifier → ROC curve is one point in the upper left corner
+			- FPR = 0, TPR = 1
+	- AUC (area under curve)
+		- plocha pod ROC křivkou
+		- pro náhodný „klasifikátor“ je AUC = 0.5, pro dokonalý klasifikátor to bude AUC = 1
