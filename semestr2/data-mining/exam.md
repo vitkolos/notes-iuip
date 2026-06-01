@@ -708,7 +708,10 @@
 		- $T$ … targets of $N$ data points
 		- $\beta\leftarrow H^+T$
 			- $H^+$ … Moore-Penrose pseudoinverse matrix for $H$
-	- additional fine-tuning cannot be performed
+			- usually, $H^+=(H^TH)^{-1}H^T$
+			- more stable with improved generalization: $(\frac1C I+H^TH)^{-1}H^T$
+			- $C$ … regularization parameter
+	- additional fine-tuning cannot be performed (we can only fit the model on the data all at once)
 
 ## SVM, Evaluation, Advanced Preprocessing
 
@@ -798,6 +801,10 @@
 		- accuracy (correct classifications ÷ total)
 		- error = 1 – accuracy
 		- don't work well for imbalanced classes
+	- confusion matrix
+		- matrix of bins (item counts)
+		- each bin corresponds to a pair of classes (real class of the data point and the classifier output)
+		- for binary classifications, we have four bins: TP, FP, FN, TN
 	- precision, $P=\frac{tp}{tp+fp}$
 	- recall, $R=\frac{tp}{tp+fn}$
 	- $F_1$-score
