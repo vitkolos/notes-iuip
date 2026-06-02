@@ -216,7 +216,7 @@
 		- $y=X\beta$
 		- $X$ … matrix of input samples
 			- before the $x$ values of the sample, there is $1$ (so that we don’t need to keep the constant $\alpha$)
-		- so $\beta=(X^TX)^{-1}(X^Ty)$
+		- we can estimate parameters $\beta\leftarrow (X^TX)^{-1}(X^Ty)$
 		- may be computationally expensive → approximate solutions
 	- non-linear – example: logistic regression
 		- if the dependent variable is categorical
@@ -564,7 +564,7 @@
 	- alterantive: each item can have a minimum item support (MIS)
 	- we can also prevent very frequent items and very rare items from appearing in the same itemsets using a *support difference constraint*
 		- we set $\varphi\in[0,1]$ (same for all itemsets)
-		- we compute the supports of every item in the itemset → we require that the differents of the maximum and the minimum is at most $\varphi$
+		- we compute the supports of every item in the itemset → we require that the difference of the maximum and the minimum is at most $\varphi$
 	- minsup of a rule = lowest MIS among the items in the rule
 	- downward closure property = any subsets of a frequent itemset are also frequent itemsets
 		- the key idea for Apriori
