@@ -808,7 +808,7 @@
 	- precision, $P=\frac{tp}{tp+fp}$
 	- recall, $R=\frac{tp}{tp+fn}$
 	- $F_1$-score
-		- $F_1=\frac{2PR}{P+R}=\frac2{1/p+1/r}$
+		- $F_1=\frac{2PR}{P+R}=\frac2{1/P+1/R}$
 		- harmonic mean of precision and recall (tends to be closer to the smaller of the two)
 	- scoring, ranking, lift analysis
 		- score = probability estimate (PE) that the example belongs to the positive class
@@ -824,7 +824,7 @@
 			- FPR = 1 – TNR
 			- TNR = specificity
 		- $y$ axis … true positive rate (recall), $\mathrm{TPR}=\frac{tp}{tp+fn}$ (number of all positive instances in the denominator)
-			- TPR = sensitivity
+			- TPR = sensitivity (or recall)
 		- every point on the curve corresponds to a different threshold
 		- random classifier → ROC curve is diagonal
 		- perfect classifier → ROC curve is one point in the upper left corner
