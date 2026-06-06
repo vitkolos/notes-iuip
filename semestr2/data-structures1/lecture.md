@@ -169,7 +169,7 @@
 		- $s(v)$ … size = number of nodes in $T(v)$ including $v$
 	- def: BST is perfectly balanced if for every node $v$ it holds that $|s(\ell(v))-s(r(v))|\leq 1$
 		- the ratio is approximately 1 : 1
-	- def: BST is balanced if for every $v$ and its every child $c$ it holds that $s(\ell(c))\leq \frac23s(v)$
+	- def: BST is balanced if for every $v$ and its every child $c$ it holds that $s(c)\leq \frac23s(v)$
 		- the ratio is between 1 : 2 and 2 : 1
 	- lemma: any balanced BST has depth $O(\log n)$
 		- imagine the longest path from the root to a leaf

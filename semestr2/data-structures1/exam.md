@@ -5,6 +5,80 @@ You should know all theory presented at the lecture: definitions of data structu
 ## Major questions
 
 - Define the Splay tree. Describe operations Splay, Find, Insert, and Delete. Compare Splay trees with other data structures, in particular balanced search trees. State and prove the theorem on amortized complexity of the Splay operation.
+	- splay tree = self-adjusting binary search tree
+	- *static optimal trees* minimize the total search time for a known sequence of operations *find*
+		- we don't know the sequence → we move every searched element to the root
+	- operation *splay(x)* … pull node $x$ to the root
+		- preferably using double rotation (zigzig, zigzag)
+			- z has child y
+			- y has child x
+			- zigzig(x)/zigzag(x) moves x above both y and z
+			- zigzig is used if $x \lt y\lt z$ or $z\lt y\lt x$
+			- zigzag is used if $y\lt x\lt z$
+		- possibly with *one* single rotation (zig) – as the last step
+			- y has child x
+			- zig(x) makes y child of x
+		- splay performs a sequence of the operations until x becomes the root
+	- operations
+		1. *find(x)* or *insert(x)* or *delete(x)*
+		2. *splay(lowest visited node)*
+	- lemma: for $a,b,c\in\mathbb R^+$ satisfying $a+b\leq c$, it holds that $\log(a)+\log(b)\leq 2\log(c)-2$
+		- $4ab=\underbrace{(a+b)^2}_{\leq c^2}-\underbrace{(a-b)^2}_{\geq 0}\leq c^2$
+		- $\log 4+\log a+\log b\leq\log c^2$
+		- note that we consider $\log_2$
+	- notation, our choice of potential
+		- $s(x)$ … size = number of nodes in the subtree rooted at $x$ (including $x$)
+		- potential of a node $x$ … $\Phi(x)=\log s(x)$
+			- sometimes denoted as rank $r(v)$
+		- total potential … $\Phi:=\sum_v \Phi(v)$
+		- $s_i,\Phi_i$ … values after $i$-th step
+		- $p$ … parent of $x$
+		- $g$ … parent of $p$
+	- theorem: the amortized cost of *splay(x)* is at most $3(\log s_i(x)-\log s_{i-1}(x)) + 1$
+	- zig step
+		- $\Phi_i(x)=\Phi_{i-1}(p)$
+		- $\Phi_i(p)\lt\Phi_i(x)$
+		- the potential of the remaining nodes stays the same
+		- $\Phi_i-\Phi_{i-1}=\sum_u(\Phi_i(u)-\Phi_{i-1}(u))=\Phi_i(x)-\Phi_{i-1}(x)+\Phi_i(p)-\Phi_{i-1}(p)$
+		- $=-\Phi_{i-1}(x)+\Phi_i(p)\lt\Phi_i(x)-\Phi_{i-1}(x)$
+	- zig-zag
+		- $\Phi_i(x)=\Phi_{i-1}(g)$
+		- $-\Phi_{i-1}(p)\lt-\Phi_{i-1}(x)$
+			- because $\Phi_{i-1}(x)\lt\Phi_{i-1}(p)$
+		- $\Phi_i(p)+\Phi_i(g)\leq 2\Phi_i(x)-2$
+			- clearly $s_i(p)+s_i(g)\leq s_i(x)$ so we just apply the lemma
+		- $\Phi_i-\Phi_{i-1}=\Phi_i(g)-\Phi_{i-1}(g)+\Phi_i(p)-\Phi_{i-1}(p)+\Phi_i(x)-\Phi_{i-1}(x)$
+		- $=\Phi_i(g)+\Phi_i(p)-\Phi_{i-1}(p)-\Phi_{i-1}(x)\leq 2(\Phi_i(x)-\Phi_{i-1}(x))-2$
+		- $\leq 3\Delta\Phi(x)-2$
+	- zig-zig
+		- similar
+		- but we need to apply the lemma to this inequality: $s_{i-1}(x)+s_i(g)\leq s_i(x)$
+			- → $\Phi_i(g)\leq 2\Phi_i(x)-\Phi_{i-1}(x)-2$
+		- $\Phi_i-\Phi_{i-1}=\Phi_i(g)+\Phi_i(p)-\Phi_{i-1}(p)-\Phi_{i-1}(x)\leq 3(\Phi_{i}(x)-\Phi_{i-1}(x))-2$
+		- $\leq 3\Delta\Phi(x)-2$
+	- an operation has amortized cost $A$ if every execution of the operation satisfies $T_i+\Phi_i-\Phi_{i-1}\leq A$
+		- zig-zig or zig-zag step ($T_i=2$)
+			- $T_i+\Delta\Phi\leq 2+3\Delta\Phi(x)-2=3\Delta\Phi(x)$
+		- zig step ($T_i=1$)
+			- $T_i+\Delta\Phi\leq 1+\Delta\Phi(x)\leq 1+3\Delta\Phi(x)$
+		- properties of our potential
+			- $1\leq s(v)\leq n$
+			- $0\leq \Phi(v)\leq \log n$
+			- $0\leq\Phi\leq n\log n$
+		- in total
+			- $\sum_i(T_i+\Delta\Phi)\leq 1+\sum_i3(\Phi_i(x)-\Phi_{i-1}(x))$
+				- we can apply telescopic sum (cancellation)
+			- $\leq 1+3(\Phi_\mathrm{last}(x)-\Phi_0(x))$
+				- in the end, the potential of $x$ is $\log n$
+				- the initial potential of $x$ is at least zero
+			- $\leq 1+3\log n=O(\log n)$ amortized complexity
+	- comparison with other data structures
+		- a splay tree is never asymptotically slower than a static optimal tree
+		- it does not support parallelism
+		- AVL tree
+			- every individual lookup in $O(\log n)$
+			- does not prioritize nodes that are accessed often
+			- more difficult to implement
 - Define the (a,b)-tree. Describe operations Find, Insert, and Delete. Analyze their complexity in the worst case. Compare (a,b)-trees with other data structures, in particular balanced search trees.
 - Define I/O model for caches and compare cache-aware and cache-oblivious algorithms. Formulate a cache-oblivious algorithm for transposition of a square matrix. Analyze its time complexity and I/O complexity.
 - Describe hashing with chains and analyze its complexity. Define c-universal and k-independent systems of hash functions and provide constructions of such systems. Give an example when k-independent system in needed and c-universality does not suffice.
@@ -16,8 +90,79 @@ You should know all theory presented at the lecture: definitions of data structu
 ## Minor questions
 
 - Describe a flexible array with growing and shrinking. Analyze its amortized complexity.
-- Define the lazily balanced trees BB\[alpha]. Analyze their amortized complexity. Give an example of their application.
+	- let's consider a *stack*, it has operations *append(x)* and *removelast*
+	- shrink to $C/2$ if $n\lt C/2$?
+		- this is problematic, we would get linear amortized complexity
+		- we should use $n\lt C/4$ instead
+	- amortized analysis … average over operations in the worst-case scenario
+	- operations
+		- append – double the capacity if the array is full … costs $O(C)$ in this case
+		- removelast – halve the capacity if the array becomes shorter than $C/4$ … costs $O(C)$
+	- we consider blocks of operations
+		- block boundaries = growing/shrinking operation
+		- “how many elements does the array contain at the beginning and at the end of the block?”
+			- if growing: $C$ at the end, then $C/2$ at the beginning
+			- if shrinking: $C/4$ at the end, then $C/2$ at the beginning
+		- so there are at least $C/4$ operations in each block (to get from $C/2$ elements to $C/4$ or $C$ elements)
+		- we can account the $O(C)$ reallocation to the $\Omega(C)$ operations
+			- → amortized $O(1)$ for operation
+			- “accounting method” – we account the cost to the operations
+	- note that the buffer does not need to be exactly $C/4$ but has to be linearly dependent on $C$
+- Define the lazily balanced trees $BB[\alpha]$. Analyze their amortized complexity. Give an example of their application.
+	- notation
+		- $n$ … number of items stored in the tree
+		- $\ell(v),r(v)$ … left/right child of $v$
+		- $s(v)$ … size = number of nodes in the subtree rooted at $v$ (including $v$)
+	- definition: BST is *perfectly balanced* if for every node $v$ it holds that $|s(\ell(v))-s(r(v))|\leq 1$
+		- the ratio is approximately 1 : 1
+	- definition: BST is *balanced* if for every $v$ and its every child $c$ it holds that $s(c)\leq \frac23s(v)$
+		- the ratio is between 1 : 2 and 2 : 1
+	- lemma: any balanced BST has depth $O(\log n)$
+		- imagine the longest path from the root to a leaf
+		- in each step from the root to the leaf, the size drops to at most 2/3 of the preceding size
+		- size of the root … $n$
+		- size of the leaf … 1
+		- $1\leq(\frac23)^dn$
+		- $d\leq\log_{2/3}(1/n)=\log_{3/2}n=O(\log n)$
+	- *insert* operation
+		- *find*, add a leaf, update sizes (we keep track of the sizes $s(v)$)
+		- if not balanced, *rebuild* in the highest unbalanced node
+	- observation: for $n$ sorted items, *build* takes linear time
+		- select the middle item as the root and split the rest in two subtrees
+		- proceed recursively
+	- $\Phi:=\sum_v\varphi(v)$
+	- $\varphi(v):=\begin{cases}|s(\ell(v))-s(r(v))|&\text{if at least } 2\\ 0&\text{otherwise}\end{cases}$
+		- the clamping ensures that perfectly balanced tree has zero potential
+	- cost of *insert*
+		- no rebuild: $A=R+\Delta\Phi=O(\log n)+O(\log n)=O(\log n)$
+			- $\Delta\Phi=O(\log n)$ because $\Delta\varphi\leq 2$ for each visited node (usually $\Delta\varphi=1$ but there may be nodes with $\varphi$ hopping from 0 to 2 due to the clamping)
+		- rebuild at $v$
+			- the invariant was broken for $v$ and its child $c$
+			- WLOG $s(\ell(v))\gt\frac23 s(v)\implies s(r(v))\lt\frac13 s(v)\implies\varphi(v)\gt\frac13 s(v)$
+				- after the rebuild, this contribution and all the contributions in the subtree become zero
+				- contributions elsewhere stay the same
+				- → potential drops … $\Delta\Phi\leq -\frac13 s(v)$
+			- amortized cost of *rebuild*: $A=\underbrace{O(s(v))}_R+c\cdot\Delta\Phi\leq 0$
+				- for a sufficiently large cost $c$
+		- → $O(\log n)$ amortized time for insert
+	- applications: dynamic sets, dictionaries (maps), priority queues
+		- mostly in functional programming (new versions of a tree can share some subtrees with the original tree)
 - Design operations Find, Insert, and Delete on a Splay tree. Analyze their amortized complexity. (It suffices to state the complexity of Splay operation without proof.)
+	- worst-case complexity of $k$ operations *splay*
+		- potential always satisfies $0\leq\Phi\leq n\log n$
+		- the difference between the final and the initial potential is at most $n\log n$
+		- $\sum_{i=1}^k T'_i\leq\sum_{i-1}^k(1+3\log n+\Phi_{i-1}-\Phi_i)=k+3k\log n+\sum_{i=1}^k(\Phi_{i-1}-\Phi_i)$
+		- $=k+3k\log n+\Phi_0-\Phi_k\leq O(k+k\log n+n\log n)=O((n+k)\log n)$
+	- analyzing operations
+		- we need to consider that operations change the potential
+		- *delete* decreases it
+		- *insert* increases it
+			- only for the nodes on the path
+			- we can apply telescopic cancellation again
+	- theorem: if we perform $k$ searches for elements from a subset of size $m$, then the total cost is $O(n\log n+k+k\log m)$
+	- working set theorem
+	- splay tree is never asymptotically slower than static optimal tree
+	- …
 - State and prove the theorem on amortized complexity on Insert and Delete on (a,2a-1)-trees and (a,2a)-trees.
 - Analyze k-way Mergesort in the cache-aware model. Which is the optimum value of k?
 - State and prove the Sleator-Tarjan theorem on competivity of LRU.
