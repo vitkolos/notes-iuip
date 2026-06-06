@@ -354,6 +354,49 @@ You should know all theory presented at the lecture: definitions of data structu
 			- which leads to I/O complexity $O(N/B\cdot\frac{\log N}{\log M/B}+1)$
 				- in cache-aware model
 - State and prove the Sleator-Tarjan theorem on competivity of LRU.
+	- optimal strategy: “evict the cache line needed the latest” (it's an offline strategy)
+	- cost of strategy $S$ … $T_{S}$ = number of cache misses
+		- w.r.t. sequence of requests for particular blocks $a_1,\dots,a_n$
+		- we assume fully associative cache
+		- no assumption on initial contents of the cache
+	- strategy is $k$-competitive for a constant $k\geq 1$ if $(\forall C)(\forall a_1,\dots,a_n):T_{STR}\leq k\cdot T_{OPT}$
+		- $C$ … cache size
+		- $T_{OPT}$ … cost of the optimal strategy
+	- LRU (least-recently used) strategy: “evict the cache line unused the longest time”
+	- theorem: $\forall C$ and $\forall\varepsilon\gt 0$ there is an access sequence s.t. $T_{LRU}\geq C\cdot(1-\varepsilon)\cdot T_{OPT}$
+		- in other words, LRU is not $k$-competitive for any $k$ (if we want the $k$ to be independent of $C$)
+	- proof
+		- access sequence $1,\dots,C,C{+}1,1,\dots,C,C{+}1,\dots$ repeated
+		- LRU evictions
+			- we want to show LRU is bad, so we consider that the cache contains $1,\dots,C$ at the beginning (best-case scenario)
+			- after the initial sequence $1,\dots,C$, there's a cache miss (and eviction) at every step
+		- better strategy: EPOCH
+			- let's divide the accesses into epochs by $C$
+			- first epoch: we evict everything (we don't know what the cache contains)
+			- second epoch: we evict $C$ (one item)
+			- third epoch: we evict $C{-}1$
+			- so we have one cache miss per $C$ requests
+			- we get $T_{LRU}\geq C T_{EPOCH}\geq C T_{OPT}$
+			- $\varepsilon$ … influence of the first epoch
+			- we get low $\varepsilon$ if we repeat the sequence for many times
+	- theorem (Sleator, Tarjan): $(\forall C_{LRU}\gt C_{OPT}\geq 1)(\forall a_1,\dots,a_n): T_{LRU}\leq\underbrace{\frac{C_{LRU}}{C_{LRU}-C_{OPT}}}_{\gt 1} T_{OPT}+C_{OPT}$
+	- corollary: for $C_{LRU}=2 C_{OPT}$, LRU is $(2{+}\varepsilon)$-competitive for large-enough sequences
+	- proof
+		- we split the sequence into epochs (from the end to the beginning) s.t. in every epoch except for the first one, $T_{LRU}=C_{LRU}$
+			- in the first one ($E_0$): $T_{LRU}\leq C_{LRU}$
+		- epoch $E_i$ s.t. $i\geq 1$
+			- there are two possible situations
+			1. LRU misses on distinct blocks
+				- this means that the access sequence for this epoch contains at least $C_{LRU}$ distinct blocks
+				- so OPT must miss at least $C_{LRU}-C_{OPT}$ times (it cannot have more than $C_{OPT}$ blocks in cache)
+			2. LRU misses twice on the same block $b$
+				- after the first miss, $b$ was at the head of the LRU list → there had to be at least $C_{LRU}$ other blocks accessed in the meantime
+				- again, OPT must miss at least $C_{LRU}-C_{OPT}$ times
+			- in epoch $E_i$, we get $T_{LRU}\leq\frac{C_{LRU}}{C_{LRU}-C_{OPT}}T_{OPT}$
+		- epoch $E_0$
+			- both strategies start with an empty cache → LRU misses are distinct
+			- OPT can prevent up to $C_{OPT}$ of those misses
+			- $T_{OPT}\geq T_{LRU}-C_{OPT}$
 - Describe a system of hash functions based on scalar products. Prove that it is a 1-universal system from $Z_p^k$ to $Z_p$.
 - Describe a system of linear hash functions. Prove that it is a 2-independent system from $Z_p$ to $[m]$.
 - Construct a k-independent system of hash functions from $Z_p$ to $[m]$.
