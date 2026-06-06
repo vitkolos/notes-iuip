@@ -358,27 +358,14 @@ You should know all theory presented at the lecture: definitions of data structu
 	- cost of strategy $S$ … $T_{S}$ = number of cache misses
 		- w.r.t. sequence of requests for particular blocks $a_1,\dots,a_n$
 		- we assume fully associative cache
-		- no assumption on initial contents of the cache
+		- no assumption on the initial contents of the cache
 	- strategy is $k$-competitive for a constant $k\geq 1$ if $(\forall C)(\forall a_1,\dots,a_n):T_{STR}\leq k\cdot T_{OPT}$
 		- $C$ … cache size
 		- $T_{OPT}$ … cost of the optimal strategy
 	- LRU (least-recently used) strategy: “evict the cache line unused the longest time”
 	- theorem: $\forall C$ and $\forall\varepsilon\gt 0$ there is an access sequence s.t. $T_{LRU}\geq C\cdot(1-\varepsilon)\cdot T_{OPT}$
 		- in other words, LRU is not $k$-competitive for any $k$ (if we want the $k$ to be independent of $C$)
-	- proof
-		- access sequence $1,\dots,C,C{+}1,1,\dots,C,C{+}1,\dots$ repeated
-		- LRU evictions
-			- we want to show LRU is bad, so we consider that the cache contains $1,\dots,C$ at the beginning (best-case scenario)
-			- after the initial sequence $1,\dots,C$, there's a cache miss (and eviction) at every step
-		- better strategy: EPOCH
-			- let's divide the accesses into epochs by $C$
-			- first epoch: we evict everything (we don't know what the cache contains)
-			- second epoch: we evict $C$ (one item)
-			- third epoch: we evict $C{-}1$
-			- so we have one cache miss per $C$ requests
-			- we get $T_{LRU}\geq C T_{EPOCH}\geq C T_{OPT}$
-			- $\varepsilon$ … influence of the first epoch
-			- we get low $\varepsilon$ if we repeat the sequence for many times
+		- consider an access sequence $1,\dots,C,C{+}1,1,\dots,C,C{+}1,\dots$ repeated
 	- theorem (Sleator, Tarjan): $(\forall C_{LRU}\gt C_{OPT}\geq 1)(\forall a_1,\dots,a_n): T_{LRU}\leq\underbrace{\frac{C_{LRU}}{C_{LRU}-C_{OPT}}}_{\gt 1} T_{OPT}+C_{OPT}$
 	- corollary: for $C_{LRU}=2 C_{OPT}$, LRU is $(2{+}\varepsilon)$-competitive for large-enough sequences
 	- proof
