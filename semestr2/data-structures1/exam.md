@@ -86,7 +86,128 @@ You should know all theory presented at the lecture: definitions of data structu
 			- $=k+3k\log n+\Phi_0-\Phi_k\leq O(k+k\log n+n\log n)=O((n+k)\log n)$
 			- note that a single splay takes at most $O(n)$ time (if the tree is just a path)
 - Define the (a,b)-tree. Describe operations Find, Insert, and Delete. Analyze their complexity in the worst case. Compare (a,b)-trees with other data structures, in particular balanced search trees.
+	- multiway search tree
+		- $k$ keys stored in a non-decreasing order in one node ($x_1,\dots,x_k$)
+			- this node has $k+1$ children
+			- subtrees $T_0,\dots,T_k$
+			- $x_i\lt$ keys in $T_i\lt x_{i+1}$
+		- terminology
+			- internal node
+			- external node (leaf) – contains no data, has no children
+	- $(a,b)$-tree for $a\geq 2,\ b\geq 2a-1$ is a multiway search tree s.t.
+		- $a\leq$ \# children in internal node $\leq b$
+			- $a-1\leq$ \# keys $\leq b-1$
+			- we relax this for the root to be able to store a single key in the entire data structure: $2\leq$ \# children in root $\leq b$
+		- all external nodes are on the same level
+	- observation: for any $(a,b)$-tree of height $h$…
+		- number of external nodes is at most $b^h$
+			- every node has at most $b$ children
+		- number of keys is at most $b^h-1$
+			- external nodes correspond to intervals – keys separate them
+		- number of external nodes is at least $2a^{h-1}$
+			- every node has at least $a$ children (root has at least 2)
+		- number of keys is at least $2a^{h-1}-1$
+		- → $\log_b(n+1)\leq h\leq \log_a(\frac{n+1}2)+1$
+			- $h\in\Omega(\log_b n)$
+			- $h\in O(\log_a n)=O(\frac{\log n}{\log a})$
+	- operation *Find*
+		- $O(\log b)$ per node (to find the correct subtree)
+		- in total $O(\log n\cdot\frac{\log b}{\log a})=O(\log n)$ if $b$ is polynomially bounded
+	- operation *Insert(x)*
+		- we assume it is not there (*Find* ends in an external node)
+		- we take the parent $v$ of the external node; we add $x$ there (and add an external node)
+		- if $v$ not oversized → stop
+		- otherwise we split the node and push one of the keys (the middle one) to the upper node
+			- we propagate this up
+			- if the root is oversized, we create a new root
+		- does the splitting create valid nodes?
+			- oversized node has $b$ keys → new nodes have $\lfloor\frac{b-1}2\rfloor$ and $\lceil\frac{b-1}2\rceil$ keys
+			- we need $\lfloor\frac{b-1}2\rfloor\geq a-1$
+			- we have $b\geq 2a-1$, so this holds
+	- operation *Delete(x)*
+		- *Find* returns $v$
+		- if $v$ is not in the last internal level, we replace it by a suitable key from the nodes in the last internal level
+			- suitable = successor
+		- so now we are deleting a node $v'$ in the last internal level (including an external node)
+		- if $v'$ not undersized → stop
+		- otherwise, we borrow a key from a sibling (if it has at least $a$ keys)
+			- we perform a “rotation” of the keys (sibling to the parent, parent to the undersized node)
+		- if a sibling does not have enough keys, we merge the nodes (we take a key from the parent)
+			- in total, we get $a-2+1+a-1=2a-2$ keys which is alright (as $b\geq 2a-1$ and there can be at most $b-1$ keys)
+			- this may propagate upwards if the parent does not have enough keys (again, we first try to borrow a key from a sibling)
+	- complexity
+		- *Insert*, *Delete* in $O(b\frac{\log n}{\log a})$
+			- we need to manipulate at most $b$ items at each level (merging/splitting the nodes)
+		- *Find* in $O(\log b\frac{\log n}{\log a})$
+		- we need $b$ small (probably $2a-1$ or $2a$)
+			- $2a$ to give some breathing space
+		- if we consider such $b$, we can write $O(a\frac{\log n}{\log a})$ and $O(\log a\frac{\log n}{\log a})$
+			- so we want $a$ small → $(2,4)$
+			- in practice, we store the trees in memory (we want one memory block to roughly correspond to one node) → $(128,256)$
+	- comparison with other data structures
+		- they are shallower than binary search trees → better disk/cache performance
+		- unlike hash tables, they support range queries
 - Define I/O model for caches and compare cache-aware and cache-oblivious algorithms. Formulate a cache-oblivious algorithm for transposition of a square matrix. Analyze its time complexity and I/O complexity.
+	- external memory model (I/O model)
+		- we have internal and external memory
+		- operations read (external → internal) and write (internal → external)
+			- they are directly controlled by the programmer
+		- definition: any algorithm has I/O complexity $f(n,B,M)$ if for any input of size $n$ it performs $\leq f(n,B,M)$ read/write operations
+			- $M$ … total size of memory
+			- $B$ … size of one memory block
+			- so the memory has $M/B$ blocks
+		- we usually care only about reads (there are more reads than writes)
+	- cache-aware model
+		- cache line of size $B$
+		- size $M$ of the cache
+		- CPU knows $B,M$
+		- assumptions
+			- fully associative cache (any memory block can be in any cache line)
+			- cache controller has an *optimal* strategy
+				- it evicts the cache lines that won't be needed (or will be needed the latest in the future)
+	- cache-oblivious model
+		- same as cache-aware, but CPU does not know $B,M$
+		- if our algorithm works well in this model, it may work well for any level of the cache (unlike the previous models which work well for certain values of parameters)
+	- consider a matrix $N\times N$
+		- usually stored by rows
+		- scanning by rows … $O(N^2/B+1)$ reads
+		- scanning by columns … $O(N^2+1)$ if $M\lt NB$
+	- matrix transposition
+		- naive way: we traverse in both ways (by columns and by rows at once)
+			- $O(N^2+1)$ block transfers if the memory is small
+		- idea: split the problem into smaller subproblems which fit in the cache
+			- “tiling” … tiles of size $d\times d$
+			- tiles on the main diagonal can be transposed directly
+			- non-diagonal tiles have to be transposed and swapped with the opposite ones → we need two tiles to fit into the cache
+			- number of tiles … $\lceil N/d\rceil^2\leq (N/d+1)^2=O(N^2/d^2+1)$
+			- consider $d=B$
+				- we need $M\geq 2B^2$
+				- usually, we make *tall cache assumption* … $M=\Omega(B^2)$, “memory is at least as tall as it is wide”
+			- we need $O(B)$ transfers per tile → I/O complexity $O(N^2/B^2+1)\cdot O(B)=O(N^2/B+1)$
+				- for cache-aware model
+		- another approach: divide and conquer
+			- consider $N=2^k$
+			- operation transpose (T)
+				- T → 2T + TS
+			- operation transpose and swap (TS)
+				- TS → 4TS
+			- each task splits into at most 4 subtasks
+			- at level $i$, we will have at most $4^i$ nodes
+			- number of levels … $\log N=k$
+				- each time, we reduce the size by two
+			- number of leaves $\leq 4^{\log N}=N^2$
+			- number of internal nodes $\leq$ number of leaves $\leq N^2$
+			- in leaves
+				- T … do nothing
+				- TS … swap elements, $O(1)$
+			- internal nodes … $O(1)$ time
+			- time $O(N^2)\quad\checkmark$
+			- consider a level where the subtree fits in the memory
+				- min $i$ such that $d=\frac N{2^i}\leq B$
+				- it becomes equivalent to the cache-aware algorithm with tiles $d=\Theta(B)$
+			- so we get $O(N^2/B+1)$ I/O complexity again
+				- under the cache-oblivious model (with the *tall cache* assumption)
+				- it is optimal – each nondiagonal element has to be transferred
 - Describe hashing with chains and analyze its complexity. Define c-universal and k-independent systems of hash functions and provide constructions of such systems. Give an example when k-independent system in needed and c-universality does not suffice.
 - Describe and analyze hashing with linear probing (under fully random hashing function). Compare this hashing with other data structures, in particular based on other hashings.
 - Define multi-dimensional range trees and describe the type of queries it supports. Analyze time and space complexity of their construction and complexity of range queries.
@@ -175,7 +296,63 @@ You should know all theory presented at the lecture: definitions of data structu
 	- so all the operations are $O(\log n)$ amortized
 		- splay is also $O(\log n)$ amortized
 - State and prove the theorem on amortized complexity on Insert and Delete on (a,2a-1)-trees and (a,2a)-trees.
+	- theorem: $m$ inserts on empty $(a,b)$-tree do $O(m)$ modifications
+		- number of splits $\leq$ number of nodes in $(a,b)$-tree with $m$ keys $\leq m$
+	- observation: $(a,2a{-}1)$-tree cannot have $O(1)$ amortized modifications for inserts/deletes
+		- there exists a problematic sequence of operations which performs $\log n$ modifications for every operation (similar to the shrinking array)
+		- example: tree where every node on a path from the root to the leaves contains 2 keys and every other node contains 1 key (if we consider a $(2,3)$-tree)
+			- inserting a key on the path leads to $\log n$ modifications
+			- if we then delete it, $\log n$ modifications need to be performed again
+			- we end up with the same tree as before → we can repeat these two operations
+	- theorem: any sequence of $m$ inserts/deletes on empty $(a,2a)$-tree does $O(m)$ modifications
+	- proof
+		- $A=R+\Delta\Phi$
+		- goal: find $\Phi$ s.t. $A=O(1)$ for add/remove/move and $A\leq 0$ for split/merge
+		- $\Phi=\sum_{v \text{ internal}} f(|v|)$
+			- $|v|$ … number of keys in $v$
+		- we need to define the contribution $f$ for every possible size of a node (including oversized and undersized nodes)
+		- add/remove/move: $|f(i+1)-f(i)|\leq c$ for some constant $c$
+		- split: $f(2a)\geq f(a-1)+f(a)+c+1$ (should be 3 but we write 1 → up to rescaling)
+			- so $A_\mathrm{split}\leq 0$
+		- merge: $f(a-1)+f(a-2)\geq f(2a-2)+c+1$
+			- so $A_\mathrm{merge}\leq 0$
+		- possible function
+			- $c=2$
+			- $f(a-2)=2$
+			- $f(a-1)=1$
+			- $f(a)=0$
+			- …
+			- $f(2a-2)=0$
+			- $f(2a-1)=2$
+			- $f(2a)=4$
+		- to conclude
+			- $\sum R_i=\sum A_i-\Delta\Phi$
+			- $\sum A_i=O(m)$
+			- $\Delta\Phi=\underbrace{\Phi_m}_{\geq 0}-\underbrace{\Phi_0}_{=0}$
+			- so we get $\sum R_i=O(m)$
 - Analyze k-way Mergesort in the cache-aware model. Which is the optimum value of k?
+	- standard Mergesort
+		- we merge two “runs” (sorted arrays) of sizes $n_1,n_2$ into a single run of size $n_1+n_2$
+		- $O(n\log n)$ … $O(\log n)$ passes; $O(n)$ operations in each one
+		- one merge = three scans of the array
+			- one scan has I/O complexity $O(N/B+1)$
+	- $K$-way Mergesort
+		- number of passes … $O(\log_K N)=O(\frac{\log N}{\log K})$
+		- we need a heap to keep minimum of $K$ elements … $O(\log K)$
+		- time
+			- one pass … $O(N\log K)$
+			- total … $O(N\log K\cdot\frac{\log N}{\log K})=O(N\log N)$
+		- I/O complexity
+			- $K+1$ scans per one run
+			- one pass … $O(N/B+1)$
+			- total … $O(N/B\cdot\frac{\log N}{\log K}+1)$
+		- how many memory blocks we need?
+			- $K+1$ blocks for merge + $K-1$ for heap
+				- $K-1$ is more than enough (even a logarithm of $K$ would suffice but we want to get a nice sum)
+			- so we need $M\geq 2KB$
+			- optimal $K=\lfloor M/2B\rfloor$
+			- which leads to I/O complexity $O(N/B\cdot\frac{\log N}{\log M/B}+1)$
+				- in cache-aware model
 - State and prove the Sleator-Tarjan theorem on competivity of LRU.
 - Describe a system of hash functions based on scalar products. Prove that it is a 1-universal system from $Z_p^k$ to $Z_p$.
 - Describe a system of linear hash functions. Prove that it is a 2-independent system from $Z_p$ to $[m]$.
