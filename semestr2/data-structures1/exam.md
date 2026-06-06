@@ -79,6 +79,12 @@ You should know all theory presented at the lecture: definitions of data structu
 			- every individual lookup in $O(\log n)$
 			- does not prioritize nodes that are accessed often
 			- more difficult to implement
+		- worst-case complexity of $k$ operations *splay*
+			- potential always satisfies $0\leq\Phi\leq n\log n$
+			- the difference between the final and the initial potential is at most $n\log n$
+			- $\sum_{i=1}^k T'_i\leq\sum_{i-1}^k(1+3\log n+\Phi_{i-1}-\Phi_i)=k+3k\log n+\sum_{i=1}^k(\Phi_{i-1}-\Phi_i)$
+			- $=k+3k\log n+\Phi_0-\Phi_k\leq O(k+k\log n+n\log n)=O((n+k)\log n)$
+			- note that a single splay takes at most $O(n)$ time (if the tree is just a path)
 - Define the (a,b)-tree. Describe operations Find, Insert, and Delete. Analyze their complexity in the worst case. Compare (a,b)-trees with other data structures, in particular balanced search trees.
 - Define I/O model for caches and compare cache-aware and cache-oblivious algorithms. Formulate a cache-oblivious algorithm for transposition of a square matrix. Analyze its time complexity and I/O complexity.
 - Describe hashing with chains and analyze its complexity. Define c-universal and k-independent systems of hash functions and provide constructions of such systems. Give an example when k-independent system in needed and c-universality does not suffice.
@@ -148,21 +154,26 @@ You should know all theory presented at the lecture: definitions of data structu
 	- applications: dynamic sets, dictionaries (maps), priority queues
 		- mostly in functional programming (new versions of a tree can share some subtrees with the original tree)
 - Design operations Find, Insert, and Delete on a Splay tree. Analyze their amortized complexity. (It suffices to state the complexity of Splay operation without proof.)
-	- worst-case complexity of $k$ operations *splay*
-		- potential always satisfies $0\leq\Phi\leq n\log n$
-		- the difference between the final and the initial potential is at most $n\log n$
-		- $\sum_{i=1}^k T'_i\leq\sum_{i-1}^k(1+3\log n+\Phi_{i-1}-\Phi_i)=k+3k\log n+\sum_{i=1}^k(\Phi_{i-1}-\Phi_i)$
-		- $=k+3k\log n+\Phi_0-\Phi_k\leq O(k+k\log n+n\log n)=O((n+k)\log n)$
+	- operations
+		1. *find(x)* or *insert(x)* or *delete(x)*
+			- as in an ordinary BST
+			- when deleting a node with two children, we need to replace it by its successor (WLOG)
+		2. *splay(lowest visited node)*
 	- analyzing operations
 		- we need to consider that operations change the potential
-		- *delete* decreases it
-		- *insert* increases it
-			- only for the nodes on the path
+		- $A=R+\Delta\Phi$
+		- *delete* decreases the potential – that's fine 👍
+			- $A\leq R$
+		- *insert* increases the potential
+			- only for the nodes on the path $v_1,\dots,v_t,\underbrace{v_{t+1}}_{\text{new}}$
 			- we can apply telescopic cancellation again
-	- theorem: if we perform $k$ searches for elements from a subset of size $m$, then the total cost is $O(n\log n+k+k\log m)$
-	- working set theorem
-	- splay tree is never asymptotically slower than static optimal tree
-	- …
+			- $\Delta\Phi=\Phi_i(v_{t+1})+\sum_{i=1}^t(\Phi_i(v_i)-\Phi_{i-1}(v_i))$
+				- $s(v_{t+1})=1\implies\Phi_i(v_{t+1})=0$
+				- $s_i(v_i)=s_{i-1}(v_i)+1\leq s_{i-1}(v_{i-1})$
+			- $\Delta\Phi\leq\Phi_i(v_1)-\Phi_{i-1}(v_t)$
+			- so $\Delta\Phi$ is $O(\log n)$
+	- so all the operations are $O(\log n)$ amortized
+		- splay is also $O(\log n)$ amortized
 - State and prove the theorem on amortized complexity on Insert and Delete on (a,2a-1)-trees and (a,2a)-trees.
 - Analyze k-way Mergesort in the cache-aware model. Which is the optimum value of k?
 - State and prove the Sleator-Tarjan theorem on competivity of LRU.
