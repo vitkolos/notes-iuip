@@ -285,6 +285,92 @@ You should know all theory presented at the lecture: definitions of data structu
 			- for $k=2$, we get $h_{a,b}=ax+b\bmod p$
 			- we can see that $\mathcal P_2$ is $(2,1)$-independent (and thus 2-universal even without $\bmod m$)
 - Describe and analyze hashing with linear probing (under fully random hashing function). Compare this hashing with other data structures, in particular based on other hashings.
+	- probing
+		- saves space (each bucket contains at most one item)
+		- probe sequence: $h(x,0),h(x,1),\dots$
+		- *Insert* follows the probe sequence until it finds an empty cell
+		- **linear probing**
+			- $h(x,i)=h(x)+i\mod m$
+			- we store the items with the same $h(x)$ right next to each other
+		- alternative: double hashing
+			- $h(x,i)=h(x)+ig(x)\mod m$
+	- problem: long clusters get longer
+		- we need some condition that there's not too many elements in the table / the clusters are not too long
+	- problem: *Delete*
+		- we cannot freely remove elements in the middle of clusters
+		- one solution: mark the bucket as deleted (“tombstone”)
+			- we need to keep the number of tombstones limited (if it gets above some threshold, we need to rehash the table)
+	- theorem: if $m\geq (1+\varepsilon)n$ (where $\varepsilon=$ \# free / \# occupied), then the expected number of probes in Find is…
+		- $O(1/\varepsilon^2)$ for a totally random hashing function
+			- or tabulation hashing (even though it's only 3-independent!)
+		- $O(1/\varepsilon^{13/6})$ for any 5-independent family
+		- $\Omega(\log n$) for some 4-independent family
+		- $\Omega(\sqrt n)$ for some 2-independent family
+	- theorem
+		- let $m\geq 3n$ s.t. $m$ is a power of 2
+			- (we choose $\varepsilon=2$)
+		- $h:\mathcal U\to[m]$ totally random
+		- $x\in\mathcal U$
+		- then the expected number of probes in *Find*($x$) is $O(1)$
+	- proof
+		- we use Chernoff bound (for the right tail)
+			- let $X=X_1+\dots+X_k$ s.t. $X_i$ are binary and independent
+			- then $Pr[X\gt c\mu]\leq (\frac{e^{c-1}}{c^c})^\mu$
+				- where $\mu=\mathbb E[X]$ and $c\gt 1$
+			- observation: if we fix $c$ and increase $k$, the probability drops exponentially
+		- we also use the observation, that if we randomly generate a value of variable $X$, then $\mathbb E[X]\leq\sum_i(\max I_i\cdot Pr[X\in I_i])$
+			- $I_i$ are intervals where the value can fall
+			- so we use the maximum from each interval and the probability that the value falls in that interval
+		- aim: show that the expected length of a run $R$ is constant
+		- we will consider blocks of size $2^t$ that together tile the entire table of size $m$
+		- definition: block $B$ of size $2^t$ is critical if more than $\frac23\cdot 2^t$ items are hashed to $B$
+			- it does not matter where the items are stored! we only care about the items being hashed to that block
+		- lemma L1
+			- let $B$ be block of size $2^t$
+			- then the probability that $B$ is critical is $\leq(\frac e4)^{\frac{2^t}3}$
+		- proof
+			- we consider indicators $X_i$ indicating if $h(x_i)\in B$
+			- $X=\sum X_i$ … number of items hashed to $B$
+			- $\mu=\sum\mathbb E[X_i]=n\cdot\frac {2^t}m$
+				- as we consider a totally random function
+			- $\mu\leq\frac{2^t}3$
+				- as $m\geq 3n$
+			- $Pr[B\text{ critical}]\leq Pr[X\gt 2\mu]\leq(\frac{e}4)^{\frac{2^t}3}$
+				- from Chernoff
+				- to simplify the reasoning, we can consider $m=3n$
+			- we can set $q=(e/4)^{1/3}$
+				- then $Pr\leq q^{2^t}$
+		- lemma L2
+			- let $R$ be run, $|R|\leq 2^{\ell+2},\ B_0,\dots,B_3$ first 4 blocks of size $2^\ell$ intersecting $R$
+			- then at least one of $B$ is critical
+		- proof
+			- consider interval $L=R\cap (B_0\cup \dots\cup B_3)$
+			- $1+3\cdot 2^\ell\leq$ \# items stored in $L$ $\leq$ \# items hashed to $L$
+				- we are considering a prefix of the run so every element stored in the blocks also has to be hashed there
+			- suppose that none of the blocks is critical
+				- there are at most $4\cdot\frac23\cdot 2^\ell$ items hashed to $L$
+				- but this is less than $1+3\cdot 2^\ell$ → contradiction
+		- lemma L3
+			- consider run $R$ containing $h(x),\ |R|\in[2^{\ell+2},2^{\ell+3})$
+			- then at least one of 12 consecutive blocks of size $2^\ell$ is critical
+				- we consider the 8 blocks before $h(x)$, the block containing $h(x)$, and the 3 blocks after $h(x)$
+		- proof
+			- $4|B|\leq |R|\lt 8|B|$
+			- so $R$ can begin up to 8 blocks before $h(x)$
+			- then we use L2
+		- we can apply union bound $Pr[\bigcup_i A_i]\leq\sum_i Pr[A_i]$
+			- we get $Pr[|R|\in[2^{\ell+2},2^{\ell+3})]\leq 12q^{2^\ell}$
+			- we are using the fact at least one of the 12 blocks needs to be critical (to get a run this long)
+		- now we use the intervals
+			- $I_1=[0,3]$ and the remaining intervals
+			- $\mathbb E[|R|]\leq 3\cdot 1+\sum_{\ell\geq 0}2^{\ell+3} Pr[|R|\in[2^{\ell+2},2^{\ell+3})]$
+			- $\leq 3+12\cdot 8\cdot \sum_{\ell\geq 1}iq^i$
+			- $q\lt 1$ so the sum converges and we get $O(1)$
+	- comparison
+		- it's cache-friendly – the correct bucket is likely to be loaded into the cache (this is often not the case with double hashing or quadratic probing)
+		- it stores the data directly inside the hash table (unlike hashing with chains)
+		- it degrades as the table becomes full (note $m\geq 3n$ in the proof)
+		- operation *Delete* generates tombstones
 - Define multi-dimensional range trees and describe the type of queries it supports. Analyze time and space complexity of their construction and complexity of range queries.
 - Define suffix arrays and LCP arrays. Describe and analyze algorithms for their construction. Give an example of their application.
 - Describe locks and atomic operations CAS and LL/SC. Describe and analyze a lock-free stack including the memory management. Explain the ABA problem and its solution.
