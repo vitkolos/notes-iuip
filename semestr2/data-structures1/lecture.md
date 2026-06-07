@@ -753,7 +753,7 @@
 		- by this proof, we would get $(2,2^kc)$-independence for $(k,c)$-independent family
 			- that's weak
 			- but we could add another assumption that $2km\leq r$ to get $(k,2c)$-independence
-- reminder: we hat $\mathcal P_k\bmod m$
+- reminder: we had $\mathcal P_k\bmod m$
 	- if $p\geq 2km$, then it is $(k,2)$-independent
 - tabulation hashing
 	- $|\mathcal U|=2^{tk}$

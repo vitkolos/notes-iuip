@@ -209,6 +209,81 @@ You should know all theory presented at the lecture: definitions of data structu
 				- under the cache-oblivious model (with the *tall cache* assumption)
 				- it is optimal – each nondiagonal element has to be transferred
 - Describe hashing with chains and analyze its complexity. Define c-universal and k-independent systems of hash functions and provide constructions of such systems. Give an example when k-independent system in needed and c-universality does not suffice.
+	- hashing function $h:\mathcal U\to [m]$
+		- universe $\mathcal U$
+		- $m$ buckets … $[m]=\set{0,\dots,m-1}$
+		- $n$ elements are already in the hash table
+		- collision → we add the element to the end of the chain
+		- density $\alpha=n/m$ … expected length of the chain (in some cases?)
+	- using a fixed hashing function is problematic – there exists an adversarial sequence of inputs
+		- solution: pick our hashing function uniformly randomly from a parametrized family of hashing functions
+		- we don't have enough memory to store a totally random function → we need a *parametrized* family
+	- theorem
+		- let $\mathcal H$ be $c$-universal, $x_1,\dots,x_n,y\in\mathcal U$ are distinct
+		- then $\mathbb E_{h\in\mathcal H}[\# i\mid h(x_i)=h(y)]\leq\frac{cn}m$
+	- proof (from linearity of expectation)
+		- indicator variable $A_i$ for each collision
+			- $A_i=1$ iff $h(x_i)=h(y)$
+		- $\mathbb E[A_i]=0\cdot Pr[h(x_i)\neq h(y)]+1\cdot Pr[h(x_i)=h(y)]\leq\frac cm$
+		- $\mathbb E[\sum_{i=0}^n A_i]=\sum_{i=0}^n\mathbb E[A_i]\leq\frac{cn}m$
+	- complexity of hashing with chaining
+		- unsuccessful find … $O(n/m)$
+		- successful find … $O(n'/m)$
+			- $n'$ … number of elements at the point in time when this element was inserted
+		- insert, delete – similar analysis
+			- unsuccessful insert = successful find
+		- if $n=\Omega(m)$, we get constant expected time
+	- what if we don't know $n$ (how many elements we need to hash)
+		- idea: stretching
+		- if $\alpha=\frac nm\gt 1$, then $m'=2m$, pick new $h\in\mathcal H$, rehash
+		- if $\alpha\lt 1/4$, then $m'=\frac m2$, pick new $h$, rehash
+		- so we keep $\alpha$ in the interval $[\frac 14,1]$ (but we could choose a different interval)
+		- we need to ensure that we have linearly many operations between reallocations
+			- so after reallocation, we want to be somewhere in the middle between the two bounds
+	- definition: $c$-universality
+		- let $\mathcal H$ be a family of functions from $\mathcal U$ to $[m]$
+		- $\mathcal H$ is $c$-universal for some $c\gt 0$ if $\forall x,y\in\mathcal U,\ x\neq y$ we have $Pr_{h\in\mathcal H}[h(x)=h(y)]\leq\frac cm$
+		- $\mathcal H$ is universal if it is $c$-universal for some $c\gt 0$
+	- definition: $k$-independence
+		- $\mathcal H$ is $(k,c)$-independent if $\forall$ distinct $x_1,\dots,x_k\in\mathcal U$ and $\forall a_1,\dots,a_k\in[m]$ it holds that $Pr_{h\in\mathcal H}[h(x_1)=a_1\land\dots\land h(x_k)=a_k]\leq\frac c{m^k}$
+			- where $k$ is integer s.t. $1\leq k\leq |\mathcal U|$ and $c\gt 0$ is real
+		- it's $k$-independent if it's $(k,c)$-independent for some $c$
+	- observations
+		- for $k\geq 2$, $(k,c)$-independence $\implies$ $(k-1,c)$-independence
+		- $(2,c)$-independence $\implies$ $c$-universality
+		- $(1,c)$-independence $\centernot\implies$ $c$-universality
+			- consider a family of constant hashing functions
+	- $k$-independence is necessary for linear probing and cuckoo hashing
+	- 2-universal example
+		- $h_{a,b}(x)=(ax+b\bmod p)\bmod m$
+		- $\mathcal L=\set{h_{a,b}\mid a,b\in\mathbb Z_p}$
+		- theorem: $\mathcal L$ is 2-universal $\forall$ prime $p\geq m$
+		- proof
+			- $x\neq y$ fixed
+			- $r=(ax+b)\bmod p$
+			- $s=(ay+b)\bmod p$
+			- claim: $(a,b)\mapsto (r,s)$ is a bijection
+				- for any pair $(r,s)$ there is exactly one choice of $(a,b)$
+				- because the system of equations is regular (thanks to $x\neq y$)
+				- so if I'm picking $a,b$ uniformly randomly, then $r,s$ is also chosen uniformly randomly
+			- $Pr[r=s\mod m]=$ \# bad pairs / \# all pairs $\leq\frac{p\cdot\lceil p/m\rceil}{p^2}$
+				- \# bad pairs … “how many times $m$ fits inside $p$”
+				- $\lceil p/m\rceil\leq\frac{p+m}m\leq\frac{2p}m$
+			- so $\frac{p\cdot\lceil p/m\rceil}{p^2}\leq\frac{2p}{pm}=\frac 2m$
+	- $k$-independent example
+		- $h_t(x)=\sum_{i=0}^{k-1} t_ix^i\mod p$
+			- $h_t:\mathbb Z_p\to\mathbb Z_p,\ t\in\mathbb Z_p^k$
+			- evaluation of the polynomial in $\mathbb Z_p$
+		- $\mathcal P_k=\set{h_t\mid t\in\mathbb Z_p^k}$
+		- theorem: $\mathcal P_k$ is $(k,1)$-independent $\forall p$ prime, $k\geq 1$
+		- proof
+			- we have distinct $x_1,\dots,x_k$
+			- we have $a_1,\dots,a_k$
+			- $Pr[\forall i:h_t(x_i)=a_i]=\frac 1{p^k}$
+				- by Lagrange interpolation theorem, there is exactly one polynomial of degree $k-1$ that intersects $k$ points
+		- example
+			- for $k=2$, we get $h_{a,b}=ax+b\bmod p$
+			- we can see that $\mathcal P_2$ is $(2,1)$-independent (and thus 2-universal even without $\bmod m$)
 - Describe and analyze hashing with linear probing (under fully random hashing function). Compare this hashing with other data structures, in particular based on other hashings.
 - Define multi-dimensional range trees and describe the type of queries it supports. Analyze time and space complexity of their construction and complexity of range queries.
 - Define suffix arrays and LCP arrays. Describe and analyze algorithms for their construction. Give an example of their application.
