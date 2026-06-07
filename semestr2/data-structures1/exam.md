@@ -294,12 +294,11 @@ You should know all theory presented at the lecture: definitions of data structu
 			- we store the items with the same $h(x)$ right next to each other
 		- alternative: double hashing
 			- $h(x,i)=h(x)+ig(x)\mod m$
-	- problem: long clusters get longer
-		- we need some condition that there's not too many elements in the table / the clusters are not too long
-	- problem: *Delete*
-		- we cannot freely remove elements in the middle of clusters
-		- one solution: mark the bucket as deleted (“tombstone”)
-			- we need to keep the number of tombstones limited (if it gets above some threshold, we need to rehash the table)
+	- properties
+		- it's cache-friendly – the correct bucket is likely to be loaded into the cache (this is often not the case with double hashing or quadratic probing)
+		- it stores the data directly inside the hash table (unlike hashing with chains)
+		- it degrades as the table becomes full (note $m\geq 3n$ in the proof) – long clusters get longer
+		- operation *Delete* generates *tombstones* (we cannot remove elements in the middle of clusters → we mark the buckets as deleted and later rehash the table if there's too many tombstones)
 	- theorem: if $m\geq (1+\varepsilon)n$ (where $\varepsilon=$ \# free / \# occupied), then the expected number of probes in Find is…
 		- $O(1/\varepsilon^2)$ for a totally random hashing function
 			- or tabulation hashing (even though it's only 3-independent!)
@@ -366,11 +365,6 @@ You should know all theory presented at the lecture: definitions of data structu
 			- $\mathbb E[|R|]\leq 3\cdot 1+\sum_{\ell\geq 0}2^{\ell+3} Pr[|R|\in[2^{\ell+2},2^{\ell+3})]$
 			- $\leq 3+12\cdot 8\cdot \sum_{\ell\geq 1}iq^i$
 			- $q\lt 1$ so the sum converges and we get $O(1)$
-	- comparison
-		- it's cache-friendly – the correct bucket is likely to be loaded into the cache (this is often not the case with double hashing or quadratic probing)
-		- it stores the data directly inside the hash table (unlike hashing with chains)
-		- it degrades as the table becomes full (note $m\geq 3n$ in the proof)
-		- operation *Delete* generates tombstones
 - Define multi-dimensional range trees and describe the type of queries it supports. Analyze time and space complexity of their construction and complexity of range queries.
 - Define suffix arrays and LCP arrays. Describe and analyze algorithms for their construction. Give an example of their application.
 - Describe locks and atomic operations CAS and LL/SC. Describe and analyze a lock-free stack including the memory management. Explain the ABA problem and its solution.
@@ -546,11 +540,121 @@ You should know all theory presented at the lecture: definitions of data structu
 			- OPT can prevent up to $C_{OPT}$ of those misses
 			- $T_{OPT}\geq T_{LRU}-C_{OPT}$
 - Describe a system of hash functions based on scalar products. Prove that it is a 1-universal system from $Z_p^k$ to $Z_p$.
+	- $h_t(x)=xt=\sum_{i=1}^d x_it_i \mod p$
+	- $h_t:\mathbb Z_p^d\to\mathbb Z_p$ (for hashing strings)
+	- $t,x\in\mathbb Z_p^d,\ p$ prime
+	- theorem: $\mathcal S=\set{h_t\mid t\in\mathbb Z_p^d}$ is 1-universal $\forall d\geq 1$, $p$ prime
+	- proof
+		- for $x\neq y$ (WLOG $x_d\neq y_d$) it holds that $Pr[h_t(x)=h_t(y)]=Pr[xt=yt]=Pr[(x-y)t=0)]=$
+		- $=Pr\left[(x_d-y_d)t_d=-\sum_{i=1}^{d-1}(x_i-y_i)t_i\right]$
+		- note that $(x_d-y_d)\neq 0$
+		- every $t_i$ is chosen independently with probability $1/p$
+		- after fixing the sum, there is only one element $t_d$ such that the equality holds (and we have $p$ choices for $t_d$)
+	- definition: 1-universality
+		- let $\mathcal H$ be a family of functions from $\mathcal U$ to $[p]$
+		- $\mathcal H$ is 1-universal if $\forall x,y\in\mathcal U,\ x\neq y$ we have $Pr_{h\in\mathcal H}[h(x)=h(y)]\leq\frac 1p$
 - Describe a system of linear hash functions. Prove that it is a 2-independent system from $Z_p$ to $[m]$.
+	- $h_{a,b}(x)=(ax+b\bmod p)\bmod m$
+	- $\mathcal L=\set{h_{a,b}\mid a,b\in\mathbb Z_p}$
+	- theorem: $\mathcal L$ is $(2,4)$-independent $\forall$ prime $p\geq m$
+	- proof
+		- $x\neq y$ fixed, $i,j\in[m]$ fixed
+		- we need $Pr[h_{a,b}(x)=i\land h_{a,b}(y)=j]\leq\frac 4{m^2}$
+		- $r=(ax+b)\bmod p$
+		- $s=(ay+b)\bmod p$
+		- claim: $(a,b)\mapsto (r,s)$ is a bijection
+			- for any pair $(r,s)$ there is exactly one choice of $(a,b)$
+			- because the system of equations is regular (thanks to $x\neq y$)
+			- so if I'm picking $a,b$ uniformly randomly, then $r,s$ is also chosen uniformly randomly
+		- $Pr[r=i\mod m]=$ \# bad pairs / \# all pairs $\leq\frac{p\cdot\lceil p/m\rceil}{p^2}$
+			- \# bad pairs … “how many times $m$ fits inside $p$”
+			- $\lceil p/m\rceil\leq\frac{p+m}m\leq\frac{2p}m$
+		- so $\frac{p\cdot\lceil p/m\rceil}{p^2}\leq\frac{2p}{pm}=\frac 2m$
+		- similarly, $Pr[s=j\mod m]\leq\frac 2m$
+		- clearly, $Pr[h_{a,b}(x)=i\land h_{a,b}(y)=j]=Pr[r=i\mod m]\cdot Pr[s=j\mod m]\leq\frac 4{m^2}$
+			- the events are independent
+	- definition: $k$-independence
+		- $\mathcal H$ is $(k,c)$-independent if $\forall$ distinct $x_1,\dots,x_k\in\mathcal U$ and $\forall a_1,\dots,a_k\in[m]$ it holds that $Pr_{h\in\mathcal H}[h(x_1)=a_1\land\dots\land h(x_k)=a_k]\leq\frac c{m^k}$
+			- where $k$ is integer s.t. $1\leq k\leq |\mathcal U|$ and $c\gt 0$ is real
+		- it's $k$-independent if it's $(k,c)$-independent for some $c$
 - Construct a k-independent system of hash functions from $Z_p$ to $[m]$.
+	- $h_t(x)=\sum_{i=0}^{k-1} t_ix^i\mod p$
+		- $h_t:\mathbb Z_p\to\mathbb Z_p,\ t\in\mathbb Z_p^k$
+		- evaluation of the polynomial in $\mathbb Z_p$
+	- $\mathcal P_k=\set{h_t\mid t\in\mathbb Z_p^k}$
+	- theorem: $\mathcal P_k$ is $(k,1)$-independent $\forall p$ prime, $k\geq 1$
+	- proof
+		- we have distinct $x_1,\dots,x_k$
+		- we have $a_1,\dots,a_k$
+		- $Pr[\forall i:h_t(x_i)=a_i]=\frac 1{p^k}$
+			- by Lagrange interpolation theorem, there is exactly one polynomial of degree $k-1$ that intersects $k$ points
+	- lemma
+		- let $\mathcal H$ be $(k,c)$-independent family of $h:\mathcal U\to[r]$
+		- then $\mathcal H\bmod m$ is $(k,2^kc)$-independent (for $m\leq r$)
+	- proof (for $k=2$)
+		- $x_1\neq x_2,\ a_1,a_2\in[m]$
+		- $Pr_{h'\in\mathcal H\bmod m}\left[h'(x_1)=a_1\land h'(x_2)=a_2)\right]=\sum_{i_1,i_2} Pr_{h\in\mathcal H}\left[h(x_1)=i_1\land h(x_2)=i_2\right]$
+			- for $i_1\equiv a_1\mod m$ and $i_2\equiv a_2\mod m$
+		- $\leq\sum_{i_1,i_2}\frac c{r^2}\leq\frac c{r^2}\lceil \frac rm\rceil^2\leq\frac c{r^2}\cdot(\frac{2r}{m})^2\leq\frac {4c}{m^2}$
+			- because there are $\lceil \frac rm\rceil$ ways to choose $i_1$ and the same number of ways to choose $i_2$ and because $\lceil \frac rm\rceil\leq\frac{r+m}m\leq\frac{2r}m$ 
+	- proof (generalized)
+		- $Pr\leq\sum_{i_1,\dots,i_k}\frac c{r^k}\leq\frac c{r^k}\lceil \frac rm\rceil^k\leq\frac c{r^k}\cdot(\frac{2r}{m})^k\leq\frac {2^k c}{m^k}$
+	- so $\mathcal P_k\bmod m$ is $k$-independent ($r=p$)
+	- we could add another assumption that $r\geq 2km$ to get $(k,2c)$-independence
 - Construct a 2-independent system of hash functions for hashing of strings of length at most L over an alphabet $[a]$ to a set of buckets $[m]$.
+	- rolling hashing
+		- let's consider $h_a(x)=\sum_{i=0}^{d-1} x_ia^i\bmod p$
+			- so $x\in\mathbb Z_p^d$
+			- $\mathcal R=\set{h_a\mid a\in\mathbb Z_p}$
+		- lemma: $\mathcal R$ is $d$-universal for $d\geq 1$, $p$ prime
+		- proof
+			- $x\neq y$
+			- $Pr_a[h_a(x)=h_a(y)]=Pr_a[\sum_{i=0}^{d-1}(x_i-y_i)a^i=0]\leq\frac dm$
+				- a polynomial of degree $d-1$ has at most $d-1$ roots (which is $\leq d$)
+		- $\mathcal R\circ\mathcal L$ is $(2,\frac 52)$-independent if $p\geq 4dm$
+	- lemma
+		- let $\mathcal F$ be a $c$-universal family of $f:\mathcal U\to[r],\ r\geq m$
+		- $\mathcal G$ is $(2,d)$-independent family of $g:[r]\to[m]$
+		- then $\mathcal H=\mathcal F\circ\mathcal G=\set{f\circ g\mid f\in\mathcal F,\ g\in\mathcal G}$ is $(2,c')$-independent where $c'=(\frac{cm}r+1)d$
+			- where $(f\circ g)(x)=g(f(x))$
+	- proof
+		- $x_1,x_2\in\mathcal U,\ x_1\neq x_2,\ i_1,i_2\in[m]$
+		- match event $M$ … $g(f(x_1))=i_1\land g(f(x_2))=i_2$
+		- collision event $C$ … $f(x_1)=f(x_2)$
+		- $P(M)=\underbrace{P(M|\neg C)}_{2\text{-ind.}}\underbrace{P(\neg C)}_{\leq 1}+\underbrace{P(M|C)}_{1\text{-ind.}}\underbrace{P(C)}_{c\text{-univ.}}$
+			- $P(M| C)=0$ if $i_1\neq i_2$, otherwise 1-independence
+		- $\leq \frac{d}{m^2}\cdot 1+\frac dm\cdot\frac cr=\frac{dr+dcm}{m^2r}=\frac{c'}{m^2}$
 - Describe the cuckoo hashing and state the theorem on its complexity (without proof).
+	- we have two hash functions $f,g$ and two sets of $m$ buckets $T_f,T_g$
+	- we hash the inserted element and if the bucket is already full, we take the element present there and insert it it using the other function
+		- we continue until we have correctly placed all the elements
+	- when we meet the timeout (we keep cycling back and forth between the tables for long enough), we rehash
+		- timeout ~ $\log n$
+	- invariant: $\forall x\in X$ is in $T_f(f(x))$ or $T_g(g(x))\implies$ *Find*, *Delete* in $O(1)$ (worst case)
+	- theorem
+		- let $m\geq (2+\varepsilon)n,\ f,g$ from $\lceil 6\log n\rceil$-independent family
+		- then cuckoo hashing with timeout $\lceil 6\log n\rceil$ has expected amortized *Insert* time $O(1)$
 - Describe hashing with linear probing and give overview of results on its complexity.
+	- probing
+		- saves space (each bucket contains at most one item)
+		- probe sequence: $h(x,0),h(x,1),\dots$
+		- *Insert* follows the probe sequence until it finds an empty cell
+		- **linear probing**
+			- $h(x,i)=h(x)+i\mod m$
+			- we store the items with the same $h(x)$ right next to each other
+		- alternative: double hashing
+			- $h(x,i)=h(x)+ig(x)\mod m$
+	- properties
+		- it's cache-friendly – the correct bucket is likely to be loaded into the cache (this is often not the case with double hashing or quadratic probing)
+		- it stores the data directly inside the hash table (unlike hashing with chains)
+		- it degrades as the table becomes full (note $m\geq 3n$ in the proof) – long clusters get longer
+		- operation *Delete* generates *tombstones* (we cannot remove elements in the middle of clusters → we mark the buckets as deleted and later rehash the table if there's too many tombstones)
+	- theorem: if $m\geq (1+\varepsilon)n$ (where $\varepsilon=$ \# free / \# occupied), then the expected number of probes in Find is…
+		- $O(1/\varepsilon^2)$ for a totally random hashing function
+			- or tabulation hashing (even though it's only 3-independent!)
+		- $O(1/\varepsilon^{13/6})$ for any 5-independent family
+		- $\Omega(\log n$) for some 4-independent family
+		- $\Omega(\sqrt n)$ for some 2-independent family
 - Describe and analyze the Bloom filter. Give an example of its application.
 - Show how to perform 1-dimensional range queries on binary search trees.
 - Define k-d trees and show that they require $\Omega(\sqrt n)$ time per 2-d range query.

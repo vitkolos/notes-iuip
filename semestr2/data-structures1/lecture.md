@@ -750,7 +750,7 @@
 		- $$P\left(h(x_1)=a_1\land h(x_2)=a_2)\right)=\sum_{i_1,i_2} P_{h\in\mathcal H}\left(h'(x_1)=i_1\land h'(x_2)=i_2\right)$$
 			- for $i_1\equiv a_1\mod m$ and $i_2\equiv a_2\mod m$
 		- $\leq\sum_{i_1,i_2}\frac c{r^2}\leq\frac c{r^2}\lceil r/m\rceil^2\leq\frac {4c}{m^2}$
-		- by this proof, we would get $(2,2^kc)$-independence for $(k,c)$-independent family
+		- by this proof, we would get $(k,2^kc)$-independence for $(k,c)$-independent family
 			- that's weak
 			- but we could add another assumption that $2km\leq r$ to get $(k,2c)$-independence
 - reminder: we had $\mathcal P_k\bmod m$
@@ -865,7 +865,7 @@
 - the weaker version has been proved above
 - stronger version
 	- lemma
-		- let $\mathcal H'$ be $(k,c)$-independent faimly of $h':\mathcal U\to[r],\ r\geq 2km$
+		- let $\mathcal H'$ be $(k,c)$-independent family of $h':\mathcal U\to[r],\ r\geq 2km$
 		- then $\mathcal H=\mathcal H'\bmod m$ is $(k,2c)$-independent
 	- proof (we don't need to know this for the exam)
 		- let's have $x_1,\dots,x_k$ distinct, $i_1,\dots,i_k\in[m]$ (not necessarily distinct)
