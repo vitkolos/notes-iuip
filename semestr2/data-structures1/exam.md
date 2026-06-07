@@ -656,7 +656,83 @@ You should know all theory presented at the lecture: definitions of data structu
 		- $\Omega(\log n$) for some 4-independent family
 		- $\Omega(\sqrt n)$ for some 2-independent family
 - Describe and analyze the Bloom filter. Give an example of its application.
+	- filter for set representation with zero false negatives
+		- consider a database and a query *Find(x)*
+		- you first ask the Bloom filter – if the filter responds “no”, we don't need to ask the database
+		- of course, *Insert(x)* has to change both the filter and the database
+	- the larger memory we have available, the smaller the probability of false positives
+	- simple Bloom filter
+		- bit array $[m]$, $h\in\mathcal H$ is $c$-universal
+		- probability of false positivity
+			- consider that there are already distinct $x_1,\dots,x_n$ present in the filter
+			- consider $y$ distinct
+			- $Pr[y\text{ is }FP]=Pr[\exists i:h(y)=h(x_i)]\leq\sum_{i=1}^n Pr_h[h(x_i)=h(y)]\leq\frac{cn}m$
+			- let's consider that $c=1$ and that we want $P(FP)\leq \varepsilon$
+				- we set $m:=\lceil n/\varepsilon\rceil$ (number of required bits)
+				- so if there are $10^6$ items and we want $\varepsilon=0.01$, we need 100 Mb to store the filter
+	- $k$-way Bloom filter
+		- we take a conjunction of $k$ Bloom filters
+		- we need $h_1,\dots,h_k$ to be independently chosen functions from a $c$-universal family
+		- $Pr[y\text{ is }FP]\leq\prod_{i=1}^k\frac{cn}m=\frac1{2^k}\leq\varepsilon$
+			- if $c=1$ and $m=2n$
+		- $k:=\lceil\log 1/\varepsilon\rceil$
+		- $M=mk=2n\lceil\log 1/\varepsilon\rceil$
+		- now for $n=10^6$ and $\varepsilon=0.01$, we need $k=7$ and $M=14$ Mb
+			- for $\varepsilon=0.001$, we need $k=10$ and $M=20$ Mb
+	- single-band Bloom filter
+		- we set $k$ bits using $k$ hash functions that are chosen independently – in the same table
+		- if the hash functions are totally random, we may get results similar to the $k$-way filter
+	- how to delete elements?
+		- if we set the bit to zero, we delete all the elements with this hash value
+		- instead of bits, we could use counters → counting filter
+			- $b$ bits → at most $t:=2^b-1$ elements can be hashed to the same position at the filter
+			- *Insert*/*Delete* just increment/decrement the value in the filter
+			- *Find* returns yes if the filter is not zero
+		- problem: when we reach $t$, the counter is “stuck” (cannot be increased, cannot be decreased), so there's a new kind of false positives
+			- for a fixed bucket $i$ and totally random $h$, we have $P(B[i]\geq t)\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
+				- we use ${n\choose t}\leq(\frac{ne}t)^t$
+			- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
+			- if we have $m=10^9$ counters, the probability that any is stuck is $\leq 3.06\cdot 10^{-5}$
 - Show how to perform 1-dimensional range queries on binary search trees.
+	- for each node $v$ we define the interval of $v$ … $\mathrm{int}(v)$
+		- contains all real numbers whose search visits $v$
+		- keys in the internal nodes cut the real line to parts – these intervals correspond to the external nodes
+		- they are all open intervals
+	- algorithm RangeQuery$(v, Q)$
+		- if $v$ is external, return
+		- if $\mathrm{int}(v)\subseteq Q$, report the whole subtree rooted at $v$ and return
+		- if $\mathrm{key}(v)\in Q$, report $\mathrm{key}(v)$
+		- $Q_\ell\leftarrow Q\cap\mathrm{int}(\ell(v)),\ Q_r\leftarrow Q\cap\mathrm{int}(r(v))$
+		- if $Q_\ell\neq\emptyset$, RangeQuery$(\ell(v), Q_\ell)$
+		- if $Q_r\neq\emptyset$, RangeQuery$(r(v), Q_r)$
+	- RangeQuery visits $O(\log n)$ nodes and subtrees if tree is balanced (has logarithmic depth)
+		- $Q=(\alpha,\beta)$
+		- $a$ … node where Find($\alpha$) stops
+		- $b$ … node where Find($\beta$) stops
+		- $p$ … lowest common predecessor of $a,b$
+		- visited nodes: on the paths to $a,b$
+		- visited subtrees: right subtrees on the path $p\to a$ and left subtrees on the path $p\to b$
 - Define k-d trees and show that they require $\Omega(\sqrt n)$ time per 2-d range query.
+	- keys = points in $\mathbb R^k$
+	- on level $i$ split by $i$-th coordinate $\bmod k$
+	- we assume there are no shared coordinates
+	- to build a static $k$-d tree, we use a median value at each level as a root
+		- median of $m$ items in $O(m)$ time
+		- $O(n)$ per level, $O(\log n)$ levels, $O(n\log n)$ time, $O(n)$ space
+	- RangeQuery same as in 1D
+		- alternate coordinates
+		- $\mathrm{int}(v)$ is an open region (product of open intervals)
+		- recurse until all coordinates fall into target intervals
+	- lemma: RangeQuery in 2D search tree has $\Omega(\sqrt n)$ worst-case time complexity
+		- consider points $\set{(i,i)\mid 1\leq i\leq n}$
+		- $n=2^t-1$
+		- $t$ … depth
+		- RangeQuery(root, $\set{0}\times\mathbb R$)
+			- $x$ coordinate → go to the left
+			- $y$ coordinate → go both left and right
+			- we end up visiting $2^{t/2}\approx\sqrt n$ nodes (we need to recurse into both subtrees at every other level)
+	- note: it's $\Theta(\sqrt n)$
 - Show how to use suffix array and LCP array for finding the longest common substring of two strings.
 - Describe parallel (a,b)-trees with the use of locks.
+
+## END

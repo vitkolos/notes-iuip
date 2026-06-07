@@ -953,9 +953,9 @@
 	- $k:=\lceil\log 1/\varepsilon\rceil$
 	- $M=mk=2n\lceil\log 1/\varepsilon\rceil$
 	- now for $n=10^6$ and $\varepsilon=0.01$, we need $k=7$ and $M=14$ Mb
-		- for $\varepsilon=0.001$, we need $k=7$ and $M=20$ Mb
+		- for $\varepsilon=0.001$, we need $k=10$ and $M=20$ Mb
 - single-band Bloom filter
-	- but we set $k$ bits using $k$ hash functions that are chosen independently
+	- we set $k$ bits using $k$ hash functions that are chosen independently – in the same table
 	- if the hash functions are totally random, we may get results similar to the $k$-way filter
 - how to delete elements?
 	- if we set the bit to zero, we delete all the elements with this hash value
