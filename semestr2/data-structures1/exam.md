@@ -366,6 +366,36 @@ You should know all theory presented at the lecture: definitions of data structu
 			- $\leq 3+12\cdot 8\cdot \sum_{\ell\geq 1}iq^i$
 			- $q\lt 1$ so the sum converges and we get $O(1)$
 - Define multi-dimensional range trees and describe the type of queries it supports. Analyze time and space complexity of their construction and complexity of range queries.
+	- goal: poly-logarithmic range queries, not space optimal
+		- $O(\log^k n)$ time, $O(n\log^{k-1} n)$ space
+	- idea: primary 1D search tree for x-coordinates of all points (x-tree) + secondary 1D search tree in each node $v$ for y-coordinate of all points in $\mathrm{int}(v)\times\mathbb R$ (“band”)
+	- observation: $y_i$ is only in secondary subtrees on the path to $x_i$
+		- → $O(n\log n)$ space if x-tree balanced
+	- RangeQuery$([a_1,b_1]\times[a_2,b_2])$
+		- x-tree: RangeQuery$([a_1,b_2])$ → $O(\log n)$ points + bands (corresponding to subtrees)
+		- points $(x_i,y_i)$: if $y_i\in[a_2,b_2]$, report
+		- bands: RangeQuery$([a_2,b_2])$ to the corresponding y-tree
+	- analysis
+		- $O(\log n)$ time in x-tree, $O(\log n)$ time in each y-tree, $O(\log^2 n)$ time in total
+		- it the points are also reported, we need $O(\log^2 n+p)$ where $p$ is the number of reported points
+	- building the range tree
+		- create two sorted lists of points: one sorted by the x-coordinate, the other sorted by the y-coordinate … $O(n\log n)$
+		- recursion ($O(n)$ subproblems, $O(\log n)$ levels)
+			- find median in x-list … $O(1)$ per subproblem
+			- build y-tree … $O(n)$ per level
+			- select sub-lists … $O(n)$ per level
+		- total time: $O(n\log n)$
+	- we assumed there are no shared coordinates
+		- but we could attach a y-tree for points with the same x-coordinate
+		- so we get 2 y-trees for the single x-tree node $v$
+			- y-tree for band $\mathrm{int}(v)\times\mathbb R$
+			- y-tree for $\mathrm{key}(v)\times\mathbb R$
+	- k-D range trees (straightforward generalization)
+		- primary x-tree (1D search tree) + secondary $(k{-}1)$-dimensional range tree for each band $\mathrm{int}(v)\times\mathbb R^{k-1}$
+		- space: every point in $O(\log n)$ secondary range trees → $O(n\log^{k-1}n)$ in total
+		- $O(\log^k n)$ time for RangeQuery ($+p$ if enumeration)
+		- building: $k$ sorted arrays, $O(n\log^{k-1}n)$ time, constant is dependent on $k$
+	- can be dynamized using lazily balanced trees
 - Define suffix arrays and LCP arrays. Describe and analyze algorithms for their construction. Give an example of their application.
 - Describe locks and atomic operations CAS and LL/SC. Describe and analyze a lock-free stack including the memory management. Explain the ABA problem and its solution.
 
@@ -715,7 +745,6 @@ You should know all theory presented at the lecture: definitions of data structu
 - Define k-d trees and show that they require $\Omega(\sqrt n)$ time per 2-d range query.
 	- keys = points in $\mathbb R^k$
 	- on level $i$ split by $i$-th coordinate $\bmod k$
-	- we assume there are no shared coordinates
 	- to build a static $k$-d tree, we use a median value at each level as a root
 		- median of $m$ items in $O(m)$ time
 		- $O(n)$ per level, $O(\log n)$ levels, $O(n\log n)$ time, $O(n)$ space
@@ -728,10 +757,12 @@ You should know all theory presented at the lecture: definitions of data structu
 		- $n=2^t-1$
 		- $t$ … depth
 		- RangeQuery(root, $\set{0}\times\mathbb R$)
-			- $x$ coordinate → go to the left
-			- $y$ coordinate → go both left and right
+			- x-coordinate → go to the left
+			- y-coordinate → go both left and right
 			- we end up visiting $2^{t/2}\approx\sqrt n$ nodes (we need to recurse into both subtrees at every other level)
 	- note: it's $\Theta(\sqrt n)$
+	- we assumed there are no shared coordinates
+		- but we could attach a $(k{-}1)$-d subtree to each node where some points share a coordinate
 - Show how to use suffix array and LCP array for finding the longest common substring of two strings.
 - Describe parallel (a,b)-trees with the use of locks.
 
