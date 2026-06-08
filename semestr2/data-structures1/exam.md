@@ -267,7 +267,7 @@ You should know all theory presented at the lecture: definitions of data structu
 				- because the system of equations is regular (thanks to $x\neq y$)
 				- so if I'm picking $a,b$ uniformly randomly, then $r,s$ is also chosen uniformly randomly
 			- $Pr[r=s\mod m]=$ \# bad pairs / \# all pairs $\leq\frac{p\cdot\lceil p/m\rceil}{p^2}$
-				- \# bad pairs … “how many times $m$ fits inside $p$”
+				- $p/m$ … “how many times $m$ fits inside $p$”
 				- $\lceil p/m\rceil\leq\frac{p+m}m\leq\frac{2p}m$
 			- so $\frac{p\cdot\lceil p/m\rceil}{p^2}\leq\frac{2p}{pm}=\frac 2m$
 	- $k$-independent example
@@ -723,8 +723,8 @@ You should know all theory presented at the lecture: definitions of data structu
 			- for any pair $(r,s)$ there is exactly one choice of $(a,b)$
 			- because the system of equations is regular (thanks to $x\neq y$)
 			- so if I'm picking $a,b$ uniformly randomly, then $r,s$ is also chosen uniformly randomly
-		- $Pr[r=i\mod m]=$ \# bad pairs / \# all pairs $\leq\frac{p\cdot\lceil p/m\rceil}{p^2}$
-			- \# bad pairs … “how many times $m$ fits inside $p$”
+		- $Pr[r=i\mod m]=$ \# bad values of $r$ / \# all possible values of $r$ $\leq\frac{\lceil p/m\rceil}{p}$
+			- \# bad values of $r$ … “how many times $m$ fits inside $p$”
 			- $\lceil p/m\rceil\leq\frac{p+m}m\leq\frac{2p}m$
 		- so $\frac{p\cdot\lceil p/m\rceil}{p^2}\leq\frac{2p}{pm}=\frac 2m$
 		- similarly, $Pr[s=j\mod m]\leq\frac 2m$
