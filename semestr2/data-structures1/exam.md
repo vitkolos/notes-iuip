@@ -593,8 +593,11 @@ You should know all theory presented at the lecture: definitions of data structu
 			- when deleting a node with two children, we need to replace it by its successor (WLOG)
 		2. *splay(lowest visited node)*
 	- analyzing operations
-		- we need to consider that operations change the potential
-		- $A=R+\Delta\Phi$
+		- we need $A\leq R+\Delta\Phi$
+		- *find* does not change the potential
+			- going from the root to a node at depth $d$ has cost $\Theta(d)$
+			- splaying this node also costs $\Theta(d)$ and it amortizes to $O(\log n)$
+			- we can account the cost of the former part on the splay → *find* has total amortized complexity $O(\log n)$
 		- *delete* decreases the potential – that's fine 👍
 			- $A\leq R$
 		- *insert* increases the potential
@@ -606,7 +609,6 @@ You should know all theory presented at the lecture: definitions of data structu
 			- $\Delta\Phi\leq\Phi_i(v_1)-\Phi_{i-1}(v_t)$
 			- so $\Delta\Phi$ is $O(\log n)$
 	- so all the operations are $O(\log n)$ amortized
-		- splay is also $O(\log n)$ amortized
 - State and prove the theorem on amortized complexity on Insert and Delete on (a,2a-1)-trees and (a,2a)-trees.
 	- theorem: $m$ inserts on empty $(a,b)$-tree do $O(m)$ modifications
 		- number of splits $\leq$ number of nodes in $(a,b)$-tree with $m$ keys $\leq m$
