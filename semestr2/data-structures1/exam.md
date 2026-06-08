@@ -251,7 +251,7 @@ You should know all theory presented at the lecture: definitions of data structu
 	- observations
 		- for $k\geq 2$, $(k,c)$-independence $\implies$ $(k-1,c)$-independence
 		- $(2,c)$-independence $\implies$ $c$-universality
-		- $(1,c)$-independence $\centernot\implies$ $c$-universality
+		- $(1,c)$-independence $\mathrlap{\kern{0.8em}/}{\implies}$ $c$-universality
 			- consider a family of constant hashing functions
 	- $k$-independence is necessary for linear probing and cuckoo hashing
 	- 2-universal example
