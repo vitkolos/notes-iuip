@@ -513,7 +513,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- list of memory pieces that are ready to be deallocated
 			- we deallocate only if we are sure that nobody uses them
 			- how to be sure
-				- synchronization points: we synchronize all processes at a point where they hold no pointers of their own (we can then free up all chunks from the free list)
+				- synchronization points: we synchronize all processes at a point where they hold no pointers of their own (we can then free up all chunks from the freelist)
 				- reference counting
 				- hazard pointers – signal to the garbage collector that I am using the pointer
 					- we store h in the hazard pointer
@@ -769,6 +769,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- $Pr_a[h_a(x)=h_a(y)]=Pr_a[\sum_{i=0}^{d-1}(x_i-y_i)a^i=0]\leq\frac dm$
 				- a polynomial of degree $d-1$ has at most $d-1$ roots (which is $\leq d$)
 		- $\mathcal R\circ\mathcal L$ is $(2,\frac 52)$-independent if $p\geq 4dm$
+		- to hash strings of length at most $L$, we set $d:=L$ and we pad the strings by zeros (assuming that they don't occur elsewhere) → this part of the string then gets “skipped”
 	- lemma
 		- let $\mathcal F$ be a $c$-universal family of $f:\mathcal U\to[r],\ r\geq m$
 		- $\mathcal G$ is $(2,d)$-independent family of $g:[r]\to[m]$
