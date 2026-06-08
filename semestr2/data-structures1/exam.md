@@ -827,7 +827,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- consider that there are already distinct $x_1,\dots,x_n$ present in the filter
 			- consider $y$ distinct
 			- $Pr[y\text{ is }FP]=Pr[\exists i:h(y)=h(x_i)]\leq\sum_{i=1}^n Pr_h[h(x_i)=h(y)]\leq\frac{cn}m$
-			- let's consider that $c=1$ and that we want $P(FP)\leq \varepsilon$
+			- let's consider that $c=1$ and that we want $Pr[FP]\leq \varepsilon$
 				- we set $m:=\lceil n/\varepsilon\rceil$ (number of required bits)
 				- so if there are $10^6$ items and we want $\varepsilon=0.01$, we need 100 Mb to store the filter
 	- $k$-way Bloom filter
@@ -849,7 +849,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- *Insert*/*Delete* just increment/decrement the value in the filter
 			- *Find* returns yes if the filter is not zero
 		- problem: when we reach $t$, the counter is “stuck” (cannot be increased, cannot be decreased), so there's a new kind of false positives
-			- for a fixed bucket $i$ and totally random $h$, we have $P(B[i]\geq t)\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
+			- for a fixed bucket $i$ and totally random $h$, we have $Pr[B[i]\geq t]\leq{n\choose t}(\frac1m)^t\leq(\frac{ne}{mt})^t$
 				- we use ${n\choose t}\leq(\frac{ne}t)^t$
 			- if we set $m=\frac{n}{\ln 2}\doteq 1.44n$ and we use $b=4$, then $(\frac{ne}{mt})^t=(\frac{e\ln 2}t)^t\leq 3.06\cdot 10^{-14}$
 			- if we have $m=10^9$ counters, the probability that any is stuck is $\leq 3.06\cdot 10^{-5}$
@@ -896,7 +896,8 @@ You should know all theory presented at the lecture: definitions of data structu
 - Show how to use suffix array and LCP array for finding the longest common substring of two strings.
 	- we build a suffix array and LCP array for the string $\alpha \# \beta$
 	- $\#$ … separator that occurs neither in $\alpha$ nor in $\beta$
-	- we find the maximum $L[k]$ such that $k$-th (lex.) substring comes from $\alpha$ (contains $\#$) and $k{+}1$-th (lex.) substring comes from $\beta$ (does not contain $\#$) or vice versa
+	- we find the maximum $L[k]$ such that $k$-th (lex.) substring comes from $\alpha$ and $k{+}1$-th (lex.) substring comes from $\beta$ or vice versa
+	- we can use $S$ to find out if the substring belongs to $\alpha$ or $\beta$ (we can compare it to the position of $\#$)
 - Describe parallel (a,b)-trees with the use of locks.
 	- standard $(a,b)$ tree: $a-1\leq$ number of keys $\leq b-1$
 	- top-down splitting and merging
