@@ -807,7 +807,7 @@ You should know all theory presented at the lecture: definitions of data structu
 		- it stores the data directly inside the hash table (unlike hashing with chains)
 		- it degrades as the table becomes full (note $m\geq 3n$ in the proof) – long clusters get longer
 		- operation *Delete* generates *tombstones* (we cannot remove elements in the middle of clusters → we mark the buckets as deleted and later rehash the table if there's too many tombstones)
-	- theorem: if $m\geq (1+\varepsilon)n$ (where $\varepsilon=$ \# free / \# occupied), then the expected number of probes in Find is…
+	- theorem: if $m\geq (1+\varepsilon)n$, then the expected number of probes in Find is…
 		- $O(1/\varepsilon^2)$ for a totally random hashing function
 			- or tabulation hashing (even though it's only 3-independent!)
 		- $O(1/\varepsilon^{13/6})$ for any 5-independent family
