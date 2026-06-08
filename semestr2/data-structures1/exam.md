@@ -397,7 +397,133 @@ You should know all theory presented at the lecture: definitions of data structu
 		- building: $k$ sorted arrays, $O(n\log^{k-1}n)$ time, constant is dependent on $k$
 	- can be dynamized using lazily balanced trees
 - Define suffix arrays and LCP arrays. Describe and analyze algorithms for their construction. Give an example of their application.
+	- the suffix array for $\alpha$ is a permutation $S[0,\dots,n]$ s.t. $\forall (0\leq i\lt n):\alpha[S[i]{:}]\lt\alpha[S[i+1]{:}]$
+		- example for *bananas*
+			0. $\varepsilon$, 7
+			1. ananas, 1
+			2. anas, 3
+			3. as, 5
+			4. bananas, 0
+			5. nanas, 2
+			6. nas, 4
+			7. s, 6
+	- the rank array $R[0,\dots,n]$ is an inverse permutation to $S$
+		- $R[i]$ … number of suffixes that are lex. smaller than $\alpha[i{:}]$
+		- it's a mapping inverse to $S$ (position → lexicographic order)
+	- the LCP-array $L[0,\dots,n-1]$
+		- $L[i]$ … length of the longest common prefix of $i$-th suffix and $(i{+}1)$-th suffix (in the lex. order)
+	- constructing $R$ (we can easily construct $S$ based on $R$) – using doubling
+		- $R[i]$ … lex. rank of substring starting at $i$
+		- $R_k[i]$ … number of positions $j$ s.t. $\alpha[j:j+k]\lt\alpha[i:i+k]$
+			- number of prefixes $\alpha[j]$ that are lexicographically smaller than $\alpha[i]$ if we compare only the first $k$ characters
+		- we can compute $R_{2k}[i]$ as the number of positions $j$ s.t. $R_k[j]\lt R_k[i]$ or $R_k[j]=R_k[i]\land R_k[j+k]\lt R_k[i+k]$
+			- we want to sort triples $(R_k[i],R_{k}[i+k],i)$
+			- we can use bucket sort in $O(n)$
+		- $R_n=R$
+		- we need $O(n\log n)$ for the initial step (if the alphabet is large and we cannot rely on the bucket sort)
+	- observation: $\forall(0\leq i\lt j\leq n):\mathrm{LCP}(\alpha[S[i]{:}],\alpha[S[j]{:}])=\min(L[i],L[i+1],\dots,L[j-1])$
+		- let's say that the right side is $k$
+		- then the LCP of $i,j$ has to be at least $k$
+		- the sequence of characters at $k+1$ position is non-decreasing
+			- the chars are the same (if their LCP is greater than $k$) or they differ (here we use the lex. order)
+		- so the LCP of $i,j$ has to be $\leq k$
+	- observation
+		- let's consider two suffixes that are lexicographically consecutive (adjacent): $\alpha,\beta$
+		- if we remove the first character from both of them, we get $\alpha',\beta'$
+		- $\mathrm{LCP}(\alpha',\beta')=\mathrm{LCP}(\alpha,\beta)-1$
+		- $\alpha',\beta'$ may not be lexicographically consecutive but $\mathrm{LCP}(\alpha',\beta')$ is the minimum of that interval (according to the previous observation)
+		- so to compute LCP of $\alpha'$ and its successor, we can start with $\mathrm{LCP}(\alpha,\beta)-1$
+	- $S,R\to L$
+		- Kasai's algorithm
+			- iterate from the longest to the shortest suffix
+				- index of the $i$-th suffix … $R[i]$
+			- in every iteration
+				- take the previous computed $k$, subtract one, clamp (so that it does not go below zero) → we get a new $k$ 
+				- take the suffixes corresponding to indices $R[i]$ and $R[i]+1$ (the lexicographic successor)
+				- we need to compare their characters one by one
+					- we can skip the first $k$ characters
+					- for every matching pair, we increment $k$ by one
+		- runs in $O(n)$
+			- we can use $k$ as potential
+			- it's always non-negative and at most $n$
+			- it always increases or decreases by one
+			- there are at most $n$ decreases → there are at most $2n$ increases
+	- applications
+		- histogram of all $k$-grams (might be useful for classifying a language or a species based on its DNA)
+			- we can find it in linear time by going through LCP array
+			- if the current LCP is below $k$, we reached a new $k$-gram
+			- we need to check that $S[i]$ is not too large (so that it truly is a $k$-gram – it should not be shorter than $k$)
+		- longest repeating substring (redundancy measure)
+			- find a maximum in the LCP array
+		- longest common substring in $\alpha,\beta$
+			- we build a LCP array for $\alpha\#\beta$
 - Describe locks and atomic operations CAS and LL/SC. Describe and analyze a lock-free stack including the memory management. Explain the ABA problem and its solution.
+	- lock (mutex)
+		- where / how many
+			- one per DS
+			- one per item
+				- locks bring some overhead
+				- only works if there is not too much “structure” in the data structure
+			- one per part
+				- e.g. bucket in hash table (for hashing with chaining) + one global lock (for rehashing)
+		- locks are blocking – the process needs to wait if the data structure is locked
+		- problems: deadlock (ordering is not always available or possible to use), fairness, inverse priorities, fault-tolerance
+	- HW assumptions (to support lock-free data structures)
+		- atomic registers: read, write, (exchange), (test & set bit)
+		- load linked (LL) / store conditional (SC)
+			- not always available, only for limited number of registers
+			- a *linked load* is a normal atomic read, but the processor remembers the address and keeps monitoring it for access by other processors
+			- a later *store conditional* to the same address succeeds if the address was not written to by other processors (otherwise it reports failure)
+		- compare & swap (CAS)
+			- `CAS(address, x, y)`
+			- atomically performs the following
+				- load *value* from *address*
+				- if *value* equals *x*, store *y* at *address*
+				- return *value*
+			- often available
+	- lock-free stack
+		- node: atomic pointer to next
+		- global: atomic pointer to head
+		- *Push(n)*: (loop)
+			- h ← head
+			- n.next ← h
+			- if CAS(head, h, n) == h
+				- return
+		- *Pop*: (loop)
+			- h ← head
+			- n ← h.next
+			- if CAS(head, h, n) == h
+				- return h
+	- it does not work :(
+		- for *Pop*, we are checking only the head – the next item might have been removed in the mean time
+			- other process could have run this sequence of operations: *Pop* (removes A), *Pop* (removes B), *Push(A)*
+			- ABA-problem
+		- possible solutions
+			- use LL/SC
+			- double CAS (atomic) … only theoretical solution
+				- if DCAS((head, h.next), (h, n), (n, n)) == (n, n)
+			- wide CAS (atomic)
+				- we can use pointer versioning
+				- if WCAS((head, version), (h, ver), (n, ver+1)) == (h, ver)
+				- theoretical problem: overflow (does not happen in practice)
+			- restrictive memory management
+		- another problem: memory management
+			- if someone pops and deallocates head before we read h.next (after storing h), we may crash
+		- solution: freelist
+			- list of memory pieces that are ready to be deallocated
+			- we deallocate only if we are sure that nobody uses them
+			- how to be sure
+				- synchronization points: we synchronize all processes at a point where they hold no pointers of their own (we can then free up all chunks from the free list)
+				- reference counting
+				- hazard pointers – signal to the garbage collector that I am using the pointer
+					- we store h in the hazard pointer
+					- then we check if h still equals head (otherwise we need to continue into the next loop)
+			- amortize scanning the freelist
+				- scan only if freelist $\geq 2pr$ items
+				- $p$ … number of processes
+				- $r$ … number of hazard pointers per processor
+				- this releases $\geq pr$
+				- so scan can be accounted to the adding
 
 ## Minor questions
 
@@ -764,6 +890,18 @@ You should know all theory presented at the lecture: definitions of data structu
 	- we assumed there are no shared coordinates
 		- but we could attach a $(k{-}1)$-d subtree to each node where some points share a coordinate
 - Show how to use suffix array and LCP array for finding the longest common substring of two strings.
+	- we build a suffix array and LCP array for the string $\alpha \# \beta$
+	- $\#$ … separator that occurs neither in $\alpha$ nor in $\beta$
+	- we find the maximum $L[k]$ such that $k$-th (lex.) substring comes from $\alpha$ (contains $\#$) and $k{+}1$-th (lex.) substring comes from $\beta$ (does not contain $\#$) or vice versa
 - Describe parallel (a,b)-trees with the use of locks.
-
-## END
+	- standard $(a,b)$ tree: $a-1\leq$ number of keys $\leq b-1$
+	- top-down splitting and merging
+		- we need $b\geq 2a$
+		- we go top down and maintain the invariant that the current node can accept one key (pre-emptive splitting)
+		- → we don't need to go back
+		- similarly, we maintain the invariant that the current node has more keys than $a-1$
+		- we get $a-1\lt$ number of keys $\lt b-1$
+	- we only need to have two locks at the same time – the current node and its parent
+	- for deleting, we may need to lock siblings
+		- we lock nodes in left-to-right order
+		- note that if we delete a key from a node, we need to lock its subtree (we use the successor as a replacement) – this problem does not occur if we use B+ trees (store data in leaves only)
