@@ -539,8 +539,9 @@ You should know all theory presented at the lecture: definitions of data structu
 	- we consider blocks of operations
 		- block boundaries = growing/shrinking operation
 		- “how many elements does the array contain at the beginning and at the end of the block?”
-			- if growing: $C$ at the end, then $C/2$ at the beginning
-			- if shrinking: $C/4$ at the end, then $C/2$ at the beginning
+			- always $C/2$ at the beginning (after growing/shrinking operation, the array is half full)
+			- if growing: $C$ at the end
+			- if shrinking: $C/4$ at the end
 		- so there are at least $C/4$ operations in each block (to get from $C/2$ elements to $C/4$ or $C$ elements)
 		- we can account the $O(C)$ reallocation to the $\Omega(C)$ operations
 			- → amortized $O(1)$ for operation
