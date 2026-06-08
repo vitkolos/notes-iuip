@@ -340,7 +340,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- we can set $q=(e/4)^{1/3}$
 				- then $Pr\leq q^{2^t}$
 		- lemma L2
-			- let $R$ be run, $|R|\leq 2^{\ell+2},\ B_0,\dots,B_3$ first 4 blocks of size $2^\ell$ intersecting $R$
+			- let $R$ be run, $|R|\geq 2^{\ell+2},\ B_0,\dots,B_3$ first 4 blocks of size $2^\ell$ intersecting $R$
 			- then at least one of $B$ is critical
 		- proof
 			- consider interval $L=R\cap (B_0\cup \dots\cup B_3)$
