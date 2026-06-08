@@ -714,7 +714,7 @@
 - exercises
 	- for $k\geq 2$, $(k,c)$-independence $\implies$ $(k-1,c)$-independence
 	- $(2,c)$-independence $\implies$ $c$-universality
-	- $(1,c)$-independence $\centernot\implies$ $c$-universality
+	- $(1,c)$-independence $\mathrlap{\kern{0.8em}/}{\implies}$ $c$-universality
 - consider $h_t(x)=\sum_{i=0}^{k-1} t_ix^i\mod p$
 	- $t\in\mathbb Z_p^k$
 	- $x\in\mathbb Z_p$
