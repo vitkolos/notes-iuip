@@ -430,7 +430,7 @@ You should know all theory presented at the lecture: definitions of data structu
 	- observation
 		- let's consider two suffixes that are lexicographically consecutive (adjacent): $\alpha,\beta$
 		- if we remove the first character from both of them, we get $\alpha',\beta'$
-		- $\mathrm{LCP}(\alpha',\beta')=\mathrm{LCP}(\alpha,\beta)-1$
+		- if $\mathrm{LCP}(\alpha,\beta)$ is nonzero, then $\mathrm{LCP}(\alpha',\beta')=\mathrm{LCP}(\alpha,\beta)-1$
 		- $\alpha',\beta'$ may not be lexicographically consecutive but $\mathrm{LCP}(\alpha',\beta')$ is the minimum of that interval (according to the previous observation)
 		- so to compute LCP of $\alpha'$ and its successor, we can start with $\mathrm{LCP}(\alpha,\beta)-1$
 	- $S,R\to L$
@@ -495,7 +495,7 @@ You should know all theory presented at the lecture: definitions of data structu
 			- if CAS(head, h, n) == h
 				- return h
 	- it does not work :(
-		- for *Pop*, we are checking only the head – the next item might have been removed in the mean time
+		- for *Pop*, we are checking only the head – the next item might have been removed in the meantime
 			- other process could have run this sequence of operations: *Pop* (removes A), *Pop* (removes B), *Push(A)*
 			- ABA-problem
 		- possible solutions
