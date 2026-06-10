@@ -208,6 +208,9 @@ You should know all theory presented at the lecture: definitions of data structu
 			- so we get $O(N^2/B+1)$ I/O complexity again
 				- under the cache-oblivious model (with the *tall cache* assumption)
 				- it is optimal – each nondiagonal element has to be transferred
+			- note: we must show that there exists a replacement strategy that leads to this I/O complexity
+				- consider a strategy where we load the entire subproblem into the cache at level $i$
+				- this strategy serves as an upper bound (in terms of cache misses) for the optimal strategy
 - Describe hashing with chains and analyze its complexity. Define c-universal and k-independent systems of hash functions and provide constructions of such systems. Give an example when k-independent system in needed and c-universality does not suffice.
 	- hashing function $h:\mathcal U\to [m]$
 		- universe $\mathcal U$
