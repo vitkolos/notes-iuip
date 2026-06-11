@@ -355,10 +355,10 @@
 	- funkcionální (např. jaká je frekvence, s jakou robot kráčí) × behaviorální (jakou vzdálenost robot ujde)
 	- explicitní (dorazil robot ke zdroji energie?) × implicitní (jak dlouho vydržel pracovat)
 	- externí (dá se měřit jenom zvenku) × interní (je dostupná robotovi z jeho senzorů)
-- jak zvolit fitness
-	- „inženýrský přístup“ – FEE (funkcionální, explicitní, externí)
-	- pro neznámé a nepředvídatelné prostředí potřebujeme BII
-	- subjektivní fitness (jedinci jsou hodnoceni člověkem) – BEE
+	- jak zvolit fitness
+		- „inženýrský přístup“ – FEE (funkcionální, explicitní, externí)
+		- pro neznámé a nepředvídatelné prostředí potřebujeme BII
+		- subjektivní fitness (jedinci jsou hodnoceni člověkem) – BEE
 - přímý pohyb s obcházením překážek
 	- lze použít Braitenbergovo autíčko
 		- motory jsou přímo spojené se senzory (pomocí vážených spojů)
