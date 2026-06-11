@@ -1,0 +1,595 @@
+# Zkouška
+
+## Úvod
+
+- historie robotiky
+	- automatizace už ve starověkém Řecku – když dohořela zápalná oběť, tak se otevřely dveře chrámu
+	- biskup Albertus Magnus: kovový sluha
+	- da Vinci: mechanický rytíř
+	- Descartes: Ma fille Francine
+	- mechanická kachna
+	- R.U.R.
+	- Elektro – robot pro světovou výstavu v New Yorku, 1939
+	- pes Sparko
+	- průmyslové manipulátory
+	- Shakey – Stanford, 1960
+	- Khepera – dá se použít i k hardwarové evoluci
+		- e-Puck – varianta Khepery
+	- Honda: robot ASIMO
+- jak vypadá evoluční vývoj
+	- máme robota, ten se pohybuje v nějakém světě
+	- definujeme úlohu, např. má hledat nějaký objekt v tom světě
+	- jeho řízení zakódujeme do chromozomů – jeden chromozom kóduje celý řídicí systém
+	- tak jsme dostali nultou generaci
+	- vyzkoušíme každý chromozom, ohodnotíme je fitness funkcí (podle toho, jakých dosahovali výsledků)
+	- přechod k další generaci
+		- selekce (vybereme ty nejlepší)
+		- reprodukce (např. křížení)
+		- mutace
+- alternativy k evoluční robotice
+	- behavior-based robotics (robotika založená na chování)
+		- robot má sadu několika základních chování, ta mezi sebou interagují
+			- příklady chování: plním konkrétní úkol, hledám potravu, …
+			- dochází mi energie → musím hledat potravu (na úkor plnění úkolu)
+		- chování spolu můžou soutěžit
+			- kompetitivní koordinace – jeho řízení vítězí → subsumption method
+			- kooperativní koordinace – jednotlivá řízení přispívají k celkovému výsledku
+		- vnímání je těsně navázané na akce – při generování reakce se nepoužívá abstraktní reprezentace světa
+		- hierarchie chování
+	- robotické učení
+		- řídicí systém se učí pomocí neúplných dat a generalizuje
+		- typicky se učí zobrazení, které mapuje vstupy senzorů na výstupy motorů
+		- týká se pouze řízení (kdežto evoluční robotika se může zabývat i návrhem konstrukce robota)
+	- umělý život
+		- simulace světa, kde se pohybuje více organismů
+		- cílem je vyvinout systém, který se dokáže přizpůsobit změnám prostředí
+		- vychází z teorie dynamických systémů – lokální interakce prvků na nižší úrovni vede ke globálnímu chování na vyšší úrovni
+		- modely „umělého života“ jsou asi poměrně abstraktní – kdežto evoluční robotika se zaměřuje na reálné roboty
+- k čemu by to mohlo být dobré
+	- evoluce by nám mohla pomoct navrhnout řízení i morfologii robota, aby mohl řešit úlohu
+	- můžeme se inspirovat přírodou a naopak – možná nějaké takové mechanismy zpětně objevíme v přírodě
+	- přístupy k návrhu řídicích systémů – rozdělení na podúlohy
+		- klasický – perception, planning, execution
+		- behavior-based – rozdělení do jednotlivých základních chování
+		- evoluční – necháme to na evoluci
+	- příklad: chceme najít předmět v bludišti a zůstat tam
+		- je snadné určit jednotlivé úlohy, které robot musí plnit, ale je těžké je zkombinovat
+		- evoluční robotika tohle řeší (nehledají se podúlohy, pouze jedno globální chování)
+	- evoluční robotika může čerpat z oborů, které popisují chování živočíchů na různých úrovních
+		- superorganismus: evoluční biologie, ekologie, sociologie
+		- organismus: psychologie, neurologie
+		- suborganismus: anatomie/fyziologie, biologie buňky, genetika, molekulární biologie
+	- biologie
+		- přirozená evoluce – jak je možné, že se vyvinula taková spousta úspěšných forem života?
+		- chceme vytvořit podobně úspěšnou umělou evoluci
+		- v přírodě funguje jedno kritérium – přežití druhu (schopnost reprodukce)
+- bootstrap problém (problém inicializace)
+	- když náhodně vygenerujeme řídicí systémy, neřeší problém → skóre 0
+	- evoluce se nemá čeho chytit
+	- možná řešení
+		- inkrementální evoluce
+			- začneme s jednodušší úlohou, postupně přidáváme obtížnost, až se dostaneme k reálné úloze
+			- je jednodušší upravovat výběrové kritérium (fitness funkci) než navrhovat přímo řízení
+			- zvláštní případ: koevoluce
+				- např. dravec a kořist
+				- dravec se snaží ulovit kořist, kořist se snaží utéct před dravcem
+				- vlastně závody ve zbrojení
+				- neměníme kritérium, ale stejně dochází k postupnému zlepšování
+		- celoživotní učení
+			- jedinec umí využívat senzorické vjemy, učí se, adaptuje svoje řízení
+			- evolucí můžou vzniknout dva druhy jedinců schopných dobře fungovat v proměnlivém prostředí
+				1. plastic general (učenlivý) – nemá obecnou strategii, ale umí se přizpůsobit prostředí
+				2. full general (umí všechno) – má obecnou strategii vhodnou pro různé typy prostředí → nemusí se přizpůsobovat
+			- někdy se full general jedinec nedá vytvořit (nebo je moc složitý)
+		- evoluce zobrazení z genotypu na fenotyp
+			- v přirozené evoluci se to zobrazení evolučně vyvíjí, v umělé evoluci to obvykle zadává autor experimentu
+- využití
+	- nemusíme navrhovat každý detail, něco za nás řeší evoluce – někdy najde překvapivá řešení
+	- může spolu interagovat biologie a robotika – např. v rojové robotice
+	- evoluční biorobotika
+		- biorobotika – stavění modelů, které se podobají živým organismům (např. mečoun)
+		- pomocí evoluční robotiky se robot naučí řízení
+	- vývojová robotika
+		- jak se mládě vyvíjí v dospělce?
+		- mohl by se podobně vyvíjet robot?
+		- proces dospívání
+		- snažíme se vyvinout robota, který je schopný se doučit, dorůst
+	- evolučně-vývojová robotika (evo-devo-robo)
+		- zkušení jedinci můžou ovlivňovat méně zkušené
+		- v přírodě: postupná evoluce pohybu po souši
+			- mládě se plazí, dospělec kráčí
+			- později dojde k přeskočení plazení a jedinec rovnou kráčí
+		- robotické organismy z krychlí s klouby
+	- rojová robotika
+		- koordinace robotů ve skupině
+		- malé robotické moduly, které se dovedou poskládat dohromady
+	- modulární robotika
+		- moduly se můžou spojovat do větších celků podle potřeby
+	- měkká robotika
+		- kombinace pružných a pevných dílů, velká flexibilita pohybů
+		- zvednutí vajíčka pomocí (pod)tlaku vzduchu
+
+## Evoluční algoritmy
+
+- genetické algoritmy
+	- populace umělých chromozomů se cyklicky podrobuje selektivní reprodukci, která upřednostňuje výkonnější jedince, a náhodným změnám
+	- umělý chromozom (genotyp) = řetězec symbolů kódující vlastnosti jedince (fenotyp)
+		- může to být binární hodnota proměnné nebo posloupnost hodnot proměnných
+		- mnoho typů kódování (binární, Grayův kód, reálná čísla)
+			- Grayův kód – dvě čísla v posloupnosti se liší o jeden bit
+				- je jednoduché ho sestavit (opíšu v opačném pořadí, doplním o nuly a jedničky)
+				- příklady: 1, 0; 10, 00, 01, 11
+		- abecedy – např. binární, ternární, …
+	- fitness funkce – kritérium výkonosti (zobrazení: genotyp → reálné číslo)
+	- obecný algoritmus
+		- vytvoř populaci $N$ náhodně vygenerovaných chromozomů
+		- opakuj: 1) dekóduj všechny chromozomy a spočítej jejich fitness, 2) vytvoř novou populaci
+		- skončí, když se objeví hledaný jedinec (který plní úlohu) nebo když to trvá dlouho…
+- Hillclimber – gradientní algoritmus
+	- $N=1$
+	- novou populaci tvoříme tak, že zmutujeme chromozom a nahradíme jim ten původní, pokud má lepší fitness
+	- nemůže nastat zhoršení
+	- $\mu$ … pravděpodobnost mutace
+	- najde jenom lokální maximum
+	- možná řešení
+		- začít z různých pozic
+		- dovolit zhoršení fitness (simulované žíhání)
+	- simulované žíhání
+		- velikost kroku i směr závisí na teplotě, která se postupně snižuje
+		- pravděpodobnost přijetí zhoršení fitness (= teplota) se s časem zmenšuje
+		- na začátku jsou kroky téměř náhodné
+		- po ochlazení v podstatě deterministické
+- jednoduchý genetický algoritmus (Goldberg)
+	- víc než 1 chromozom v populaci
+	- selektivní reprodukce, křížení, mutace
+	- algoritmus
+		- vytvoř populaci $N$ náhodně vygenerovaných chromozomů
+		- opakuj
+			- dekóduj všechny chromozomy a spočítej jejich fitness
+			- vytvoř novou populaci selektivní reprodukcí
+			- rekombinuj chromozomy (křížení)
+			- mutuj chromozomy
+		- skonči, když se objeví hledaný jedinec (který plní úlohu) nebo když fitness nejlepšího neroste
+- jednoduchá selekce
+	- čím lepší jedinec, tím více jeho kopií se může objevit v nové populace
+	- reprodukce ruletou
+		- každý jedinec dostane výseč kruhu úměrnou své fitness funkci (musí být nezáporná)
+		- výseč ~ pravděpodobnost, že bude reprodukovaný
+		- ruletou se otočí $N$-krát
+	- problémy
+		- všichni mají podobnou fitness → náhodné prohledávání (nic moc se neděje)
+		- jeden jedinec (nebo dva) má obrovskou fitness → téměř všichni v populaci budou kopií toho stejného jedince
+	- řešení
+		- škálování – zvětšení nebo zmenšení rozdílů
+		- selekce podle pořadí (rank based) – nezáleží na konkrétní hodnotě fitness
+		- rank based s ořezáváním – nejlepších $M$ zkopírujeme $O$-krát, aby $N=M\times O$ (vlastně zahodíme spodní část seznamu)
+		- turnajová selekce – náhodně se vyberou dva jedinci, ten lepší jedinec s určitou pravděpodobností vyhraje a bude zkopírován (jinak ten druhý)
+	- elitismus – nejlepší jedinci se beze změny zkopírujou (abychom nepřišli o dosud nejlepší řešení)
+- křížení
+	- jedinci jsou náhodně spárováni a každý pár je s danou pravděpodobností zkřížen
+	- jednobodové nebo vícebodové křížení
+- mutace
+	- abychom měli možnost prohledat celý prostor
+	- aby nám algoritmus nekonvergoval příliš brzo
+	- uniformní mutace – každý znak každého jedince je s určitou pravděpodobností nahrazen náhodným znakem
+- nedeterminismus
+	- GA je nedeterministický, používá náhodné veličiny
+	- typicky se sleduje průměrná a maximální fitness, aby se GA mohl ve vhodnou chvíli zastavit (nebo se zastavuje po dosažení určitého počtu generací)
+	- GA se pouští opakovaně se stejnými nebo pozměněnými parametry
+	- výsledkem je nejlepší jedinec vybraný z finálních generací ze všech běhů GA
+- fitness krajina (fitness landscape)
+	- tvar fitness funkce – v mnohadimenzionálním prostoru
+	- chceme, aby se fitness postupně zvětšovala
+- schémata
+	- schéma – oproti chromozomu má jeho abeceda jeden prvek navíc (typicky hvězdičku $*$)
+	- je to jakoby maska popisující víc chromozomů
+	- schéma s $r$ hvězdičkami reprezentuje $k^r$ řetězců ($k$ je velikost původní abecedy)
+	- každý řetězec délky $m$ je reprezentovaný $2^m$ schématy
+	- $o(S)$ … řád schématu – počet pevných symbolů (různých od $*$)
+	- $\delta(S)$ … definiční délka schématu – vzdálenost mezi první a poslední pevnou pozicí ve schématu
+	- $\phi(S,t)$ … fitness schématu v čase $t$ (průměrná fitness řetězců reprezentovaných daným schématem)
+	- $\xi(S,t)$ … počet řetězců v populaci $P(t)$, které jsou reprezentované schématem $S$
+	- kolik jedinců určených daným schématem bude v dané populaci?
+		- jak schéma ovlivní selekce?
+			- $\xi(S,t+1)=\xi(S,t)\cdot\frac{\phi(S,t)}{\bar F(t)}$
+			- kde $\bar F(t)$ je průměrná fitness populace $P(t)$
+			- tedy „nadprůměrné“ schéma pokryje v následující generaci více řetězců (jejich počet roste geometrickou řadou)
+		- jak schéma ovlivní křížení?
+			- když křížím jedince ze stejného schématu, tak jsou pokrytí i potomci
+			- když je jeden rodič mimo schéma, tak potomek může být mimo schéma
+				- ale záleží, kde se kříží (viz hvězdičkový prefix/suffix)
+			- pravděpodobnost zničení schématu křížením je $\leq\frac{\delta(S)}{m-1}$
+			- takže pravděpodobnost zachování příslušnosti ke schématu je $\geq 1-p_k\cdot\frac{\delta(S)}{m-1}$
+		- co mutace?
+			- musí se změnit jeden z pevných symbolů schématu
+			- tj. pravděpodobnost, že mutace zachová schéma je $(1-p_m)^{o(S)}\approx 1-o(S)\cdot p_m$
+				- aproximace funguje, protože $p_m$ je hodně malé (takže v součtu podle binomické věty budou dominantní první dva členy, kde figuruje $p_m^0$ a $p_m^1$)
+		- tedy $\xi(S,t+1)\geq\xi(S,t)\cdot\frac{\phi(S,t)}{\bar F(t)}\cdot (1-p_k\cdot\frac{\delta(S)}{m-1})\cdot (1-o(S)\cdot p_m)$
+		- $\geq\xi(S,t)\cdot\frac{\phi(S,t)}{\bar F(t)}\cdot (1-p_k\cdot\frac{\delta(S)}{m-1}-o(S)\cdot p_m)$
+			- schéma $S$ přežívá dobře, pokud má malé $\delta,o$
+	- věta o schématech
+		- krátká nadprůměrná schémata s nízkým řádem pokrývají exponenciálně rostoucí počet řetězců v po sobě jdoucích generacích genetického algoritmu
+		- pozor, máme omezenou velikost populace
+	- hypotéza o stavebních blocích
+		- genetický algoritmus hledá řešení blízké optimu řetězením krátkých schémat
+		- evoluce nefunguje dobře, když se optimum nedá poskládat z krátkých bloků
+		- *není to věta*
+- jsou GA dobrou simulací biologické evoluce?
+	- evoluce nekončí a nezačíná vždy od nuly (bootstrapping)
+		- SAGA – proměnlivá délka genotypu; značně zkonvergovaná populace se mění postupnými mutacemi, ne křížením
+		- neutrální sítě – drobné náhodné změny v genotypu nemusí měnit fitness, ale můžou populaci posunout jinam
+	- další variace GA spojené s dospíváním a učením (fitness se mění v průběhu života jedince)
+	- co se nemění – genetická reprezentace jedince, interakce s prostředím
+- vylepšení GA
+	- dělení na druhy
+		- definuje se vzdálenost – míra podobnosti jedinců
+		- křížení jenom v rámci druhu
+		- ochrana nových druhů – jedinec má čas, aby se zdokonalil
+			- po omezenou dobu od vzniku nového druhu se při selekci jedinců zohledňuje jenom fitness v rámci jejich vlastního druhu
+	- proměnlivá velikost populace
+		- optimální velikost populace se těžko určuje
+		- stárnutí – jedinec je po určitém počtu generací vyřazen
+			- těžko se nastavují parametry
+	- kódování – různé přístupy
+		- konečná doména – pevný počet bitů
+			- potenciální problém: pro rozlišení pěti prvků potřebujeme tři bity, ale tím dostaneme osm prvků
+		- celá čísla – binární, Grayův kód
+		- reálná čísla – různá kódování (omezený rozsah, pevný počet desetinných míst, plovoucí desetinná čárka)
+
+## Neuronové sítě
+
+- umělá neuronová síť
+	- soubor neuronů propojených ohodnocenými spoji, které přenášejí signály
+	- neurony: vstupní, výstupní, skryté
+		- pracují paralelně
+	- různé aktivační (přenosové) funkce: lineární, skoková, sigmoida, ReLU
+	- architektura: dopředné šíření, rekurentní
+- učení
+	- s učitelem, bez učitele
+	- online (spřáhnuté) × offline (dávkové)
+		- upravují se váhy rovnou na základě každého vstupu nebo až najednou pro celou dávku?
+	- algoritmus zpětného šíření
+	- na začátku náhodné hodnoty vah, pak gradient descent (případně se používá ještě momentum)
+- rekurentní neuronové sítě (RNN)
+	- posuvné okénko (tzn. síť předpovídá další prvek v řadě na základě minulých $k$ prvků pro fixní $k$) někdy nestačí – potřebujeme, aby si síť pamatovala informace
+	- jak si se zpětnou hranou poradí algoritmus zpětného šíření?
+		- neurony zdvojíme, vystačíme si s dopřednými hranami
+		- při úpravě vah klonů upravujeme váhy původních neuronů
+	- LSTM, GRU
+	- někdy se používá reinforcement learning
+	- základní architektury rekurentních sítí
+		- Elman – uchovávají se stavy ze skrytých neuronů
+		- Jordan – uchovávají se stavy z výstupních neuronů
+- kombinace evoluce a NS
+	- NS nám zajistí hladkost prohledávaného prostoru (malá změna váhy trochu změní výstup)
+	- různé úrovně granularity
+		- fylogenetická – jenom GA
+		- vývojová – síť doroste
+		- ontogenetická – síť se učí
+	- přímočaré zobrazení „senzory → motory“
+	- robustnost vůči šumu
+- evoluce vah a parametrů učení
+	- proč
+		- GA zkoušejí celou populaci sítí – ne jen jednu síť
+		- nejsme omezeni architekturou ani aktivační funkcí (nemusí být diferencovatelná)
+		- nepotřebujeme detailně znát výstup sítě pro každý vzor
+	- kódování vah
+		- řetězec reálných čísel
+		- řetězec binárních čísel – jako čísla s pevnou desetinnou čárkou se zadanou přesností
+			- varianta: dynamické kódování – v průběhu učení zafixujeme vyšší bity a síť se učí jen ty nižší (tzn. zajistíme jistou kvalitu řešení)
+	- příklad: k analýze sonarových signálů fungoval GA lépe než zpětné šíření
+	- jiná strategie: kombinace evoluce a učení s učitelem
+		- zpětné šíření je citlivé na počáteční nastavení vah – GA nám ho může najít
+	- gen může kódovat i hyperparametry a typ architektury
+		- naopak nemusíme kódovat váhy
+		- přímé (kód obsahuje přesné váhy) vs. nepřímé kódování 
+- evoluce architektury
+	- genetický kód může obsahovat plán budování sítě
+		- posloupnost segmentů = vrstev
+		- jeden segment kóduje vlastnosti uzlů (počet neuronů, aktivační funkce, geometrické rozložení) a vlastnosti spojení (hustota, parametry učení)
+		- pak se použije backpropagace
+		- ve fitness se dá penalizovat počet spojů nebo počet cyklů učení
+	- genotyp může kódovat přepisovací pravidla – výsledkem přepisování je binární matice sousednosti (spojení) mezi neurony
+	- dozrávání – síť roste v době, kdy se robot pohybuje ve světě
+		- genotyp kóduje pozici neuronu, směr růstu axonů, délku axonů
+		- růst závisí i na aktivitě robota
+	- taky se dá dělat evoluce pravidel učení
+
+## Evoluce programů a robotů
+
+- genetické programování
+	- genetický řetězec nekóduje řešení problému, ale program řešící problém
+	- typicky to vychází z LISPovské reprezentace programů
+	- postup
+		- zvolí se množina funkcí $F$ a terminálů $T$
+			- funkce musí být uzavřené, tj. všude definované
+		- náhodně se vygeneruje počáteční populace
+		- dále jako genetický algoritmus
+	- křížení – vezmeme dva jedince (stromy), prohodíme jejich větve
+		- tak nám vzniknou syntakticky správné programy
+	- mutace – zvolí se uzel a zruší se nebo se tam vytvoří nový podstrom
+		- moc se nepoužívají
+	- vylepšení: automaticky definované funkce (funkce nahrazuje celý podstrom)
+		- chromozom obsahuje např. 3 stromy
+		- první (hlavní) strom může obsahovat reference na ten druhý a třetí
+		- druhý strom může obsahovat reference na ten třetí
+- alternativní přístup: gramatická evoluce
+	- evoluce programu v libovolném programovacím jazyce
+	- používá to lineární genom (kdežto GP používá stromy)
+	- zobrazení z genotypu na fenotyp se dělá podle gramatiky
+	- jak se má uplatnit pravidlo? na to se používá kodon
+		- tzn. slouží k výběru správné pravé strany přepisovacího pravidla
+		- vždycky přepisujeme nejlevější neterminál
+			- tudíž ten algoritmus vlastně generuje stromy, které se zanořují doleva
+- evoluce robotů
+	- problémy
+		- mechanická odolnost
+		- přívod energie
+		- analýza – vyvinutý řídící systém může být hodně složitý
+		- časová náročnost
+		- návrh fitness funkce
+	- přístupy
+		- evoluce fyzických robotů – Khepera
+		- simulovaná evoluce – pozor, často zneužívá rozdíl mezi simulací a realitou
+
+## Schéma evolučního experimentu
+
+- přemístění
+	- jedince umístíme na náhodné místo
+	- kdybychom v simulaci recyklovali pozici, v níž skončil minulý jedinec, tak by to mohlo dalšímu jedinci ztížit podmínky
+	- kdybychom používali vždycky stejnou výchozí pozici, tak by se robot mohl naučit pevnou posloupnost kroků
+- simulovaná evoluce
+	- fyzická evoluce trvá dlouho a různí roboti se můžou chovat různě
+	- dává smysl nejdřív použít simulovanou evoluci a pak vyzkoušet nejlepší jedince na reálných robotech (abychom si byli jistí, že to vůbec funguje)
+	- je důležité zvážit, jak moc má simulace odpovídat realitě
+- interakce robota s prostředím (jak to modelovat v simulaci)
+	- senzory a motory můžou fungovat rozdílně, i když jsou identické
+	- je potřeba nějak modelovat šum
+	- tělo robota a charakteristiky prostředí musejí být přesně reprodukované (mřížka jako model prostředí často nestačí)
+	- tzv. *základní množinu charakteristik* (jak robot interaguje s prostředím) musíme modelovat přesně
+		- mezi pokusy se přiměřeně mění, aby bylo řízení dostatečně robustní
+	- simulace má pak ještě tzv. *implementační aspekty*
+		- ty neodpovídají realitě, jsou to čistě vlastnosti simulace
+		- musíme je mezi pokusy měnit, aby je robot nemohl použít k „podvádění“
+- charakteristiky fitness funkce
+	- funkcionální (např. jaká je frekvence, s jakou robot kráčí) × behaviorální (jakou vzdálenost robot ujde)
+	- explicitní (dorazil robot ke zdroji energie?) × implicitní (jak dlouho vydržel pracovat)
+	- externí (dá se měřit jenom zvenku) × interní (je dostupná robotovi z jeho senzorů)
+- jak zvolit fitness
+	- „inženýrský přístup“ – FEE (funkcionální, explicitní, externí)
+	- pro neznámé a nepředvídatelné prostředí potřebujeme BII
+	- subjektivní fitness (jedinci jsou hodnoceni člověkem) – BEE
+- přímý pohyb s obcházením překážek
+	- lze použít Braitenbergovo autíčko
+		- motory jsou přímo spojené se senzory (pomocí vážených spojů)
+		- pozor, existují rovnovážné body, kde se vstupy navzájem anulují – autíčko se zastaví (ten problém řeší rekurentní spoje, ale ty se špatně nastavují)
+
+---
+
+- reaktivní inteligence
+	- reaktivní systémy – senzory jsou přímo připojené k motorům a na stejný stav senzorů systém reaguje stejně
+		- systém může mít pomocné stavy, které slouží k určení motorických akcí
+	- vtělené a situační systémy
+	- senzorově-motorická koordinace
+	- nejednoznačnost vjemů
+	- aktivní vnímání
+		- robot může jít vjemům „naproti“
+	- může se stát, že se od sebe dva různé vjemy ze senzorů dají špatně rozlišit (ale chtěli bychom je umět rozlišit)
+		- to může řešit překódování stavů senzorů – zesílí se užitečné příznaky
+		- typicky to řeší skrytá vrstva v neuronové síti
+		- nebo to taky můžeme řešit pomocí aktivního vnímání
+		- příklad: válec/stěna
+			- pohyblivý robot odjel, jakmile objekt správně klasifikoval
+			- takže měl paradoxně méně vjemů, kde došlo ke správné klasifikaci (?)
+		- index geometrické separability
+			- chtěli bychom, aby vjemy pro stejné třídy byly blízko sebe
+			- zaznamenáme si vjemy v průběhu experimentu
+			- každému vjemu přiřadíme třídu
+			- spočítáme podíl vjemů, jejichž nejbližší jiný vjem má stejnou třídu
+	- atraktor chování
+	- umělá evoluce využívá omezení modelu
+	- příklad: krysy hledají potravu
+		- Khepera – pohybuje se po zakřivené dráze a nutně najde dlouhou stěnu
+
+## Moduly
+
+- v evoluční robotice nejsou nutné, ale možná budou fungovat dobře
+	- přizpůsobíme tomu architekturu
+- úlohy: sběr odpadu, navigace s návratem domů
+- sběr odpadů
+	- Khepera čistič s ramenem
+	- emergentní modulární architektura
+	- simulovaná evoluce
+	- ale arbitři moc nefungovaly
+		- moduly se nepřepínaly
+- návrat domů k nabíječce
+	- simulovaná baterie
+	- chceme, aby robot jezdil co nejrychleji mimo nabíječku – tomu odpovídal výpočet fitness
+
+## Učení a evoluce
+
+- dvě různé formy biologické adaptace
+- evoluce – na populaci, operuje na genotypu
+- učení – v jednom jedinci po dobu jeho života, ovlivňuje jenom fenotyp
+	- budeme uvažovat umělé neuronové sítě (učení vah)
+- konekcionismus rozlišuje
+	- učení – změny synaptických vah
+	- paměť – změny aktivačních stavů
+- učení se zpětnou vazbou z prostředí pracuje rychleji než evoluce
+	- ale výsledky učení se přímo nepřepisují do genotypu
+- výhody
+	- i evolučně suboptimální jedinci můžou přežít, pokud se dovedou dobře učit
+		- ale učení stojí čas, takže evoluce upřednostňuje jedince, které mají dané vlastnosti od narození
+	- učení umožňuje vytvořit složité fenotypy z krátkých genotypů – část informací se extrahuje z prostředí
+- nevýhody
+	- ne vždy je možné naučit se, co je potřeba
+	- nenaučený jedinec si může ublížit
+- učení dělá fitness funkci „hladší“
+- učení a evoluce můžou mít různé cíle
+	- prostor učení a prostor evoluce vypadají jinak
+- výhody učení se projevují v interakci s evolucí
+- evoluce učení
+	- Floreano, Mondala
+	- genotyp kóduje architekturu a pravidla učení pro váhy (ne jejich hodnoty)
+	- učící pravidla – skutečné vzorce se nemusíme učit
+- sekvenční úloha – zapnutí světla vypínačem
+	- učení jedinci si uměli poradit se změnou barvy stěn (jedinci s genetický kódovanými váhami nikoliv)
+- …
+
+## Koevoluce, dravec-kořist
+
+- současná evoluce dvou nebo více populací s provázanou fitness funkcí
+- koevoluce nemusí vést ke zdokonalování jedinců – strategie se můžou pouze cyklicky opakovat
+	- lze brzdit pomocí síně slávy
+- jak sledovat vývoj?
+	- když se zlepšuje jeden druh, tak se skoro jistě (relativně) zhoršuje druhý
+	- takže se používá CIAO – necháme nejlepšího jedince z aktuální generace utkat se s nejlepšími soupeři z minulých generací
+		- generujeme bitmapu N×N, kde N je počet generací – pixel je černý nebo bílý podle toho, kdo vyhrál
+	- po skončení evoluce můžeme uspořádat tzv. mistrovství – necháme nejlepšího z dané generace utkat se s nejlepšími ze všech generací (ideálně by křivka měla růst)
+- aplikace
+	- třídící algoritmus pro data s určitými vlastnostmi (např. jsou částečně setříděné)
+- příklad: dravec-kořist s roboty
+	- jedinec testovaný proti nejlepším soupeřům z předcházejících 10 generacích
+	- fitness kořisti = čas do kontaktu / maximální čas
+	- fitness dravce = 1 – fitness kořisti
+	- různé strategie, lze je pozorovat a popsat (ale těžko)
+		- různí jedinci v populaci můžou mít různé strategie
+	- aby se předešlo cyklení, dává smysl vybírat ze všech předchozích generací (ne jen z 10 předcházejících)
+	- nedá se úplně zabránit cyklení strategií – těch tříd je konečně mnoho
+	- metoda síně slávy fungovala líp
+	- zkusili vylepšit kořist
+	- experimenty s jednoduchou evolucí
+	- experimenty s celoživotním učením
+- koevoluce tvaru těla
+	- Karl Sims
+- hra Tron
+
+## Zobrazení genotypu na fenotyp
+
+- dosud 1:1
+- ale dekódování genotypu na fenotyp může být ovlivněno prostředím
+- výsledná fitness je daná fenotypem
+- jedinec se může vyvíjet postupně – mít vývojová stádia
+- genetické kódování
+	- přímé kódování
+		- jednoduché na implementaci, ale chtěli bychom něco s větší vyjadřovací silou (na krátkém rozsahu)
+	- co bychom chtěli
+		- vyjadřovací sílu
+		- kompaktnost
+		- možnost rozvoje
+- stabilní genetický algoritmus
+	- konstantní počet jedinců
+	- při vytvoření nového jedince se z aktuální populace vybere nějaký jedinec, který se zahodí
+	- dá se dobře paralelizovat – akorát se pak nedá jasně říct, kdy začíná a končí generace
+
+## Kráčející stroje
+
+- složitější než kolečka – noha potřebuje aspoň 2 stupně volnosti
+	- trik: můžeme použít symetrie
+	- ale všechny nohy se nemůžou pohybovat stejně
+- statická × dynamická chůze – podle toho, jestli je těžiště stále nad mnohoúhelníkem dotyku noh
+- mlok – dva způsoby pohybu (plavání a chůze)
+- propojené generátory řídicích signálů (tzv. CPG)
+- další experimenty
+	- Sony – pes Aibo
+	- Honda – humanoid ASIMO
+- někteří roboti se dovedou přestavět – změnit svoji morfologii
+	- např. rozdělit se na menší roboty nebo metamorfovat
+	- ukázka s modulárními polokostkami/poloválci
+	- M-TRAN
+	- zase generátory signálů – každý modul má svůj CPG, které spolu komunikují
+	- příklad robota popsaného tak, že se na něj dá použít evoluční algoritmus
+
+## Evoluční učení neuronových sítí
+
+- mozek se vyvinul evolučně
+- sekvenční úlohy z rozhodování
+- temporal difference reinforcement learning
+	- Q-učení
+	- neuroevoluce je jiná
+- neuroevoluce = „odložené učení“?
+- dosud jsme měli optimalizaci vah a pevnou architecturu = konvenční neuroevoluce
+	- pokročilejší: optimalizace architektury
+- základní metody neuroevoluce
+	- máme pevnou topologii (obvykle pevné propojení)
+	- evolučně se vyvíjejí váhy sítě (nepoužívá se algoritmus zpětného šíření)
+	- …
+	- problémy
+		- předčasná konvergence
+		- různé kódy odpovídají stejným sítím (liší se jenom permutace neuronů)
+			- křížení pak vytváří málo nových jedinců
+- pokročilá neuroevoluce s pevnou architekturou sítě
+	- symbiotická adaptivní neuroevoluce (SANE)
+		- jedna skrytá vrstva, vyvíjejí se jednotlivé skryté neurony
+		- při vyhodnocení se z nich vybere $k$ neuronů a složí se síť
+		- to se opakuje, aby byl každý neuron vyhodnocený aspoň 10×
+		- fitness neuronu je průměrná fitness přes všechny testy, kde jsme ho použili
+		- takže se neurony specializují a fungují v symbióze s ostatními
+		- každý neuron má 5 spojů, ty můžou vést ze vstupní vrstvy nebo do výstupní vrstvy (o tom rozhoduje parametr, který je součástí genetického kódu)
+		- porovnání symbiotické a standardní evoluce – u standardní rychle klesá diverzita
+		- příklad: cartpole
+	- vynucené subpopulace / enforced sub-populations (ESP)
+		- neurony jsou rozdělené na druhy – vyvíjejí se v rámci druhů
+		- jeden skrytý neuron odpovídá jedné populaci
+	- kooperativní synaptická neuroevoluce (CoSyNE)
+		- máme subpopulace pro váhy
+		- váhy pro $i$-tou synapsi jsou v subpopulaci $P_i$
+		- sloupec $x_i$ jsou hodnoty vah pro všechny synapse v síti
+		- kooperativní koevoluce pro každou subpopulaci odděleně
+	- CMA-ES
+	- NEAT
+		- začíná se s malou sítí, sítě můžou růst
+		- smysluplné křížení sítí s různou topologií
+		- ochrana inovací pomocí druhů
+		- uzly v síti mají tzv. historické značky – podle nich se párují při mutaci
+		- přidání spoje je mutace
+		- musíme si hlídat, aby měl konkrétní spoj v celé generaci jenom jednu historickou značku
+			- u neuronů to asi nehlídáme
+			- je to taková heuristika, kterou se trochu bráníme proti permutačnímu problému
+		- ochrana inovací
+			- dělíme jedince do druhů
+			- nový druh je po několik generací chráněný – jedinci soutěží jenom mezi sebou
+			- jedinci sdílejí zdroje s ostatními jedinci svého druhu – mají upravenou fitness
+			- rozdělení do druhů můžeme ovládat nastavováním vzdálenostní konstanty v každé generaci
+	- cellular encoding
+
+## Od simulace k realitě
+
+- Karl Sims
+	- kvádroví roboti
+- L-systém
+	- jako bezkontextová gramatika, akorát v každém kroku musím přepsat všechny neterminály najednou
+	- generuje se konstrukční jazyk podobný jako jazyk Logo
+- GOLEM
+- projekt ERO
+- soft robots
+	- přímé kódování nefunguje dobře
+	- HyperNEAT funguje líp
+- growing soft-bodied creatures
+- electrophysiological soft robots
+
+## Robotické roje
+
+- mravenci – feromony
+- znaky robotických rojů, technologické motivace
+	- superlineárnost – roboti mají dohromady větší schopnosti než prostý součet jejich jednotlivých schopností
+- chceme projít všechny vrcholy grafu
+	- potenciálová metoda (naučit!)
+- chceme projít všechny hrany grafu
+	- každý uzel má směrovku
+
+## Pokročilé evoluční NS
+
+- NEAT
+- nepřímé kódování
+	- analogové genetické kódování (AGE)
+- HyperNEAT
+- ES-HyperNEAT
+- pravidelné a modulární sítě
+- deceptive tasks, jejich řešení
+- novelty search
+- curiosity search
+- metoda s dominancí a frontami
+- kreativní myšlení
+	- curiosity search na vnitřních stavech (skrytých neuronech)
+- skončili jsme na slajdu 61
