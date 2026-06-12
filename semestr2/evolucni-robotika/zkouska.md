@@ -791,55 +791,106 @@
 ## Evoluční učení neuronových sítí
 
 - mozek se vyvinul evolučně
+	- když to dokáže mozek, tak by to mělo jít i s umělou neuronovou sítí v umělé evoluci
+	- neuronové sítě jsou výkonné ve spoustě oblastí – především když neexistuje dobrá teorie
+	- předpokládalo se, že neuroevoluce nahradí zpětné šíření chyby (tzn. při učení s učitelem)
+		- ale zajímavějších výsledků neuroevoluce dosahuje v situaci, kdy nemáme správné výstupy (tzn. když nemůžeme jednoduše použít backpropagaci)
+		- evoluční strategie jsou dosud nejlepší metodou, jak optimalizovat hyperparametry sloužící k učení NS
 - sekvenční úlohy z rozhodování
-- temporal difference reinforcement learning
-	- Q-učení
+	- skrytý Markovovský model (POMDP)
+	- temporal difference reinforcement learning
+		- Q-učení
+		- těžké, když je stavový prostor rozsáhlý/spojitý a když má prostor skryté stavy (partial observability)
 	- neuroevoluce je jiná
-- neuroevoluce = „odložené učení“?
-- dosud jsme měli optimalizaci vah a pevnou architecturu = konvenční neuroevoluce
-	- pokročilejší: optimalizace architektury
+		- hledáme přímé nelineární zobrazení ze senzorů na akce
+		- rozsáhlost/spojitost za nás řeší neuronová síť
+		- skryté stavy můžeme řešit pomocí paměti (RNN)
+- dva přístupy k neuroevoluci
+	- dosud jsme měli optimalizaci vah a pevnou architecturu sítě = konvenční neuroevoluce
+	- mohli bychom ale také optimalizovat architekturu
 - základní metody neuroevoluce
 	- máme pevnou topologii (obvykle pevné propojení)
 	- evolučně se vyvíjejí váhy sítě (nepoužívá se algoritmus zpětného šíření)
-	- …
+	- genotyp – řetězec bitů nebo reálných čísel
+		- pevná topologie
+		- úplné propojení
+		- náhodně generovaná počáteční populace
 	- problémy
 		- předčasná konvergence
+		- příliš mnoho parametrů optimalizujeme naráz (tisíce vah)
 		- různé kódy odpovídají stejným sítím (liší se jenom permutace neuronů)
 			- křížení pak vytváří málo nových jedinců
-- pokročilá neuroevoluce s pevnou architekturou sítě
-	- symbiotická adaptivní neuroevoluce (SANE)
-		- jedna skrytá vrstva, vyvíjejí se jednotlivé skryté neurony
-		- při vyhodnocení se z nich vybere $k$ neuronů a složí se síť
-		- to se opakuje, aby byl každý neuron vyhodnocený aspoň 10×
-		- fitness neuronu je průměrná fitness přes všechny testy, kde jsme ho použili
-		- takže se neurony specializují a fungují v symbióze s ostatními
-		- každý neuron má 5 spojů, ty můžou vést ze vstupní vrstvy nebo do výstupní vrstvy (o tom rozhoduje parametr, který je součástí genetického kódu)
-		- porovnání symbiotické a standardní evoluce – u standardní rychle klesá diverzita
-		- příklad: cartpole
-	- vynucené subpopulace / enforced sub-populations (ESP)
-		- neurony jsou rozdělené na druhy – vyvíjejí se v rámci druhů
-		- jeden skrytý neuron odpovídá jedné populaci
-	- kooperativní synaptická neuroevoluce (CoSyNE)
-		- máme subpopulace pro váhy
-		- váhy pro $i$-tou synapsi jsou v subpopulaci $P_i$
-		- sloupec $x_i$ jsou hodnoty vah pro všechny synapse v síti
-		- kooperativní koevoluce pro každou subpopulaci odděleně
-	- CMA-ES
-	- NEAT
-		- začíná se s malou sítí, sítě můžou růst
-		- smysluplné křížení sítí s různou topologií
-		- ochrana inovací pomocí druhů
-		- uzly v síti mají tzv. historické značky – podle nich se párují při mutaci
-		- přidání spoje je mutace
-		- musíme si hlídat, aby měl konkrétní spoj v celé generaci jenom jednu historickou značku
-			- u neuronů to asi nehlídáme
-			- je to taková heuristika, kterou se trochu bráníme proti permutačnímu problému
-		- ochrana inovací
-			- dělíme jedince do druhů
-			- nový druh je po několik generací chráněný – jedinci soutěží jenom mezi sebou
-			- jedinci sdílejí zdroje s ostatními jedinci svého druhu – mají upravenou fitness
-			- rozdělení do druhů můžeme ovládat nastavováním vzdálenostní konstanty v každé generaci
-	- cellular encoding
+			- tzv. permutační problém
+- pokročilá neuroevoluce s pevnou architekturou sítě – metody
+	- SANE
+	- ESP
+	- CoSyNE
+- symbiotická adaptivní neuroevoluce (SANE)
+	- jedna skrytá vrstva, vyvíjejí se jednotlivé skryté neurony
+	- při vyhodnocení se z nich vybere $k$ neuronů a složí se síť
+	- to se opakuje, aby byl každý neuron vyhodnocený aspoň 10×
+	- fitness neuronu je průměrná fitness přes všechny testy, kde jsme ho použili
+	- takže se neurony specializují a fungují v symbióze s ostatními
+	- každý neuron má 5 spojů, ty můžou vést ze vstupní vrstvy nebo do výstupní vrstvy (o tom rozhoduje parametr, který je součástí genetického kódu)
+	- porovnání symbiotické a standardní evoluce – u standardní rychle klesá diverzita (měří se pomocí Hammingovské vzdálenosti)
+	- příklad: cartpole
+- vynucené subpopulace / enforced sub-populations (ESP)
+	- neurony jsou rozdělené na druhy – vyvíjejí se v rámci druhů
+	- jeden skrytý neuron odpovídá jedné subpopulaci
+	- možnost vyvíjet i rekurentní sítě
+	- úspěšné při řešení těžkých úloh – např. balancování dvou tyčí
+	- velký prohledávaný prostor tak vlastně rozdělíme na podúlohy
+- kooperativní synaptická neuroevoluce (CoSyNE)
+	- máme subpopulace pro váhy
+	- váhy pro $i$-tou synapsi jsou v subpopulaci $P_i$
+		- $i$-tý řádek matice
+	- sloupec $x_j$ jsou hodnoty vah pro všechny synapse v síti
+		- sítě $x_1,\dots,x_m$ se vyhodnotí a dostanou fitness
+		- nejhorší sloupce se nahradí novými potomkami
+	- kooperativní koevoluce pro každou subpopulaci odděleně
+		- několik prvků z populace se vybere a zamíchá (takže se vymění hodnoty dané váhy napříč sloupci/sítěmi)
+		- víc se permutují prvky s nižší fitness
+	- také se někdy používá CMA-ES
+		- covariance matrix adaptation evolution strategy
+		- vyvíjejí se jednotlivé celé sítě
+		- při mutacích se zohledňují korelace mezi váhami
+- NEAT
+	- začíná se s malou sítí, sítě můžou růst
+	- smysluplné křížení sítí s různou topologií
+	- ochrana inovací pomocí druhů
+	- uzly a váhy v síti mají tzv. historické značky
+		- podle nich se párují při křížení
+		- potomci dědí historické značky svých rodičů
+	- přidání spoje je mutace
+	- musíme si hlídat, aby měl konkrétní spoj v celé generaci jenom jednu historickou značku
+		- u neuronů to asi nehlídáme
+		- je to taková heuristika, kterou se trochu bráníme proti permutačnímu problému
+	- křížení
+		- zarovnají se geny hran se stejnými značkami
+		- potomek dostane náhodně jeden z genů se stejnými značkami (tzv. odpovídající si geny)
+		- disjunktní geny z obou se zkopírují
+		- přesahující geny se zkopírují jenom od rodiče s vyšší fitness
+			- to jsou ty geny, jejichž časové značky jsou větší než všechny časové značky ve druhém rodiči
+	- ochrana inovací
+		- dělíme jedince do druhů (k tomu musíme mít nějakou metriku – vzdálenost mezi jedinci)
+			- $\delta=\frac{c_1E}N+\frac{c_2D}N+c_3\bar W$
+			- $E$ … počet přesahujících genů
+			- $D$ … počet disjunktních genů
+			- $N$ … počet genů ve větším jedinci
+			- $\bar W$ … průměrný rozdíl vah odpovídajících si genů
+			- $c_1,c_2,c_3$ … konstanty určující váhy kritérií
+		- nový druh je po několik generací chráněný – jedinci soutěží jenom mezi sebou
+		- jedinci sdílejí zdroje s ostatními jedinci svého druhu – mají upravenou fitness
+			- také si hlídáme, aby jeden druh nepokryl celou populaci
+		- rozdělení do druhů můžeme ovládat nastavováním vzdálenostních konstant v každé generaci
+		- používáme elitismus
+	- při vyhodnocení na cartpolu fungoval NEAT podobně jako ESP
+		- na těžší úloze byl lepší
+- cellular encoding
+	- Gruau, Whitley, Pyeatt, 1996
+	- viz Gruauova simulace šestinohého robota
+	- pravidla růstu – gramatika
+	- nepřímé kódování – genom je komprimovaný
 
 ## Od simulace k realitě
 
