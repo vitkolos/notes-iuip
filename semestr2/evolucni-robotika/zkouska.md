@@ -165,6 +165,7 @@
 		- rank based s ořezáváním – nejlepších $M$ zkopírujeme $O$-krát, aby $N=M\times O$ (vlastně zahodíme spodní část seznamu)
 		- turnajová selekce – náhodně se vyberou dva jedinci, ten lepší jedinec s určitou pravděpodobností vyhraje a bude zkopírován (jinak ten druhý)
 	- elitismus – nejlepší jedinci se beze změny zkopírujou (abychom nepřišli o dosud nejlepší řešení)
+		- podobný koncept: síň slávy (nejlepší jedinci ze všech předcházejících generací)
 - křížení
 	- jedinci jsou náhodně spárováni a každý pár je s danou pravděpodobností zkřížen
 	- jednobodové nebo vícebodové křížení
@@ -368,6 +369,14 @@
 		- 2 výstupní neurony (motory, sigmoida zajišťuje vhodný rozsah výstupů)
 		- další 2 „vstupní“ neurony přenášejí výstup z minulého kroku zpátky na vstup
 	- teoreticky by robot mohl couvat, ale vždy preferoval směr, kde má více senzorů
+	- fitness
+		- $\phi=\frac 1n\sum_k \phi_k$
+		- $\phi_k=V_k(1-\sqrt{\Delta V_k})(1-i_k)$
+			- fitness za $k$-tý krok
+		- $V_k=|l_k|+|r_k|$
+		- $\Delta V_k=|l_k-r_k|$
+		- $l_k,r_k$ … rychlosti motorů
+		- $i_k$ … normalizovaná hodnota nejaktivnějšího infračerveného senzoru
 
 ## Vizuální navigace, readaptace, reaktivní inteligence
 
@@ -473,61 +482,163 @@
 
 ## Učení a evoluce
 
-- dvě různé formy biologické adaptace
-- evoluce – na populaci, operuje na genotypu
-- učení – v jednom jedinci po dobu jeho života, ovlivňuje jenom fenotyp
-	- budeme uvažovat umělé neuronové sítě (učení vah)
-- konekcionismus rozlišuje
-	- učení – změny synaptických vah
-	- paměť – změny aktivačních stavů
-- učení se zpětnou vazbou z prostředí pracuje rychleji než evoluce
-	- ale výsledky učení se přímo nepřepisují do genotypu
-- výhody
+- učení a evoluce
+	- dvě různé formy biologické adaptace
+	- evoluce – na populaci, operuje na genotypu
+	- učení (ontogenetická adaptace) – v jednom jedinci po dobu jeho života, ovlivňuje jenom fenotyp
+		- budeme uvažovat umělé neuronové sítě (učení vah)
+	- konekcionismus rozlišuje
+		- učení – změny synaptických vah
+		- paměť – změny aktivačních stavů neuronů v rekurentních sítích
+	- učení se zpětnou vazbou z prostředí pracuje rychleji než evoluce
+		- ale výsledky učení se přímo nepřepisují do genotypu
+- výhody učení
+	- učení zjednodušuje přizpůsobení se rychlým změnám v prostředí
+	- učení má bohatší zpětnou vazbu z prostředí než evoluce
 	- i evolučně suboptimální jedinci můžou přežít, pokud se dovedou dobře učit
 		- ale učení stojí čas, takže evoluce upřednostňuje jedince, které mají dané vlastnosti od narození
 	- učení umožňuje vytvořit složité fenotypy z krátkých genotypů – část informací se extrahuje z prostředí
-- nevýhody
-	- ne vždy je možné naučit se, co je potřeba
+- nevýhody učení
+	- ne vždy je možné naučit se, co je potřeba (když se nějaký podnět nevyskytne, tak na něj jedinec neumí reagovat)
+	- učení trvá dlouho – dosud nenaučený jedinec se nechová optimálně
 	- nenaučený jedinec si může ublížit
-- učení dělá fitness funkci „hladší“
+- jak učení pomáhá evoluci
+	- učení dělá fitness funkci „hladší“
+	- Hinton, Nowlan
+	- kanalizační efekt
+		- učení umožňuje prohledávání okolí kandidátů
+		- zároveň když evoluce najde jedince s geny částečně fixovanými na správných hodnotách, tak jim začne dávat přednost oproti těm, které je fixované nemají (ale můžou se je naučit)
 - učení a evoluce můžou mít různé cíle
-	- prostor učení a prostor evoluce vypadají jinak
-- výhody učení se projevují v interakci s evolucí
+	- pokud je fitness funkce evoluce definovaná jinak než chybová funkce učení
+	- prostor učení a prostor evoluce pak vypadají jinak
+	- příklad
+		- evoluce je řízená schopností hledat potravu
+		- neuronová síť
+			- má jednu skrytou vrstvu
+			- obsahuje mj. dva výstupní neurony, na nichž se snaží předpovědět další stav senzorů (po vykonání motorické akce)
+				- zde může probíhat učení
+			- výstupní neurony, které ovlivňují motorickou akci, se sice přímo neučí, ale skrytou vrstvu sdílí s učenými neurony (tzn. učení je také ovlivňuje)
+		- jedinci, kteří se učí, umí potravu hledat lépe než ti, kteří se neučí
+		- takže vysvětlení podle Hintona a Nowlana nestačí
+	- ještě jiná interpretace učení (Harvey)
+		- učení umožňuje napravit chyby způsobené mutací
 - evoluce učení
 	- Floreano, Mondala
 	- genotyp kóduje architekturu a pravidla učení pro váhy (ne jejich hodnoty)
-	- učící pravidla – skutečné vzorce se nemusíme učit
+	- můžeme mít různé druhy učících pravidel – určují, jak se mění spoje mezi neurony v závislosti na jejich aktivaci
+	- výsledky
+		- vyvinuté váhy zodpovídaly za učení i chování
+		- učení začalo až po chvíli pohybu robota
+		- vyvinuté chování vzniklo interakcí s prostředím, váhy se vyvíjely jen u senzorů, kde byla nějaká aktivita
 - sekvenční úloha – zapnutí světla vypínačem
+	- Urzelai, Floreano, 2001
+	- robot má stisknout vypínač (rozsvítí světlo), pak jít ke světlu a tam zůstat
 	- učení jedinci si uměli poradit se změnou barvy stěn (jedinci s genetický kódovanými váhami nikoliv)
-- …
+	- podobně si poradili se změnou polohy vypínače a světla
+- adaptace na rychlé změny prostředí
+	- Ackley, Littman, 1991
+	- organismus se skládal ze dvou modulů
+		- výkonný – určuje pravděpodobnost vykonání akcí
+		- vyhodnocovací – poskytuje zpětnou vazbu na základě výstupu hodnotícího modulu
+	- genetický algoritmus vyvíjel váhy obou modulů
+	- učení měnilo jenom váhy výkonného modulu na základě zpětné vazby z vyhodnocovacího modulu
+		- kladná hodnota zvyšuje váhu, záporná ji snižuje
+		- finální váhy se do genotypu nazpět nepřepisují
+	- organismy se můžou reprodukovat, když mají dostatek energie a blízko sebe partnera, který je také připraven k reprodukci
+	- potomkové vznikají křížením a mutací
+	- organismy umírají, když jsou staré nebo nemají energii
+	- autoři porovnávali
+		- evoluci bez učení
+		- učení bez evoluce
+		- evoluci s učením – nejvýkonnější
+- proměnlivé stěny
+	- Nolfi, Parisi
+	- Khepera hledá cíl v aréně, kde stejně můžou měnit barvu
+	- fitness je vyšší, čím dřív Khepera najde cíl
+		- ale Khepera nepozná, že už ho našla
+		- takže musí důkladně prozkoumat arénu
+	- dvě prostředí: tmavé stěny nebo světlé stěny
+	- tmavé stěny Khepera detekuje, až když je velmi blízko
+		- takže Khepera musí poznat, v jakém prostředí se ocitla, aby mohla vhodně zvolit strategii
+	- porovnání učení × neučení
+		- vyvinutí učící se jedinci byli před učením horší než neučící a po učení lepší
+		- vyvinutí učící se jedinci měli predispozice k učení – ne k chování
+- učená může být i morfologie (stavba těla)
+	- Peter Krčah
+	- tělo z kvádrů spojených panty, pohyb pantů řízený NS
+	- evoluční algoritmus NEAT
+	- jedinci se měli co nejrychleji pohybovat v kapalinách s různou viskozitou
+		- dvě úlohy: pohyb ve volné vodě, pohyb při dně
+	- učení – hillclimbing s mutacemi rozměrů kvádrů
+	- fitness = nižší z průměrných rychlostí v obou prostředích
+	- 8 mutací s krátkými testy rychlosti (případně se změna vrátila zpět), pak dlouhé měření rychlosti
 
 ## Koevoluce, dravec-kořist
 
-- současná evoluce dvou nebo více populací s provázanou fitness funkcí
-- koevoluce nemusí vést ke zdokonalování jedinců – strategie se můžou pouze cyklicky opakovat
-	- lze brzdit pomocí síně slávy
+- kompetitivní koevoluce
+	- současná evoluce dvou nebo více populací s provázanou fitness funkcí
+	- „závody ve zbrojení“ – strategie se stávají složitější
+	- dochází ke zlepšování, aniž bychom měnili prostředí nebo selekční kritéria
+	- co když necháme fixní kořist a vyvíjíme dravce
+		- strategie bude méně obecná – když se kořist změní, tak nemusí fungovat
+		- pokud bude kořist dokonalá, tak nám u dravců nefunguje selekce, protože jsou všichni špatní
+	- koevoluce může pomoct vyhnout se lokálním minimům
+	- koevoluce nemusí vést ke zdokonalování jedinců – strategie se můžou pouze cyklicky opakovat
+		- lze brzdit pomocí síně slávy – to ale neodpovídá přirozené evoluci a nemusí to vést k lepšímu výkonu
 - jak sledovat vývoj?
 	- když se zlepšuje jeden druh, tak se skoro jistě (relativně) zhoršuje druhý
-	- takže se používá CIAO – necháme nejlepšího jedince z aktuální generace utkat se s nejlepšími soupeři z minulých generací
+	- takže se používá CIAO (current individual vs. ancestral opponents)
+		- necháme nejlepšího jedince z aktuální generace utkat se s nejlepšími soupeři z minulých generací
 		- generujeme bitmapu N×N, kde N je počet generací – pixel je černý nebo bílý podle toho, kdo vyhrál
+		- ideálně by dravec z $i$-té generace měl porazit kořisti z všech předcházejících generací – matice by měla mít černou a bílou polovinu (podle hlavní diagonály)
 	- po skončení evoluce můžeme uspořádat tzv. mistrovství – necháme nejlepšího z dané generace utkat se s nejlepšími ze všech generací (ideálně by křivka měla růst)
-- aplikace
-	- třídící algoritmus pro data s určitými vlastnostmi (např. jsou částečně setříděné)
+- aplikace koevoluce
+	- třídicí sítě
+		- cíl: třídící algoritmus pro data s určitými vlastnostmi (např. jsou částečně setříděné)
+		- souboj: třídicí programy vs. testovací programy (unit testy)
+	- hráč pro tic-tac-toe, Nim, zmenšenou verzi Go
 - příklad: dravec-kořist s roboty
-	- jedinec testovaný proti nejlepším soupeřům z předcházejících 10 generacích
+	- kořist vidí dravce, až když je velmi blízko
+	- jedinec byl testovaný proti nejlepším soupeřům z předcházejících 10 generací
 	- fitness kořisti = čas do kontaktu / maximální čas
 	- fitness dravce = 1 – fitness kořisti
 	- různé strategie, lze je pozorovat a popsat (ale těžko)
 		- různí jedinci v populaci můžou mít různé strategie
+	- fitness oscilovala, CIAO nepřehledné
 	- aby se předešlo cyklení, dává smysl vybírat ze všech předchozích generací (ne jen z 10 předcházejících)
-	- nedá se úplně zabránit cyklení strategií – těch tříd je konečně mnoho
-	- metoda síně slávy fungovala líp
-	- zkusili vylepšit kořist
+		- nedá se úplně zabránit cyklení strategií – těch tříd je konečně mnoho
+		- metoda síně slávy fungovala líp – každý jedinec zápasí z 10 soupeřů náhodně vybraných z nejlepších jedinců ze všech předcházejících generací
+			- metoda síně slávy vede na obecnější strategie
+	- problematické třídy strategií (které se snadno cyklí)
+		- dravec: pronásleduj kořist × sleduj kořist, zaútoč, až když je vůči tobě ve speciální pozici
+		- kořist: stůj na místě krytá při stěně (dravec nechce narazit do stěny) × rychle se pohybuj (a vyhýbej se dravcovi i stěnám)
+	- zkusili vylepšit kořist (dali jí vidění)
+		- standardní koevoluce nebyla horší než síň slávy
 	- experimenty s jednoduchou evolucí
+		- evoluci se povedlo najít efektivní strategii proti jedné nejlepší strategii
+	- experimenty bez vidění
+		- jednoduchá evoluce dravce nefungovala, koevoluce fungovala lépe
+		- jednoduchá evoluce pro kořist fungovala
+	- existují úlohy, kde neexistuje úplně obecné řešení – pak je zacyklení strategií nevyhnutelné a optimální
 	- experimenty s celoživotním učením
+		- idea: jedinec se dokáže adaptovat na změnu strategie soupeře už v průběhu jedné generace
+		- dva druhy úspěšných jedinců
+			- úplně obecný – s jednou univerzální strategií
+				- efektivnější, ale může být nedostupný
+			- plasticky obecný – umí si vybrat vhodnou strategii z jednoduchých strategií
+				- může být těžké ho najít
+		- další experiment: genotyp kóduje taky pravidla učení
+			- kořisti adaptace nepomáhala, měla slabé senzory (ve variantě, kde dravec viděl a kořist ne)
 - koevoluce tvaru těla
 	- Karl Sims
+	- kvádry spojené klouby
+	- organismy soupeří o kostku – vyhrává ten, kdo je k ní blíž
+	- různé přístupy k soutěžím: každý s každým, napříč druhy, uvnitř druhů, …
 - hra Tron
+	- koevoluce stroj vs. člověk
+	- programy byly reprezentované jako stromy, bylo použito genetické programování
+	- poražení lidského protihráče → vyšší pravděpodobnost reprodukce
+	- počítačové programy se zlepšovaly, lidská populace se nevyvíjela (lidé se učili jenom mezi po sobě jdoucími hrami)
 
 ## Zobrazení genotypu na fenotyp
 
