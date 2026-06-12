@@ -363,48 +363,113 @@
 	- lze použít Braitenbergovo autíčko
 		- motory jsou přímo spojené se senzory (pomocí vážených spojů)
 		- pozor, existují rovnovážné body, kde se vstupy navzájem anulují – autíčko se zastaví (ten problém řeší rekurentní spoje, ale ty se špatně nastavují)
+	- můžeme uvažovat neuronovou síť bez skrytých neuronů
+		- 8 vstupních neuronů (infračervené snímače)
+		- 2 výstupní neurony (motory, sigmoida zajišťuje vhodný rozsah výstupů)
+		- další 2 „vstupní“ neurony přenášejí výstup z minulého kroku zpátky na vstup
+	- teoreticky by robot mohl couvat, ale vždy preferoval směr, kde má více senzorů
 
----
+## Vizuální navigace, readaptace, reaktivní inteligence
 
+- vizuální navigace
+	- jak zpracovat obraz
+		- klasicky – předzpracování, segmentace, hledání vzorů…
+		- evolučně
+	- Harvey, 1994 – portálový robot („gantry robot“)
+		- kamera je zavěšená z portálového jeřábu řízeného počítačem
+		- obraz přes zrcadlo, má 64 pixelů
+		- vývoj SAGA
+		- současná evoluce neuronové sítě a *recepčních polí*
+			- recepční pole jsou popsány pomocí polárních souřadnic
+			- z celého pole se rovnoměrně vybere 25 pixelů, jejich jas se zprůměruje a převede na 4bitové číslo
+		- řešené úlohy
+			- vyhýbání se překážkám
+			- sledování pohyblivých cílů
+			- rozlišování objektů
+		- bootstrapping (pro úlohu nalezení bílého trojúhelníku a vyhýbání se bílému obdélníku)
+			- přímá evoluce neúspěšná
+			- fungovala evoluce ve 3 stádiích s různými fitness funkcemi i prostředím
+				1. najdi bílou stěnu
+				2. najdi bílý obdélník
+				3. cílová úloha
+			- problém: inkrementální evoluci musí navrhnout experimentátor
+- readaptace
+	- jak modifikovat řídicí systém při změnách vnějších podmínek
+	- dvě úrovně
+		- jedinec – využije robustnost a generalizaci neuronových sítí
+		- populace – využije se různorodost jedinců v populaci
+			- readaptace po změně robota
+				- např. místo Khepery použijeme Koalu, protože má silnější motory
+				- Koala má víc IR senzorů, tak použijeme jenom půlku z nich
+			- přechod ze simulace do reality
+				- úspěch přechodu může záviset na tom, jak v simulaci modelujeme šum
+				- přechod ze simulace do reality je také krokem inkrementální evoluce
+	- evoluce robotů je kontinuální proces s otevřeným koncem
 - reaktivní inteligence
 	- reaktivní systémy – senzory jsou přímo připojené k motorům a na stejný stav senzorů systém reaguje stejně
 		- systém může mít pomocné stavy, které slouží k určení motorických akcí
-	- vtělené a situační systémy
+		- vtělené systémy – mají tělo, to má nějaké vstupy a výstupy
+		- situační systémy – nacházejí se v externím prostředím a můžou reagovat s tímto prostředím
 	- senzorově-motorická koordinace
-	- nejednoznačnost vjemů
-	- aktivní vnímání
-		- robot může jít vjemům „naproti“
+		- nepotřebujeme vnitřní reprezentaci prostředí / složité vnitřní stavy
+		- stačí nám koordinace vnímání a akcí
+	- problém nejednoznačnosti vjemů
+		- může se stát, že dva objekty generují stejné vjemy, ale vyžadují různé odezvy
+		- řešení: vykonáme takové akce, které vjemy rozliší
+			- tzv. aktivní vnímání – robot může jít vjemům „naproti“
 	- může se stát, že se od sebe dva různé vjemy ze senzorů dají špatně rozlišit (ale chtěli bychom je umět rozlišit)
 		- to může řešit překódování stavů senzorů – zesílí se užitečné příznaky
-		- typicky to řeší skrytá vrstva v neuronové síti
+			- typicky to řeší skrytá vrstva v neuronové síti
 		- nebo to taky můžeme řešit pomocí aktivního vnímání
 		- příklad: válec/stěna
 			- pohyblivý robot odjel, jakmile objekt správně klasifikoval
-			- takže měl paradoxně méně vjemů, kde došlo ke správné klasifikaci (?)
+			- takže měl paradoxně méně vjemů, kde došlo ke správné klasifikaci
 		- index geometrické separability
 			- chtěli bychom, aby vjemy pro stejné třídy byly blízko sebe
 			- zaznamenáme si vjemy v průběhu experimentu
 			- každému vjemu přiřadíme třídu
 			- spočítáme podíl vjemů, jejichž nejbližší jiný vjem má stejnou třídu
-	- atraktor chování
-	- umělá evoluce využívá omezení modelu
+	- další možné řešení: atraktor chování
+		- robot na signály senzorů reaguje takovým způsobem, že na určité pozici vznikne atraktor – robot se tam nakonec dostane a bude tam oscilovat
+		- je to emergentní chování, vzniká pouze interakcí agenta s prostředím
+- umělá evoluce využívá omezení modelu
 	- příklad: krysy hledají potravu
-		- Khepera – pohybuje se po zakřivené dráze a nutně najde dlouhou stěnu
+	- Khepera – pohybuje se po zakřivené dráze a nutně najde dlouhou stěnu
+	- když odebereme omezení prostředí – např. náhodně generujeme velikost arény – tak je úloha těžší, evoluce nemůže tato omezení zneužívat
 
 ## Moduly
 
-- v evoluční robotice nejsou nutné, ale možná budou fungovat dobře
+- modulární architektura
+	- v evoluční robotice nejsou moduly nutné, ale možná budou fungovat dobře
 	- přizpůsobíme tomu architekturu
-- úlohy: sběr odpadu, navigace s návratem domů
+	- úlohy: sběr odpadu, navigace s návratem domů
 - sběr odpadů
 	- Khepera čistič s ramenem
-	- emergentní modulární architektura
-	- simulovaná evoluce
-	- ale arbitři moc nefungovaly
-		- moduly se nepřepínaly
-- návrat domů k nabíječce
+	- dlouhá posloupnost akcí – najdi válec, seber ho, odvez ho za hranici arény (přitom se vyhýbej dalším válcům a stěnám…)
+	- testování několika architektur
+		- bez skryté vrstvy
+		- se skrytou vrstvou
+		- s rekurentními spojeními
+		- s dvěma sadami výstupů – podle stavu chapadla
+		- emergentní modulární architektura
+			- místo jednoho výstupu uvažujeme několik modulů (např. 2)
+			- každý modul sestává z arbitra a výstupu
+			- arbitři spolu soutěží – použije se výstup vítězného modulu
+	- aby evoluce fungovala lépe, tak se po uchopení válce robotovi objevil v cestě uměle přidaný válec, který musel objet
+	- emergentní modulární architektura umožnila najít správné řešení rychleji než jiné architektury a umožnila vývoj robustnějšího řešení (pro přenesení na reálného robota výkon příliš nepoklesl)
+		- ale arbitři nefungovali tak, jak bychom čekali – moduly se přepínaly velmi rychle, žádný neodpovídal nějakému základnímu chování
+		- vypadá to, že hlavní úlohou modulů je zlepšení schopnosti rozlišování objektů – robot vlastně provádí *aktivní vnímání* pomocí přepnutí modulů
+- roboti s vnitřní dynamikou
+	- úloha: návrat domů k nabíječce
 	- simulovaná baterie
+	- třívrstvý perceptron, 5 neuronů ve skryté vrstvě s rekurentními spoji
+	- nabíječka v jednom rohu společně se zdrojem světla
 	- chceme, aby robot jezdil co nejrychleji mimo nabíječku – tomu odpovídal výpočet fitness
+	- jeden skrytý neuron „monitoroval baterii“ – ovlivňoval vnímání prostředí v závislosti na stavu baterie
+	- další krok experimentu: zkoumání readaptace
+		- zdroj světla se přesunul do jiného rohu (takže už nebyl u nabíječky)
+		- robot se rychle přizpůsobil
+		- nejsnáze se přizpůsobil, když se světlo přesunulo do opačného rohu
 
 ## Učení a evoluce
 
