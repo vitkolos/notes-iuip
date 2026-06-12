@@ -642,39 +642,151 @@
 
 ## Zobrazení genotypu na fenotyp
 
-- dosud 1:1
-- ale dekódování genotypu na fenotyp může být ovlivněno prostředím
-- výsledná fitness je daná fenotypem
-- jedinec se může vyvíjet postupně – mít vývojová stádia
+- zobrazení genotypu na fenotyp
+	- dosud 1:1
+	- ale dekódování genotypu na fenotyp může být ovlivněno prostředím
+		- tak je to v přirozené evoluci – chceme se jí přiblížit (jak kvůli zlepšení umělé evoluce, tak kvůli zkoumání přirozené evoluce)
+	- výsledná fitness je daná fenotypem
+	- jedinec se může vyvíjet postupně – mít vývojová stádia
 - genetické kódování
 	- přímé kódování
 		- jednoduché na implementaci, ale chtěli bychom něco s větší vyjadřovací silou (na krátkém rozsahu)
 	- co bychom chtěli
 		- vyjadřovací sílu
+			- aby se daly kódovat různé aspekty robota
 		- kompaktnost
+			- aby se opakující struktury daly snadno kódovat kratším kódem
 		- možnost rozvoje
-- stabilní genetický algoritmus
-	- konstantní počet jedinců
-	- při vytvoření nového jedince se z aktuální populace vybere nějaký jedinec, který se zahodí
-	- dá se dobře paralelizovat – akorát se pak nedá jasně říct, kdy začíná a končí generace
+			- aby se kód mohl zlepšovat pomocí genetických operátorů
+			- pleiotropie – jeden gen může ovlivňovat více fenotypických rysů
+				- to bychom chtěli omezit (aby se robot zároveň v nějakých charakteristikách nezlepšoval a v jiných nezhoršoval)
+			- vhodná je modulární organizace zobrazení genotypu na fenotyp
+				- může to být způsob, jak bránit pleiotropii
+- kódování instrukcí růstu axonů
+	- Nolfi, Miglino, Parisi, 1994
+	- soustava neuronů s axony v rovině
+	- genotyp obsahuje pokyny pro růst a větvení axonů
+		- když axon doroste k jinému neuronu, tak vznikne spoj
+		- axon roste jen tehdy, když aktivita neuronu překročí určitou hranici (je daná geneticky) → prostředí také ovlivňuje růst axonů
+	- genotyp je rozdělený na bloky kódující charakteristiky jednotlivých neuronů a instrukce pro růst axonů
+		- celkově max. 32 neuronů (10 vstupních, 17 vnitřních, 5 výstupních)
+		- blok obsahuje osm prvků
+			- práh pro růst
+			- pozici (dvě souřadnice)
+			- úhel větvení axonu
+			- délku segmentů axonu
+			- váhu (všechny spoje vycházejícího z jednoho neuronu mají stejnou váhu)
+			- práh neuronu
+			- typ neuronu (např. jestli řídí levý nebo pravý motor – pak se průměrují neurony, které řídí ten stejný motor)
+	- úloha: najít cíl náhodně umístěný v aréně, cílová oblast může (ale nemusí) být osvětlená
+- adaptace architektury NS
+	- příliš malé sítě se nedovedou naučit správné zobrazení
+	- příliš velké sítě špatně generalizují
+	- tři metody automatického návrhu topologie sítě *při učení*
+		- růst
+			- *kaskádový algoritmus učení korelací*
+			- začíná se vstupními neurony přímo spojenými s výstupními
+			- přidává další neurony (připojené na vstup a na výstup), žádné spoje neodebírá
+		- prořezávání
+			- začne se velkou sítí, postupně ruší spoje, dokud se chyba nezhorší
+			- např. ruší spoje s váhami blízkými nule
+		- dekompozice
+			- máme skupinu podsítí s různou architekturou (ale stejnými vstupy a výstupy)
+			- různé podsítě se naučí různé vzory
+	- tyhle metody jsou založeny na učení s učitelem – potřebujeme mít dostatek trénovacích dat
+- kódování na úrovni buněk
+	- v přírodě roste nervová soustava postupně – buňky se dělí a diferencují (stanou se z nich neurony), přesunou se na správná místa, vyrostou spoje
+	- Cangelosi (1994) – dělení buněk a migrace
+		- počet dělení je geneticky shora omezený
+	- Gruau (1994) – dělení a diferenciace
+- Gruauova simulace šestinohého robota
+	- genotyp: binární strom (14 různých symbolů, některé s parametrem)
+	- přepis do fenotypu – založí se neuron odpovídající kořeni stromu
+		- uzel popisuje operace, které se mají na buňce vykonat
+	- vylepšená verze: terminální uzel se může odkazovat na jiný strom
+		- ADNS (automatické definování neuronových podsítí)
+	- aplikace: šestinohý robot
+		- křížení – záměna podstromů
+		- s ADNS fungoval lépe, genotyp obsahoval 3 stromy
+	- fitness: ušlá vzdálenost
+	- při evoluci použil 32 ostrovů na toroidu – pravděpodobnost spárování byla úměrná vzdálenosti na toroidu
+	- s ADNS byly výsledné sítě dobře strukturované
+- jednoduché geometricky orientované kódování buněk
+	- Kodjabachian a Meyer, 1998
+	- simulovaný šestinohý robot
+	- opět z neuronů rostou axony
+	- křížení – záměna podstromů jako v GP
+	- genotyp – 6 instrukcí
+	- fitness: ušlá vzdálenost + člen podporující pohyb nohou
+	- stabilní genetický algoritmus
+		- konstantní počet jedinců
+		- při vytvoření nového jedince se z aktuální populace vybere nějaký jedinec, který se zahodí
+		- dá se dobře paralelizovat – akorát se pak nedá jasně říct, kdy začíná a končí generace
+	- jedinci jsou rozmístění na kružnici
+		- náhodně se zvolí bod na kružnici
+		- v blízkosti tohoto bodu zvolíme dva jedince, vyrobíme nového jedince
+		- turnajem zvolíme souseda v blízkosti toho bodu, který bude nahrazen novým jedincem
 
 ## Kráčející stroje
 
-- složitější než kolečka – noha potřebuje aspoň 2 stupně volnosti
-	- trik: můžeme použít symetrie
-	- ale všechny nohy se nemůžou pohybovat stejně
-- statická × dynamická chůze – podle toho, jestli je těžiště stále nad mnohoúhelníkem dotyku noh
-- mlok – dva způsoby pohybu (plavání a chůze)
-- propojené generátory řídicích signálů (tzv. CPG)
-- další experimenty
+- kráčející stroje
+	- složitější než kolečka – noha potřebuje aspoň 2 stupně volnosti
+		- trik: můžeme použít symetrie
+		- ale všechny nohy se nemůžou pohybovat stejně
+	- asi chceme využít symetrii, abychom si úlohu zjednodušili
+	- statická × dynamická chůze – podle toho, jestli je těžiště stále nad mnohoúhelníkem dotyku noh
+		- trojkrok – statická chůze
+- první pokusy s kráčením
+	- Brooks – každá noha má stejný (ručně sestavený) konečný automat
+	- Maes, Brooks – koordinace noh se dá naučit metodou pokus-omyl
+	- Beer, Gallagher – simulovaný šestinohý brouk
+		- evoluce může najít systém chůze s minimem předem zadaných parametrů
+		- noha
+			- má dva stavy – dole (na zemi), nahoře (zvednutá)
+			- může se hýbat nahoru a dolů a také se otáčet dopředu/dozadu
+			- má senzor – úhel mezi nohou a tělem
+			- 5 neuronů – 2 skryté, 3 ovládají pohyby
+		- když ztratí rovnováhu, tak padá (obviously 🙃)
+		- vždy se vyvinul trojkrok
+		- 4 vypozorované fáze učení
+			1. zatlačil všemi šesti nohami a spadl dopředu
+			2. nekoordinované pohyby nohou, časté pády
+			3. nejlepší měli statickou stabilní chůzi
+			4. doladěný statický krok
+- pokročilejší kráčející roboti
+	- Lewis – fyzický šestinohý robot
+		- každá noha s dvěma stupni volnosti
+		- inkrementální evoluce a funkcionální dekompozice
+			- evoluce řízení jedné nohy
+			- koordinace nohou
+		- genotyp – váhy v Grayově kódu
+		- 2 neurony na jednu nohu – zdvih, švih
+			- když oscilovaly s fázovým posunem 90°, tak noha dělala kroky
+		- první fáze – evoluce řízení pro nohu
+			- fitness se určuje vizuálně podle obrazovky počítače
+		- druhá fáze – evoluce řízení oscilátorů
+			- nejprve vlnění, pak trojkrok
+		- robot nemá senzory
+	- Gomi, Ide – 8nohý robot bez senzorů
+		- celý vývoj na fyzickém robotu
+		- nejprve vlnitá chůze, potom čtyřkrok
+	- Jakobi – řízení pro stejného robota, ale formou minimální simulace, navíc měl robot senzory
+		- oproti předchozím experimentů nebylo řízení tak robustní, bylo na hraně technických možností
+	- Gruau – evoluce architektury (viz výše)
+	- Ijspeert – na základě modelu mihule vyvinul model mloka, který uměl plavat i chodit
+		- propojené generátory řídicích signálů (tzv. CPG, central pattern generator)
 	- Sony – pes Aibo
 	- Honda – humanoid ASIMO
 - někteří roboti se dovedou přestavět – změnit svoji morfologii
 	- např. rozdělit se na menší roboty nebo metamorfovat
 	- ukázka s modulárními polokostkami/poloválci
-	- M-TRAN
+	- M-TRAN – kombinace magnetů a paměťových pružin
 	- zase generátory signálů – každý modul má svůj CPG, které spolu komunikují
+		- realizované jako oscilující neurony
 	- příklad robota popsaného tak, že se na něj dá použít evoluční algoritmus
+		- genotyp – posloupnost segmentů
+		- křížení jenom na hranici segmentů
+		- mutace zamění celý segment
 
 ## Evoluční učení neuronových sítí
 
