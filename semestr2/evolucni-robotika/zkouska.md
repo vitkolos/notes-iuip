@@ -894,28 +894,221 @@
 
 ## Od simulace k realitě
 
-- Karl Sims
-	- kvádroví roboti
-- L-systém
-	- jako bezkontextová gramatika, akorát v každém kroku musím přepsat všechny neterminály najednou
-	- generuje se konstrukční jazyk podobný jako jazyk Logo
-- GOLEM
+- Karl Sims – kvádroví roboti
+	- fenotyp robota – strom
+		- vrcholy reprezentují kvádry, hrany reprezentují spoje
+		- každý vrchol grafu navíc obsahuje neuronovou síť, rozměry kvádru atd.
+	- genotyp je graf, ne nutně strom
+		- hrany můžou tvořit cykly
+		- je tam jeden speciální kořenový uzel
+	- přepis genotypu na fenotyp
+		- rekurzivním procházením grafu po hranách
+		- začíná se v kořeni
+		- navštívené hrany a uzly se kopírují do fenotypu
+		- opakované návštěvy vloží kopie
+			- jsou tam rekurzivní limity – maximální povolené počty opakování – aby se předešlo nekonečným cyklům
+		- hrana může být označená jako reflexivní podle osy x/y/z, pak je podstrom zkopírovaný symetricky
+- Hornby – L-systém
+	- řízení robota se vyvíjí spolu s jeho morfologií (tzv. vtělená umělá inteligence)
+	- generativní kódování – aby se pomocí jednoduchého genotypu dal popsat složitý robot
+	- Tinkerbot
+		- morfologie popsaná L-systémem
+		- genotyp je bezkontextový 0L-systém vyvíjený genetickým algoritmem
+		- podle L-systému se vygeneruje popis těla robota ve speciálním konstrukčním jazyku (podobný jazyku Logo)
+	- L-systém – jako bezkontextová gramatika, akorát v každém kroku musím přepsat všechny neterminály najednou
+- Lipson, Pollack – GOLEM
+	- Genetically Organized Lifelike ElectroMechanics
+	- robot skládající se z tyčích spojených kulovými klouby
+	- vyvíjený v simulaci
+	- řízení
+		- neuronová síť bez omezení spojů
+		- neuron může být připojený na tyč a ta se stane svalem – její délka se mění podle výstupu neuronu
+	- cíl evoluce: co nejrychlejší pohyb po rovině
+	- výsledný robot vytištěný na 3D tiskárně, potom se do tyček vložily motory
 - projekt ERO
+	- studentský softwarový projekt
+	- genotyp analogický tomu Simsovému
+	- hierarchický NEAT
 - soft robots
+	- příroda používá tvrdé i měkkné materiály!
 	- přímé kódování nefunguje dobře
-	- HyperNEAT funguje líp
+	- nepřímé kódování vyvíjené algoritmem HyperNEAT funguje líp
+		- generující síť CPPN (compositional pattern producing network) dostává na vstupu 3D souřadnice a vzdálenost od středu a vrací materiál voxelu (+ informaci, zda má být vůbec přítomný)
 - growing soft-bodied creatures
-- electrophysiological soft robots
+	- růst (morfologický vývoj) je odpovědí na stimuly z prostředí
+		- kořeny rostlin sledují, kde jsou v půdě živiny
+		- lidské kosti a tkáně přizpůsobují svoje vlastnosti v reakci na mechanickou zátěž
+	- vlastnosti materiálu těla organismu ovlivňují evoluci i adaptivní chování
+		- hypotéza: tvrdost/měkkost stavebního materiálu dovoluje vyvinout inteligentní chování
+		- hypotéza: při správné kombinaci geometrie, vlastností materiálu a procesu růstu může robot využívat tzv. morfologické počítání
+	- dva generátory CPPN – jeden určuje, zda je voxel plný nebo prázdný, druhý určuje, zda se smršťuje nebo roztahuje
+- evolved electrophysiological soft robots
+	- každý voxel má elektrický potenciál – rozdíl napětí uvnitř a vně buňky
+		- když vnější napětí překročí práh, tak se buňka depolarizuje a prudce zvýší napětí
+		- pak se napětí zase sníží (buňka se repolarizuje) a klesne do záporu
+		- pak se buňka zotavuje (tzv. refrakční doba) a nedokáže přijmout impuls zvenku
+	- organismus má centrální stimulátor, který pravidelně vysílá impulsy
+	- CPPN je vyvíjený algoritmem HyperNEAT
+	- excitovaná buňka může vybudit až 26 sousedních buněk
+	- čas potřebný k excitaci sousední buňky je poloviční oproti době depolarizace, vzruchy se šíří jako vlny
+	- refrakce trvá 5× déle než repolarizace
+	- typy buněk
+		- prázdná
+		- vodivý sval
+		- nevodivý sval
+		- vodivá pasivní tkáň
+		- nevodivá pasivní tkáň
+		- stimulátor – přibližně uprostřed prostoru 10×10×10
+	- fitness funkce odráží vzdálenost, kterou robot ušel (maximalizuje se), a také počet vodivých buněk (ten se minimalizuje? asi aby robot nebyl celý vodivý, ale měl pouze „nervy“)
 
 ## Robotické roje
 
-- mravenci – feromony
 - znaky robotických rojů, technologické motivace
+	- velké množství jedinců, ti jsou homogenní a poměrně jednoduší
+	- interakce mezi jedinci jsou založeny na jednoduchých pravidlech, která používají pouze lokální informace
+	- celkové chování je výsledkem samoorganizace
+	- robustnost, škálovatelnost, všestrannost/flexibilita, nízká cena?
 	- superlineárnost – roboti mají dohromady větší schopnosti než prostý součet jejich jednotlivých schopností
-- chceme projít všechny vrcholy grafu
-	- potenciálová metoda (naučit!)
-- chceme projít všechny hrany grafu
-	- každý uzel má směrovku
+- koordinovaný průzkum
+	- tři přístupy: monitorování prostředí, feromonová robotika, řetězení
+	- monitorování
+		- robotický roj se snaží lokalizovat zdroj vůně/zápachu
+		- jednoduché chování založené na detekci zápachu a větru
+		- komunikace může zlepšit efektivitu
+		- algoritmus
+			- když nedetekuješ zápach → pohybuj se po rozšiřující se spirále
+			- když detekuješ zápach → pohybuj se proti větru
+	- feromonová robotika
+		- viz dále
+	- řetězení
+		- omezený dosah senzorů
+		- signalizace barvami
+- feromonová robotika
+	- roj se skládá z autonomních robotů bez centrálního řízení
+	- agent pracuje jenom s lokálními informacemi
+		- nemá mapu prostředí (mapa prostředí se v dynamickém prostředí špatně udržuje)
+		- používá feromonovou stopu (dá se detekovat jen lokálně, odpařuje se a šíří se do okolí, agent může feromon vylučovat)
+	- rozptýlení robotů
+		- roboti, kteří se vidí, ale jsou daleko od sebe, se přitahují
+		- roboti, kteří se vidí, ale jsou příliš blízko sebe, se odpuzují
+	- robot, který najde cíl začne vydávat (virtuální) feromon
+	- virtuální feromon – zprávy posílané mezi roboty v dosahu
+		- zpráva obsahuje typ feromonu a počet přeskočení (přes kolik robotů už prošla)
+		- každý agent dostane více zpráv se stejným typem, tak vybere tu, která má nejnižší počet přeskočení, zvýší ho o jedna a pošle ji sousedům
+		- nejkratší cestu k cíli robot najde tak, že se vydá směrem, odkud přišla zpráva s nejnižším počtem přeskočení
+	- pokrytí grafu
+		- navštívit každý uzel / projít každou hranu
+		- klasický přístup: zmapovat graf, navrhnout plán na průchod grafem 
+			- vyžaduje to mít složitý hardware, který to zvládne spočítat, také bychom museli při změně grafu počítat nový pán
+		- plánování v reálném čase
+			- používáme jenom lokální informace (značky na uzlech/hranách)
+			- jednoduché algoritmy
+			- při změně grafu se algoritmus nemění
+		- algoritmus (na začátku jsou počítadla nulová)
+			- zvyš počítadlo aktuálního uzlu o jedna
+			- přesuň se na sousední uzel s nejmenším počítadlem
+	- varianty algoritmu pokrytí uzlů
+		- na začátku kroku jsme na pozici $s$, pak se přesouváme na pozici $s'$ (sousední uzel s nejnižší hodnotou počítadla)
+		- změna hodnoty počítadla na pozici $s$ (tedy změna $u(s)$) se ale dá implementovat různě
+		- Koenigovo pravidlo: $u(s)\leftarrow u(s)+1$ (tzn. základní verze)
+			- exponenciální čas $O(n^{\sqrt n})$
+			- funguje i pro skupinu $k$ mravenců
+			- věta: souvislý graf bude vždy pokrytý nezávisle na počtu mravenců
+				- důkaz sporem: uvažujme část grafu, která je opakovaně navštěvovaná
+				- takže existuje podmnožina $V$ vrcholů grafu, která je navštěvovaná cyklicky, tedy $u$-hodnoty vrcholů tam rostou neomezeně a překročí hodnoty ve všech uzlech, do nichž se dá z nějakého uzlu z $V$ dostat
+				- při návštěvě uzlu z $V$, který má souseda mimo $V$, musí být navštíven uzel mimo $V$ → spor
+			- důkaz funguje i pro Korfovo pravidlo
+			- robustnost: po zastavení se může pokračovat z libovolného uzlu; náhodné přemístění (ne moc časté) také nevadí
+		- Korfovo pravidlo … $u(s)\leftarrow u(s')+1$
+			- polynomiální $O(n^2)$
+			- learning real-time A\*
+			- $u(s)$ aproximuje součet minimální $u$-hodnoty souseda a ceny, za kterou se dá do souseda dostat
+			- dokud nebyly navštíveny uzly, tak platí…
+				- $u(s)=0$ znamená, že uzel nebyl navštíven
+				- $u(s)$ je odhadem vzdálenosti uzlu od nejbližšího nenavštíveného uzlu
+			- → „běž do souseda s nejnižší $u$-hodnotou, abys mohl navštívit nejbližší dosud nenavštívený uzel“
+			- v průběhu algoritmu jsou přípustné $u$-hodnoty $0\leq u(s)\leq gd(s)$
+				- $gd(s)$ … nejkratší vzdálenost do cílového uzlu (nejbližšího nenavštíveného?)
+			- $u$-hodnota nikdy neklesá
+				- lze nahlédnout z toho, že se agent vždycky volí nejnižšího souseda
+			- podle pravidla … $u_{t+1}(s_t)=u_t(s_{t+1})+1$
+			- věta: mravenec potřebuje maximálně $2\sum_s gd(s)\leq 2\sum_{i=1}^n i=n^2-n$ k tomu, aby došel na cílový uzel
+				- důkaz pomocí potenciálu
+			- potenciál grafu v čase $t$ … $2\sum_s u_t(s)-u_t(s_t)$
+			- dokážeme, že potenciál v čase $t+1$ je vyšší než v čase $t$
+			- $(2\sum_s u_{t+1}(s)-u_{t+1}(s_{t+1}))-(2\sum_s u_t(s)-u_t(s_t))=$
+			- $=(2u_{t+1}(s_t)-u_{t+1}(s_{t+1}))-(2u_t(s_t)-u_t(s_t))=$
+			- $=2u_{t+1}(s_t)-u_t(s_{t+1})-u_t(s_t)=$
+			- $=2u_{t+1}(s_t)-(u_{t+1}(s_t)-1)-u_t(s_t)=$
+			- $=u_{t+1}(s_t)-u_t(s_t)+1\geq 1$
+		- další polynomiální pravidla
+			- Wagnerovo pravidlo … if $u(s)\leq u(s')$, then $u(s)\leftarrow u(s)+1$
+			- Thrunovo pravidlo … $u(s)\leftarrow \max(u(s)+1,\ u(s')+1)$
+		- využití: robotický vysavač
+	- úloha: projít všechny hrany grafu
+		- EAW (edge ant-walk)
+		- každý uzel má směrovku (ukazuje na hranu nebo spíše na uzel odpovídající hraně)
+		- při projití směrovku otočíme, aby směřovala do další hrany (po řadě)
+		- idea: mravenec se vydává cestou, kterou nejdéle nikdo nešel
+		- zaručuje pokrytí hran v čase $O(n^3)$
+- přemisťování a shlukování
+	- koordinované přemisťování objektu
+		- vyžaduje spolupráci
+		- bez explicitní komunikace
+		- přistup založený na chováních
+		- zotavení ze stagnacie inspirované od mravenců
+	- slepé hrnutí (bulldozing)
+		- radlice s detekcí síly odporu
+		- při srážce s jiným robotem nebo při detekci odporu na radlici počkáme a pak zase hrneme
+	- shlukování
+		- důležité mechanismy: komunikace, pozitivní a negativní zpětná vazba
+		- příklad pravidla
+			- pravděpodobnost uchopení objektu je nepřímo úměrná počtu vnímaných objektů
+			- pravděpodobnost odložení objektu je přímo úměrná počtu vnímaných objektů
+	- kooperativní manipulace
+		- pouštní mravenci spolupracují při vytahování dlouhých objektů z písku
+		- lze napodobit s roboty
+		- jak dlouho čekat na kamaráda?
+		- superlineární výkon
+			- optimální výkon, když má skupina cca 6 členů
+- rekonfigurovatelní roboti
+	- modulární roboti skládající se s několika identických částí, které se můžou přeorganizovat, aby vytvořili vhodný tvar pro řešení úlohy
+	- inspirace buňkami (celulární automaty) a jednotlivci (roje)
+	- různé tvary robotů: řetězce, mřížky, mobilní rekonfigurovatelní, …
+	- příklad robota řetězcového typu: CONRO
+		- spojené zásuvky se západkami
+		- infračervené navádění
+		- dobrá mobilita
+		- řízení se dokáže vyrovnat s náhlými změnami morfologie robota
+	- další řetězcový robot: PolyBot
+		- modul s jedním stupněm volnosti
+	- robot mřížkového typu: A-TRON
+		- dvě polokoule
+		- 4 samčí a 4 samičí konektory
+		- semo-spojování jednoduché, samo-rekonfigurace složitější
+	- hybridní robot: M-TRAN
+		- dvě propojené polokulaté krychle
+		- hybridní mřížkový a řetězcový typ
+		- magnety nebo mechanické háčky
+		- pravidla pro celulární automaty
+	- mobilní rekonfigurovatelní roboti
+		- skládají se do spojených objektů
+		- příklad: záchrana člověka
+- stimergie
+	- komunikace prostřednictvím změn prostředí
+	- výsledek činnosti jedince zanechá trvalou značku, která ovlivňuje následující akce i jiných jedinců
+	- cyklus stimul–reakce
+	- příklad: budování vosího hnízda
+		- pravidlo: přidej buňku do kouta, když tam jsou 2 nebo 3 stěny
+		- může být deterministické nebo stochastické
+- distribuované budování
+	- každý robot dostane binární bitmapu finálního útvaru
+	- sledování hranice – robot se pohybuje v pevné vzdálenosti od středu nejbližšího stacionárního robota
+	- gradient – každý robot si nastaví gradient o jedna vyšší než nejnižší gradient souseda (počáteční robot má fixní gradient 0)
+	- lokalizace – robot určuje svoji polohu pomocí komunikace s už lokalizovanými roboty (těmi v počátku, kteří určují globální souřadnice)
+	- na začátku budování se jako první dávají do pohybu roboti, kteří jsou nejdál od počátku (mají nejvyšší gradient)
+	- kolektivní budování inspirované termity: TERMES
+		- umí se hýbat dopředu/dozadu, otáčet se na místě, chodit do schodů, přemisťovat kvádry
 
 ## Pokročilé evoluční NS
 
