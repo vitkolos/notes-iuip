@@ -496,7 +496,7 @@
 	- učení zjednodušuje přizpůsobení se rychlým změnám v prostředí
 	- učení má bohatší zpětnou vazbu z prostředí než evoluce
 	- i evolučně suboptimální jedinci můžou přežít, pokud se dovedou dobře učit
-		- ale učení stojí čas, takže evoluce upřednostňuje jedince, které mají dané vlastnosti od narození
+		- ale učení stojí čas, takže evoluce upřednostňuje jedince, kteří mají dané vlastnosti od narození
 	- učení umožňuje vytvořit složité fenotypy z krátkých genotypů – část informací se extrahuje z prostředí
 - nevýhody učení
 	- ne vždy je možné naučit se, co je potřeba (když se nějaký podnět nevyskytne, tak na něj jedinec neumí reagovat)
@@ -553,7 +553,7 @@
 		- evoluci s učením – nejvýkonnější
 - proměnlivé stěny
 	- Nolfi, Parisi
-	- Khepera hledá cíl v aréně, kde stejně můžou měnit barvu
+	- Khepera hledá cíl v aréně, kde stěny můžou měnit barvu
 	- fitness je vyšší, čím dřív Khepera najde cíl
 		- ale Khepera nepozná, že už ho našla
 		- takže musí důkladně prozkoumat arénu
