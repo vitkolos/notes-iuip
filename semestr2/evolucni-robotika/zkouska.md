@@ -433,7 +433,7 @@
 	- problém nejednoznačnosti vjemů
 		- může se stát, že dva objekty generují stejné vjemy, ale vyžadují různé odezvy
 		- řešení: vykonáme takové akce, které vjemy rozliší
-			- tzv. aktivní vnímání – robot může jít vjemům „naproti“
+			- tzv. *aktivní vnímání* – robot může jít vjemům „naproti“
 	- může se stát, že se od sebe dva různé vjemy ze senzorů dají špatně rozlišit (ale chtěli bychom je umět rozlišit)
 		- to může řešit překódování stavů senzorů – zesílí se užitečné příznaky
 			- typicky to řeší skrytá vrstva v neuronové síti
