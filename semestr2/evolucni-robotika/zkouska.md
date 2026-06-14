@@ -104,7 +104,6 @@ u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nej�
 		- robotické organismy z krychlí s klouby
 	- rojová robotika
 		- koordinace robotů ve skupině
-		- malé robotické moduly, které se dovedou poskládat dohromady
 	- modulární robotika
 		- moduly se můžou spojovat do větších celků podle potřeby
 	- měkká robotika
@@ -857,7 +856,7 @@ u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nej�
 		- $i$-tý řádek matice
 	- sloupec $x_j$ jsou hodnoty vah pro všechny synapse v síti
 		- sítě $x_1,\dots,x_m$ se vyhodnotí a dostanou fitness
-		- nejhorší sloupce se nahradí novými potomkami
+		- nejhorší sloupce se nahradí novými potomky
 	- kooperativní koevoluce pro každou subpopulaci odděleně
 		- několik prvků z populace se vybere a zamíchá (takže se vymění hodnoty dané váhy napříč sloupci/sítěmi)
 		- víc se permutují prvky s nižší fitness
@@ -1244,7 +1243,7 @@ u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nej�
 		- výsledky
 			- novelty search prohledá všechno, ale ne jedním jedincem
 				- porovnání celých drah vede na jedince, kteří sami prohledají větší část bludiště
-			- kombinace curiosity + novelty toho porovná víc
+			- kombinace curiosity + novelty toho prohledá víc
 				- je skoro jedno, jestli používáme $NS_T$ nebo $NS_E$
 			- curiosity search překonává target endpoints a novelty search
 				- ale nejlíp funguje curiosity + novelty
