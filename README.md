@@ -27,3 +27,4 @@ Master of Computer Science – Artificial Intelligence ([some notes are in Engli
 - [Umělá inteligence 2](semestr2/artificial-intelligence2/zkouska.md)
 - [Data Mining](semestr2/data-mining/exam.md)
 - [Data Structures 1](semestr2/data-structures1/exam.md)
+- [Evoluční robotika](semestr2/evolucni-robotika/zkouska.md)
