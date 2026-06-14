@@ -1,5 +1,7 @@
 # Zkouška
 
+u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nejčastěji](zkousena-teorie.md)
+
 ## Úvod
 
 - historie robotiky
@@ -1000,7 +1002,7 @@
 	- rozptýlení robotů
 		- roboti, kteří se vidí, ale jsou daleko od sebe, se přitahují
 		- roboti, kteří se vidí, ale jsou příliš blízko sebe, se odpuzují
-	- robot, který najde cíl začne vydávat (virtuální) feromon
+	- robot, který najde cíl, začne vydávat (virtuální) feromon
 	- virtuální feromon – zprávy posílané mezi roboty v dosahu
 		- zpráva obsahuje typ feromonu a počet přeskočení (přes kolik robotů už prošla)
 		- každý agent dostane více zpráv se stejným typem, tak vybere tu, která má nejnižší počet přeskočení, zvýší ho o jedna a pošle ji sousedům

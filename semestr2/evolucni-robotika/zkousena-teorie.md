@@ -22,8 +22,7 @@
 - reaktivní řízení + příklad úlohy, kde lze využít
 - senzorově-motorická koordinace a příklad
 - minimální simulace
-- robotický roj + nalezení optimální cesty pomocí mravenců a hledání potravy
-- feromonová robotika + algoritmus pro prohledávání grafu (vrcholu) v polynomiálním čase
+- robotický roj, feromonová robotika + algoritmus pro prohledávání grafu (vrcholu) v polynomiálním čase
 
 ## Učení
 
