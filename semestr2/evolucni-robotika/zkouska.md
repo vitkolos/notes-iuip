@@ -1113,15 +1113,139 @@
 ## Pokročilé evoluční NS
 
 - NEAT
+	- neuroevolution of augmenting topologies
+	- principy
+		- začíná se s malou sítí, sítě můžou růst
+		- dochází ke (smysluplnému) křížení sítí s různou topologií
+		- ochrana inovací pomocí druhů
+	- topologie se vyvíjí zároveň s váhami sítě
+	- každý uzel a každá váha mají svou historickou značku, ta se dědí
+	- kříží se uzly se stejnými značkami
 - nepřímé kódování
+	- komprimovaný genom
+	- založené na L-systémech
+	- cellular encoding
+		- pravidla růstu jsou popsány pomocí gramatiky
 	- analogové genetické kódování (AGE)
+		- implicitní kódování synapsí a vah v síti
+		- genom je sekvence znaků z nějaké konečné abecedy
+		- kód neuronu
+			- začíná „device tokenem“ (pevná krátká sekvence)
+			- pak kód vstupního konce (ukončený koncovým tokenem)
+			- pak kód výstupního konce (také ukončený)
+		- váhy spojů mezi neurony se spočítají nějakou funkcí $I$, která dostane vždycky výstupní kód jednoho neuronu a vstupní kód druhého neuronu
+		- když device token není následovaný dvěma úseky zakončenými koncovými tokeny, tak je kód neuronu neplatný
+			- úseky mezi kódy neuronů se nevyužívají
+		- vstupní a výstupní neurony mají odlišné device tokeny
+		- genetické operátory
+			- přidání/smazání/nahrazení znaku
+			- smazání/posunutí/zdvojení náhodného úseku genomu
+			- přidání zařízení (neuronu)
+			- homologické křížení
+			- zdvojení celého genomu
+		- generování počáteční populace: každý genom jako náhodná sekvence, do které je vložený zadaný počet neuronů s náhodnými terminálními sekvencemi
+		- testováno na úloze balancování dvou tyčí bez znalosti rychlostí
+			- lepší než NEAT
 - HyperNEAT
-- ES-HyperNEAT
-- pravidelné a modulární sítě
-- deceptive tasks, jejich řešení
-- novelty search
-- curiosity search
-- metoda s dominancí a frontami
+	- ke generování sítě, která řeší úlohu, se použije generátor CPPN
+		- funkce $f_1$ ze souřadnic neuronu určí jeho přenosovou (aktivační) funkci
+		- funkce $f_2$ ze souřadnic dvou neuronů určí váhu spoje mezi nimi
+	- CPPN se vyvíjí algoritmem NEAT
+	- vhodné na úlohy, které vykazují symetrie
+	- experimentátor rozhoduje, kde na substrátě budou umístěné neurony a kolik jich bude
+	- článek: *adding the connection cost technique to HyperNEAT produces neural networks that are more modular, regular, and higher performing*
+	- alternativa: ES-HyperNEAT (ES = evolving substrate)
+		- algoritmus sám určuje hustotu a pozici neuronů na substrátě
+- deceptive tasks (zavádějící úlohy)
+	- žádná kombinace malých stavebních bloků nevede na optimální řešení
+	- úloha je tím těžší, čím je složitější fitness krajina
+		- klamavá fitness – ukazuje nesprávný směr k řešení
+	- řešení
+		- sdílení zdrojů (fitness sharing) spolu se zavedením druhů → podobná řešení se dělí o fitness, čímž se vynucuje hledání nových druhů
+		- hierarchical fair competition
+			- subpopulace podle úroveň fitness
+			- každá subpopulace má vstupní úroveň a exportní úroveň fitness
+				- jedinec překročí vstupní úroveň → je přijat do subpopulace
+				- jedinec překročí exportní úroveň → přechází do vyšší subpopulace
+			- v nejnižší úrovni je generátor náhodných jedinců
+			- úrovně buď pevné, nebo adaptivní
+		- fitness uniform selection scheme
+			- místo hodnoty fitness se hodnotí jedinečnost fitness
+			- náhodně zvol hodnotu fitness, vyber jedince s nejbližší fitness
+		- reorganizace genomu
+			- pořadí genů se mění tak, aby byly korelované geny blízko sebe a křížení je tak často nerozdělovalo
+		- více fitness funkcí
+			- různé fitness funkce zachycují různé vlastnosti jedinců
+			- buď se dynamicky vybírá jedna fitness, nebo se dělá multikriteriální optimalizace
+		- další přístupy: koevoluce, novelty search, kreativní přístup, …
+- novelty search (hledání novinek)
+	- fitness funkce se nahradí mírou novosti (novelty metric) – měří novost chování
+	- archiv novinek – uchovává staré jedince, kteří přišli s novým chováním
+	- příklad míry: průměrná vzdálenost ke $k$ nejbližším chováním
+		- jedince porovnáváme vůči aktuální populaci a archivu novinek
+	- když je míra dost velká, tak je jedinec zařazený do archivu (je to podobné síni slávy u koevoluce)
+	- také kontrolujeme, jestli už jsme nenašli vyhovující řešení
+	- funguje u zavádějících úloh, pokud můžeme intuitivně charakterizovat chování a pokud je počet možných chování omezen
+	- dá se dobře kombinovat s NEAT
+	- příklad: navigace v bludišti
+		- tři varianty: fitness funkce (podle vzdálenosti od cíle na konci), novelty search (vzdálenost od ostatních robotů na konci), náhodná fitness
+		- všechny tři varianty používaly NEAT
+		- novelty search byl úspěšnější
+		- problém: metrika pro chování je silně redukovaná (uvažuje se jenom koncová poloha)
+		- taky by se místo přesné polohy dala použít jenom poloha v mřížce (to by byla ještě silnější redukce)
+	- příklad: dvojnohý kráčející robot
+	- není hledání novinek prostě prohledávání prostoru hrubou silou?
+		- experiment: prohledávání bludiště (porovnáme novelty search s náhodně generovanými roboty a s tradiční evolucí)
+		- testujeme, co se stane, když nejlepšího jedince přesuneme do nového bludiště
+		- postup
+			- 50 běhů NEAT s hledáním novinek (novelty search) v bludišti
+			- první jedinec, který v daném běhu najde cíl, je přenesen do druhého bludiště a změří se jeho výkon
+				- pokrytá plocha, uražená vzdálenost
+			- evoluce pokračuje v druhém bludišti (50 generací)
+				- použijí se různá cílová místa
+		- kontrolní algoritmy
+			- naivní hledání – náhodně generovaní jedinci s jediným skrytým neuronem
+			- NCC (network complexity control) – náhodně generované sítě, $i$-tá síť má stejný počet neuronů jako nejlepší síť $i$-tého běhu novelty searche
+			- random search – evoluce, ale s náhodnou hodnotou fitness funkce
+	- závěr: novelty search produkuje specialisty
+- curiosity search (zvědavé prohledávání)
+	- novelty search produkuje specialisty – jedinec je porovnávaný s celou populací a stačí, když umí něco nového
+	- curiosity search hledá jedince, kteří se chtějí každý naučit co nejvíc schopností – jedinec je porovnávaný jen sám se sebou
+	- příklad: dlaždice a dveře
+		- zavřené dveře je potřeba aktivně otevřít (pak zůstanou otevřené)
+		- robot má 6 senzorů: vzdálenost od překážky, počet nenavštívených dlaždic, vzdálenost od zavřených dveří × 4 (červená, zelená, modrá, žlutá)
+		- výstupy sítě: ovládání motorů, otevírání dveří dané barvy (tzn. celkem 6 výstupů)
+		- porovnávané algoritmy
+			- curiosity search – odměna za to, že jedinec navštíví všechna místa
+			- novelty search – vzdálenost mezi dráhami $NS_T$ (nebo aspoň koncovými body drah $NS_E$)
+			- curiosity + novelty (tzv. NSGA-II, non-dominated sorting genetic algorithm II)
+				- dvě složky fitness funkce
+				- definujeme si, kdy řešení *dominuje* jiné řešení (když není v žádné složce horší a je aspoň v jedné složce lepší)
+				- populaci rozdělíme na fronty
+					- fronta 1: řešení, která nejsou dominovaná žádným jiným řešením
+					- fronta $i$: řešení, která nejsou dominovaná jiným řešením kromě řešení v nižších frontách
+				- elitismus, explicitně zachovává diverzitu (crowding distance), vrací nedominovaná řešení
+				- selekce pomocí operátoru *crowded tournament selection*
+					- vítězí řešení, které dominuje to druhé
+					- pokud jsou řešení ze stejné fronty, tak vítězí to s větší crowding distance
+						- tzn. v dané frontě jsou ostatní řešení dost daleko
+			- základní algoritmus (koncové body / target endpoints)
+				- minimalizuje se vzdálenost koncové polohy od libovolného z koncových bodů
+				- nenutí robota prozkoumávat celé bludiště
+		- výsledky
+			- novelty search prohledá všechno, ale ne jedním jedincem
+				- porovnání celých drah vede na jedince, kteří sami prohledají větší část bludiště
+			- kombinace curiosity + novelty toho porovná víc
+				- je skoro jedno, jestli používáme $NS_T$ nebo $NS_E$
+			- curiosity search překonává target endpoints a novelty search
+				- ale nejlíp funguje curiosity + novelty
+			- celá populace u všech metod dohromady prozkoumá celé bludiště, samotný jedinec ale nikdy nezvládne prozkoumat celé bludiště (takového jedince se nám nepodařilo najít)
 - kreativní myšlení
-	- curiosity search na vnitřních stavech (skrytých neuronech)
-- skončili jsme na slajdu 61
+	- novelty search má problém, když mutace nedokáže vytvořit dost odlišné chování
+		- tzv. novelty plateau
+	- kreativní myšlení = *curiosity search* na vnitřních stavech (skrytých neuronech)
+		- curiosity search se zabývá jenom výstupními neurony (chováním)
+	- experiment: zavádějící bludiště
+		- úloha nebyla dost těžká, tak na tom nebylo moc poznat
+	- pro těžší úlohu (přemisťování míčků do osvětlené části) byl výsledek jasnější
+		- kreativní myšlení bylo jasně lepší
