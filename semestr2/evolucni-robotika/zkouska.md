@@ -347,11 +347,12 @@
 	- senzory a motory můžou fungovat rozdílně, i když jsou identické
 	- je potřeba nějak modelovat šum
 	- tělo robota a charakteristiky prostředí musejí být přesně reprodukované (mřížka jako model prostředí často nestačí)
-	- tzv. *základní množinu charakteristik* (jak robot interaguje s prostředím) musíme modelovat přesně
-		- mezi pokusy se přiměřeně mění, aby bylo řízení dostatečně robustní
-	- simulace má pak ještě tzv. *implementační aspekty*
-		- ty neodpovídají realitě, jsou to čistě vlastnosti simulace
-		- musíme je mezi pokusy měnit, aby je robot nemohl použít k „podvádění“
+	- často chceme sestavit *minimální simulaci* – modelovat toho co nejmíň
+		- tzv. *základní množinu charakteristik* (jak robot interaguje s prostředím) musíme modelovat přesně
+			- mezi pokusy se přiměřeně mění, aby bylo řízení dostatečně robustní
+		- simulace má pak ještě tzv. *implementační aspekty*
+			- ty neodpovídají realitě, jsou to čistě vlastnosti simulace
+			- musíme je mezi pokusy měnit, aby je robot nemohl použít k „podvádění“
 - charakteristiky fitness funkce
 	- funkcionální × behaviorální
 		- funkcionální: měří mechanické komponenty nebo interní stavy, které se podílejí na výsledném chování (např. jaká je frekvence, s jakou robot kráčí)
@@ -1131,9 +1132,7 @@
 	- kříží se uzly se stejnými značkami
 - nepřímé kódování
 	- komprimovaný genom
-	- založené na L-systémech
-	- cellular encoding
-		- pravidla růstu jsou popsány pomocí gramatiky
+	- možné přístupy: kódování založené na L-systémech, cellular encoding (pravidla růstu jsou popsány pomocí gramatiky), analogové genetické kódování
 	- analogové genetické kódování (AGE)
 		- implicitní kódování synapsí a vah v síti
 		- genom je sekvence znaků z nějaké konečné abecedy
