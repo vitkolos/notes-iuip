@@ -167,7 +167,7 @@ u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nej�
 		- rank based s ořezáváním – nejlepších $M$ zkopírujeme $O$-krát, aby $N=M\times O$ (vlastně zahodíme spodní část seznamu)
 		- turnajová selekce – náhodně se vyberou dva jedinci, ten lepší jedinec s určitou pravděpodobností vyhraje a bude zkopírován (jinak ten druhý)
 	- elitismus – nejlepší jedinci se beze změny zkopírujou (abychom nepřišli o dosud nejlepší řešení)
-		- podobný koncept: síň slávy (nejlepší jedinci ze všech předcházejících generací)
+		- podobný koncept (používá se v koevoluci): síň slávy (nejlepší jedinci ze všech předcházejících generací)
 - křížení
 	- jedinci jsou náhodně spárováni a každý pár je s danou pravděpodobností zkřížen
 	- jednobodové nebo vícebodové křížení
