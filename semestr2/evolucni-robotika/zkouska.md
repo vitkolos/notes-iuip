@@ -353,13 +353,21 @@
 		- ty neodpovídají realitě, jsou to čistě vlastnosti simulace
 		- musíme je mezi pokusy měnit, aby je robot nemohl použít k „podvádění“
 - charakteristiky fitness funkce
-	- funkcionální (např. jaká je frekvence, s jakou robot kráčí) × behaviorální (jakou vzdálenost robot ujde)
-	- explicitní (dorazil robot ke zdroji energie?) × implicitní (jak dlouho vydržel pracovat)
-	- externí (dá se měřit jenom zvenku) × interní (je dostupná robotovi z jeho senzorů)
+	- funkcionální × behaviorální
+		- funkcionální: měří mechanické komponenty nebo interní stavy, které se podílejí na výsledném chování (např. jaká je frekvence, s jakou robot kráčí)
+		- behaviorální: měří celkové efekty / výsledky chování (např. jakou vzdálenost robot ujde)
+	- explicitní × implicitní
+		- explicitní: říká robotovi, jak řešit úkol – přísně ohraničuje chování pomocí pravidel, která musí být splněna (např. hýbej se dopředu, udržuj 10cm vzdálenost ode zdí, netoč se na místě)
+		- implicitní: sdělíme robotovi cíl, aniž bychom mu řekli, jak ho má dosáhnout (např. jak dlouho vydržel pracovat)
+	- externí × interní
+		- externí: dá se měřit jenom zvenku (v simulaci lze snadno použít)
+		- interní: je dostupná robotovi z jeho senzorů
 	- jak zvolit fitness
 		- „inženýrský přístup“ – FEE (funkcionální, explicitní, externí)
 		- pro neznámé a nepředvídatelné prostředí potřebujeme BII
-		- subjektivní fitness (jedinci jsou hodnoceni člověkem) – BEE
+			- to je nejlepší kombinace (teoretický ideál) – neříkáme robotovi, jak má problém řešit; evoluce má volné ruce
+			- problém s implicitní fitness: může být hodně těžká pro náhodného robota (bootstrapping problem)
+		- subjektivní fitness (jedinci jsou hodnoceni člověkem) → BEE
 - přímý pohyb s obcházením překážek
 	- lze použít Braitenbergovo autíčko
 		- motory jsou přímo spojené se senzory (pomocí vážených spojů)
