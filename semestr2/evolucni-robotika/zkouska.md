@@ -319,10 +319,15 @@ u zkoušky se objeví čtyři otázky; mrkni na [teorii, která se zkouší nej�
 	- evoluce programu v libovolném programovacím jazyce
 	- používá to lineární genom (kdežto GP používá stromy)
 	- zobrazení z genotypu na fenotyp se dělá podle gramatiky
-	- jak se má uplatnit pravidlo? na to se používá kodon
-		- tzn. slouží k výběru správné pravé strany přepisovacího pravidla
+	- jak se má uplatnit pravidlo? na to se používá kodon (číslo)
+		- tzn. konkrétní prvek v genotypu slouží k výběru správné pravé strany přepisovacího pravidla
 		- vždycky přepisujeme nejlevější neterminál
 			- tudíž ten algoritmus vlastně generuje stromy, které se zanořují doleva
+	- přesný postup
+		- začneme s výchozím neterminálem
+		- interujeme přes prvky genetického kódu
+			- zvolíme nejlevější neterminál, tomu v naší gramatice odpovídá seznam pravidel
+			- aktuální prvek genetického kódu nám říká, kolikáté pravidlo ze seznamu máme aplikovat
 - evoluce robotů
 	- problémy
 		- mechanická odolnost
