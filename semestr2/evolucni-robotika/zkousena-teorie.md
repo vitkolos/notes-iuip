@@ -1,7 +1,7 @@
 # Zkoušená teorie
 
 ## Základy evoluce
-a – b—
+
 - charakteristiky fitness funkce + které jsou vhodné pro evoluční vývoj
 - jednoduchý genetický algoritmus, věta o schématech
 - bootstrap problém a jak se řeší
