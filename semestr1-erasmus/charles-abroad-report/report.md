@@ -1,4 +1,6 @@
-# Report pro [Charles Abroad](https://www.charlesabroad.cz)
+# Report ze studijního pobytu Erasmus+ v Grenoblu
+
+[dostupný také v databázi mobility na webu Charles Abroad](https://www.charlesabroad.cz/damo-katalog/39817a9f-c94b-47dc-95b4-6d76f5ee3b6b)
 
 - autor: [Vít Kološ](/)
 - obor studia: Informatika – Umělá inteligence (1. ročník navazujícího magisterského studia) na Matematicko-fyzikální fakultě Univerzity Karlovy
