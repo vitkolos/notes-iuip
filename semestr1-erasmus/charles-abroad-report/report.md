@@ -1,11 +1,10 @@
 # Zpráva ze studijního pobytu Erasmus+ v Grenoblu
 
-[zpráva je dostupná také v databázi mobility na webu Charles Abroad](https://www.charlesabroad.cz/damo-katalog/39817a9f-c94b-47dc-95b4-6d76f5ee3b6b)
-
 - autor: [Vít Kološ](/)
 - obor studia: Informatika – Umělá inteligence (1. ročník navazujícího magisterského studia) na Matematicko-fyzikální fakultě Univerzity Karlovy
 - rok výjezdu: 2025/2026
 - hostitelská instituce: Université Grenoble Alpes (UFR IM²AG), nepřímo také Grenoble INP / ENSIMAG
+- [zpráva je dostupná také v databázi mobility na webu Charles Abroad](https://www.charlesabroad.cz/damo-katalog/39817a9f-c94b-47dc-95b4-6d76f5ee3b6b)
 
 [![centrální náměstí v kampusu](attachments/IMG-20250906-WA0023.jpeg)](attachments/IMG-20250906-WA0023.jpeg)
 
