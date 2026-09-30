@@ -1,0 +1,21 @@
+# Tutorial
+
+- to get credit (zápočet)
+	- 1 assignment -- at least 1 point out of 20
+	- 1 presentation of a project (up to 15 points)
+	- optional: quizzes (2--4 quizzes, each for 5 points)
+	- in total: 40 % of the grade
+- optional: online test (15 % of the grade)
+- final exam: 45 % of the grade
+- the assignment will have two parts
+	- after submitting the assignment, there will be an in-class quiz regarding our solutions
+	- we need to be able to respond to the questions to get the second half of the points for the assignment (we won't have the access to the code or to the internet)
+	- we will have at least two weeks to solve the assignment
+	- we will get the feedback regarding the assignment, the quiz will be after that
+	- the quizzes will be individual
+- projects
+	- subjects of the projects will be discussed in the middle of the semester
+	- can be prepared in pairs -- it's not necessary that both students present the results
+	- we should declare which AI tools we used
+	- it's possible to present the project early but we need to let the professor know
+	- otherwise, there will be possibilities at the end of the semester
