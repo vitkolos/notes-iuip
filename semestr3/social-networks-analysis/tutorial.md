@@ -1,9 +1,9 @@
 # Tutorial
 
 - to get credit (zápočet)
-	- 1 assignment -- at least 1 point out of 20
+	- 1 assignment – at least 1 point out of 20
 	- 1 presentation of a project (up to 15 points)
-	- optional: quizzes (2--4 quizzes, each for 5 points)
+	- optional: quizzes (2–4 quizzes, each for 5 points)
 	- in total: 40 % of the grade
 - optional: online test (15 % of the grade)
 - final exam: 45 % of the grade
@@ -15,7 +15,6 @@
 	- the quizzes will be individual
 - projects
 	- subjects of the projects will be discussed in the middle of the semester
-	- can be prepared in pairs -- it's not necessary that both students present the results
+	- can be prepared in pairs – it's not necessary that both students present the results
 	- we should declare which AI tools we used
 	- it's possible to present the project early but we need to let the professor know
-	- otherwise, there will be possibilities at the end of the semester
