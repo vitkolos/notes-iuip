@@ -1,0 +1,75 @@
+# Lecture
+
+- let's make it interactive!
+- new slides! (remade)
+	- though the old slides are good enough
+
+## Introduction
+
+- population-based stochastic search
+- two principles: variation + selection
+- population of solutions, not just one solution
+	- opposed to NNs – gradient descent maintains only one solution
+- search … finding a candidate satisfying some requirements
+- optimization … we have some objective function $f(x)$
+- learning … use observations to improve future decisions
+- black-box optimization
+	- we only need to tell good and bad solutions apart
+	- we don't need to know the structure of $f(x)$, it can be very general
+- “searching without knowing where to go”
+- example: airfoil (wing profile) optimization
+- in the second semester, we'll discuss how the search algorithms can adapt (learn)
+- Charles Darwin
+	- theory of natural selection
+	- there are some hereditary traits, there is some variation
+	- × Lamarck theory
+		- individuals improve in their lifetime
+		- faster convergence, higher risk of getting stuck in local optima
+- Gregor Mendel
+	- experiments on plant hybridization
+	- “we're not mixing, we're transferring discrete units of information”
+- genes
+	- human genome has 0.8 GB (fits on a CD)
+- genotype vs. fenotype
+	- variation works on the genotype
+	- evaluation is performed on the fenotype
+- diploidy … organisms often carry two chromosome sets (one from each parent)
+	- there's no good implementation in evolutionary algorithms yet
+- evolutionary cycle
+	- current population $P_t$
+	- parent selection
+	- variation – generates new candidates
+	- evaluation
+	- survivor selection
+	- next population $P_{t+1}$
+- notation
+	- $\mu$ … number of individuals in a population
+	- $\lambda$ … number of offspring
+- objective value is not always the fitness
+- selection pressure
+	- how strongly the differences in fitness affect the parent selection
+	- “does everyone mate with the best individual?”
+- who survives?
+	- do we kill the parents?
+	- generational replacement × overlapping replacement
+	- elitist replacement – we keep the best-so-far solution
+- composition of the population serves as the memory of the search
+	- it may be useful to keep it diverse
+- the step from one to the next generation is stochastic
+- genetic drift
+	- some change in the population may be caused just by the stochasticity of the process (not by the differences in fitness)
+	- because of the finite sampling (we don't have infinitely many individuals)
+- how to represent the genotype (and how to mutate/combine)
+	- bit string → flip bits
+	- real vector → perturb coordinates
+	- permutation → swap/reorder
+	- tree / program → change structure
+- representation affects how the neighborhood looks like
+	- standard binary vs. Gray code
+	- in standard binary encoding, a single bit flip may easily change the order of the number (for Gray code, it does not happen that easily)
+- computational cost
+- when is evolution attractive?
+	- awkward search space
+	- black-box evaluation
+	- we want more than one optimum
+- sometimes, we can combine evolution with other approaches
