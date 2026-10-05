@@ -1,0 +1,31 @@
+# Lecture
+
+- problem
+	- variables
+	- domains
+	- constraints
+- a feasible solution = a complete consistent assignment of values to variables
+- an optimal solution = a feasible solution that minimizes/maximizes a value of some objective function
+- properties of constraints
+	- they express partial information
+	- they provide a local view of the problem – connect only a few variables
+	- can be heterogeneous (domains can be different; they don't have to be linear constraints)
+	- are non-directional (left-hand side and right-hand side have no special meaning)
+	- are declarative (they don't tell you how to satisfy them)
+	- are additive (their order is not important; we care about their conjunction)
+	- are rarely independent (they share variables)
+- advantages of CP
+	- close to real-life problems
+	- declarative manner (we can focus on problem description without paying too much attention to problem solving)
+	- co-operative problem solving (we can integrate various solving approaches – Gaussian elimination for linear inequalities, bipartite graph matching for combinatorial constraints, …)
+	- semantic foundation (we can use clean and elegant modelling languages)
+- limitations of CP
+	- efficiency (combinatorial explosion, many problems are NP-complete)
+	- hard-to-predict behaviour (it's hard to estimate the efficiency before running the model on real data)
+	- model stability (new data = new problem)
+	- too local (individual constraints give a very limited insight – one constraint may look satisfiable even though the whole model is not)
+	- weak co-operation of solvers (usually done only through sharing variables)
+- binary CSP
+	- CSP where all the constraints are binary
+	- note: unary constraints can be encoded into domains directly
+	- dual encoding: k-ary constraint can be converted to a dual variable with the domain consisting of compatile tuples
