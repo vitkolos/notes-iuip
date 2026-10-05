@@ -1,3 +1,27 @@
 # Přednáška
 
-- 
+- kontrola programů je těžká
+	- pojďme napsat program, který to udělá za nás
+	- nerozhodnutelnost problému *Helloworld* (důkaz sporem)
+	- převod problému *Volání funkce* na *Helloworld*
+- Churchova-Turingova teze: lambda-kalkulus, částečně rekurzivní funkce a Turingovy stroje jsou navzájem ekvivalentní co do výpočetní síly
+- jednopáskový deterministický Turingův stroj
+	- $M=(Q,\Sigma,\delta,q_0,F)$
+	- $Q$ … stavy
+	- $\Sigma$ … abeceda (písmena na pásce), včetně prázdného znaku $\lambda$
+		- budeme uvažovat situaci, kdy součástí uživatelského vstupu nejsou prázdné znaky
+	- $\delta$ … přechodová funkce
+		- může mít nějaké nedefinované přechody – pak výpočet končí
+	- $q_0$ … výchozí stav
+	- $F$ … přijímající stavy
+- jazyk palindromů
+	- načtu první znak, uložím do stavu, dojdu na konec vstupu, smažu znak shodný se stavem, vrátím se, smažu první znak
+	- pokud narazím na různý koncový znak, tak to není palindrom
+	- jinak skončím s prázdnou páskou → je to palindrom
+	- poznámka k implementaci: pro každý znak $x$ se nám hodí mít stavy MEM_$x$ a CHECK_$x$, přičemž při prvním se posouváme po pásce doprava (hledáme konec vstupu) a druhý použijeme k jednomu kroku doleva (z prázdné buňky k poslednímu znaku vstupu, který pak porovnáme s $x$)
+- částečně rozhodnutelné (rekurzivně spočetné) jazyky
+	- přijímané nějakým TS
+- rozhodnutelné (rekurzivní) jazyky
+	- TS se s každým vstupem zastaví
+- turingovsky vyčíslitelné funkce
+- $k$-páskový TS

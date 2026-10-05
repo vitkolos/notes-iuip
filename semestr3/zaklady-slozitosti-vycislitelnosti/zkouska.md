@@ -1,6 +1,6 @@
 # Zkouška
 
-k tvrzením, jež jsme dokazovali na přednášce, bude požadován důkaz
+verze 2025/2026; k tvrzením, jež jsme dokazovali na přednášce, bude požadován důkaz
 
 ## Skupina A
 

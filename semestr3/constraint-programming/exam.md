@@ -1,5 +1,7 @@
 # Exam
 
+version 2025/2026
+
 ## Foundations
 
 - Define a constraint satisfaction problem (including the notion of constraint) and its solution.
