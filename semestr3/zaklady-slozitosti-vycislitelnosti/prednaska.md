@@ -25,3 +25,34 @@
 	- TS se s každým vstupem zastaví
 - turingovsky vyčíslitelné funkce
 - $k$-páskový TS
+- Random Access Machine
+	- program je uložen odděleně od registrů (paměti)
+	- umí opravdu náhodný přístup do paměti
+	- instrukce jsou vykonávány jedna po druhé – je to imperativní program
+	- instrukce: load, add, sub, copy (dvě verze), jnz, read, print
+	- příkaz copy umožňuje použití nepřímé adresace – bez toho bychom nemohli využít neomezenou paměť (nebylo by to ekvivalentní TS)
+	- program pro součin čísel
+	- můžeme mít neomezeně dlouhá pole
+	- RASP
+		- random access stored program
+		- odpovídá von Neumannově architektuře (program je také uložen v registrech)
+		- není potřeba nepřímá adresace
+	- PRAM = paralelní RAM
+	- ke každému TS $M$ existuje ekvivalentní RAM $R$
+		- BÚNO uvažujeme pásku $M$ omezenou zleva
+		- $R$ musí ve své paměti reprezentovat konfiguraci $M$, tj. stav řídicí jednotky, slovo na pásce, polohu hlavy
+	- ke každému RAMu existuje ekvivalentní TS
+- číslování Turingových strojů
+	- shortlex uspořádání – řetězce primárně řazeny podle léky, pak lexikograficky
+	- jazyk $L\subseteq\Sigma^*$ odpovídá množině přirozených čísel (každé slovo můžeme očíslovat pomocí shortlex uspořádání)
+	- jazyků nad konečnou abecedou $\Sigma$ není spočetně mnoho
+		- množina jazyků odpovídá potenční množině přirozených čísel
+		- podle Cantorovy věty platí, že kardinalita $\mathcal P(A)$ je ostře větší než kardinalita $A$
+	- každému Turingovu stroji přiřadíme přirozené číslo (tzv. Gödelovo číslo)
+		- pomocí binárního kódování a shortlex uspořádání
+	- pokud číslo neodpovídá syntakticky správnému zápisu TS, budeme uvažovat TS, který nic nepřjímá
+	- jednomu TS odpovídá nekonečně mnoho Gödelových čísel, protože ho lze zakódovat nekonečně mnoho různými binárními kódy
+	- ale jazyků je nespočetně mnoho, takže je jich víc, než kolik je TS – ne každý jazyk je částečně rozhodnutelný
+- univerzální Turingův stroj
+	- na vstupu bere $\braket{M,x}$ (tzn. binární kód kódující TS $M$ a vstup $x$)
+	- univerzální Turingův stroj simuluje práci stroje $M$ nad vstupem $x$
