@@ -73,3 +73,34 @@
 	- black-box evaluation
 	- we want more than one optimum
 - sometimes, we can combine evolution with other approaches
+
+## Genetic Algorithms
+
+- simple genetic algorithm
+	- representation: fixed-length bit string
+	- variation: one-point crossover + bit mutation
+	- survivor selection: generational replacement (we kill the parents)
+- John Holland
+	- studied the adaptation in natural and artificial systems
+	- introduced the simple genetic algorithm
+- chromosome
+	- locus … position $i$ in the chromosome
+	- allele … the value $x_i\in\set{0,1}$ at that locus
+	- chromosome/genotype … the complete string
+- selection
+	- roulette-wheel selection
+	- in the real-world problems, we may need to somehow transform the objective value to get a useful fitness function
+	- we can use ranking-based selection
+		- tournament selection
+- uniform crossover
+	- does it make sense?
+	- is there any linkage between alleles? → we should use one-point crossover
+- schema theory
+	- it's been over-dramatized :)
+	- schema describes a family of strings
+	- important: *to evaluate a fitness of a schema, we only consider only the individuals in the population*
+	- schema → building blocks
+	- schema theorem does not prove that…
+		- a GA converges to the global optimum
+		- useful building blocks exist
+		- crossover is generally superior to mutation

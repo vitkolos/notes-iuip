@@ -38,3 +38,9 @@
 	1. strategy profile evaluation (what is the expected utility?)
 	2. best response calculation
 	3. iterated removal of dominated strategies
+- solution concepts
+	- maximin strategy
+		- we maximize our expected utility assuming the worst-case scenario
+	- Nash equilibrium
+		- none of the players can benefit from unilaterally deviating from their policy
+		- support enumeration
