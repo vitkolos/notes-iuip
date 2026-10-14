@@ -44,3 +44,20 @@
 	- Nash equilibrium
 		- none of the players can benefit from unilaterally deviating from their policy
 		- support enumeration
+- congestion games and the price of anarchy
+	- cost of traversing an edge
+	- congested highway turns into a parking lot
+	- Braess’ paradox (adding an edge makes the traffic situation worse)
+		- can also be illustrated using strings and springs
+	- tragedy of commons
+- what is the optimal policy of the player? are we close to that policy?
+	- incentive to deviate
+	- $\epsilon$-Nash equilibrium
+	- fictitious play
+		- we learn the empirical distribution of the opponent's past actions
+		- we play the best response to this strategy
+	- best-response dynamics
+		- we play the best response to the previous action of the opponent
+	- convergence
+		- a game has the fictitious-play property if the fictitious play converges there
+	- three-player zero-sum game is somehow equivalent to a two-player general-sum game

@@ -103,4 +103,4 @@
 	- schema theorem does not prove that…
 		- a GA converges to the global optimum
 		- useful building blocks exist
-		- crossover is generally superior to mutation
+		- crossover is generally superior to mutationote
