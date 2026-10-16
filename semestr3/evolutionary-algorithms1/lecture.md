@@ -141,3 +141,7 @@
 - no free lunch
 	- averaged over all possible objective functions on a finite space, every black-box search algorithm performs equally well
 	- but we don't care about all problems! we are interested in one particular class of problems
+- questions
+	- what are we learning in EA? the structure of the population
+	- representation matters
+	- can a perfect individual live in a bad population? yes, bad population is useful for exploration
