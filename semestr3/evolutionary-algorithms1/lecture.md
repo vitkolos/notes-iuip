@@ -103,4 +103,41 @@
 	- schema theorem does not prove that…
 		- a GA converges to the global optimum
 		- useful building blocks exist
-		- crossover is generally superior to mutationote
+		- crossover is generally superior to mutation
+- two test problems
+	- OneMax
+	- OneMax with 4-bit traps
+		- this problem is more difficult
+		- you can solve the traps individually
+- quality and diversity of the population
+- forces
+	- selection – increases the quality (sampling is focused on better individuals), reduces the diversity
+	- variation – proposes new candidates; may improve or worsen the quality, increases the diveristy
+	- draft – the process is stochastic so there are some traits propagating through the popoulation even if they provide no evolutionary benefit; has no systematic effect on the quality of the population, but slowly reduces the diversity
+- selection pressure
+	- selection intensity
+	- takeover time
+		- can be studied if we have a selection-only algorithm
+		- for tournament selection, using higher $k$ means higher selection pressure (we are choosing the maximum from more individuals → worse individuals are much less likely to get selected)
+- elitims vs. just storing the best individual
+	- we always want to save the best individual to be able to return it from the algorithm
+	- elitims makes this individual part of the next population
+- selection pressure is a tradeoff between speed and diversity
+- (1+1) evolutionary algorithm = hill climbing
+	- we can derive what is a good probability of mutation
+	- it's $1/\ell$
+	- (we don't have to remember the theorem)
+- population size is connected to the number of generations
+	- we may have a fixed evaluation budget (evaluations take time) → the more generations we want to have, the smaller population we can have (and vice versa)
+- with a large population, we can use *island model* and parallelize the computation
+- for more difficult problems, we may need a larger population (it allows for better exploration)
+- hitchhiking
+	- a suboptimal trait survives because it happens to be a part of an individual with high fitness
+	- mutation helps to prevent this
+- how to measure diversity
+	- on the genotypic level – using Hamming distance etc.
+	- on the phenotypic level – how different are the decoded individuals / how different is their behavior (may be hard to measure)
+	- using fitness – e.g. standard deviation
+- no free lunch
+	- averaged over all possible objective functions on a finite space, every black-box search algorithm performs equally well
+	- but we don't care about all problems! we are interested in one particular class of problems

@@ -1,14 +1,29 @@
 # Tutorial
 
 - https://jbulin.github.io/teaching/fall/nopt042/
-
-## Picat
-
-- linked list (head & tail syntax) vs. array (can be indexed)
-- variables start with capital letter or underscore
-- a variable is free until instantiated
-- primitive values: atom (quoted or starts with a lower-case letter), number (integer or real)
-- compound values: list, string, struct, array (curly braces), map (like dictionary), set
-- assignment
-	- actually creates a new copy of the variable and updates the occurences so that they refer to the new variable
-- dollar … makes sure that the expression is passed to the solver as it is
+- Picat
+	- linked list (head & tail syntax) vs. array (can be indexed)
+	- variables start with capital letter or underscore
+	- a variable is free until instantiated
+	- primitive values: atom (quoted or starts with a lower-case letter), number (integer or real)
+	- compound values: list, string, struct, array (curly braces), map (like dictionary), set
+	- assignment
+		- actually creates a new copy of the variable and updates the occurences so that they refer to the new variable
+	- dollar … makes sure that the expression is passed to the solver as it is
+- lecture recap
+	- hill climbing
+	- if we are in the infeasible region, we can count how many constraints we have violated
+	- step-by-step approach
+- breaking symmetries
+	- value × variable symmetry
+	- for a map-coloring problem, we can find a triangle and assign colors to the territories
+- integer programming
+	- CBC = COIN-OR Branch-and-Cut
+	- *branch & bound*
+		- I assign values to integer variables – create branches according to these value
+		- for each node, I solve the LP (if it's infeasible, I can prune the branch)
+		- I can quickly go to the leaf; sometimes, I get a feasible solution that way – it's a candidate (“primal bound”)
+		- then, I can perform LP relaxation for the other branches and check how well the resulting solution performs (if it's worse than the primal bound, I can throw the whole branch away)
+	- *cut*
+		- when we have a fractional LP solution, we can introduce an additional constraint that cuts out the fractional solution and does not cut out any integer solution (so by repeating these cuts, we get to the integer solution according to Chvátal's proof)
+- lazy constraint generation: we add constraints that cut out the solutions we found but don't like for some reason
