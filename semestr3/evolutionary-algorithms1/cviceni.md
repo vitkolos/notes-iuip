@@ -29,3 +29,18 @@
 			- $o_2$ ← mutace($o_2'$)
 			- off ← off $\cup\set{o_1,o_2}$
 		- pop ← off
+- jak může vypadat fitness u maximalizace střídání nul a jedniček
+	- buď porovnáme rozdíl oproti optimu (respektive oběma optimům)
+	- nebo spočítáme přechody z nuly na jedničku
+	- první varianta je lepší z hlediska mutací, druhá potřebuje křížení
+- loupežníci
+	- mutace přehodí předmět na jinou hromádku
+	- alternativní mutace: vyměníme dva předměty (swap)
+		- hint: dají se parametry původní mutace nastavit tak, aby se nám často děly tyhle swapy?
+	- jednobodové křížení – pomáhá nám? asi ani ne, ale když ho vypneme, tak to funguje hůř
+		- potíž je asi v tom, že „třetí hromádka“ může v každém jedinci znamenat něco jiného
+	- chytré (memetic) operátory
+		- swap předmětů mezi lehkou a těžkou hromádkou
+			- vlastně bychom k tomu nepotřebovali další výpočet fitness (ale nemusíme to takhle optimalizovat v naší implementaci)
+		- extrém: operátor kompletně řeší náš problém
+		- je to vždycky tradeoff mezi rychlostí operátorů a rychlostí konvergence
