@@ -1,0 +1,82 @@
+# Přednáška
+
+- zajímavější než reflexní agenti pro nás budou goal-based agenti, konkrétně problem-solving agenti
+- problem solving
+	- formulace cíle – jaký je cílový stav?
+	- formulace problému – jaké jsou stavy a akce (přechody mezi nimi)?
+	- řešení problému – jak najít nejlepší sekvenci stavů (respektive akcí), kterou dosáhnu cíle?
+	- provedení řešení – když znám akce, jak je provést?
+- dobře definovaný problém má…
+	- počáteční stav
+	- přechodový model (popis akcí a stavů)
+		- stavový prostor může být hodně velký, ale nemusím ho mít celý v paměti
+		- stačí, když mám přechodovou funkci
+	- test cíle (jsem v cílovém stavu?)
+	- cena cesty – obvykle předpokládáme, že odpovídá součtu cen akcí
+- řešení problému = sekvence akcí z počátečního do cílového stavu
+	- optimální řešení má nejnižší cenu cesty
+- abstrakce
+	- eliminujeme některé detaily z reprezentace problému
+	- abstrakce musí být validní a užitečná
+	- validní abstrakce – abstraktní řešení lze převést na řešení v reálném (detailnějším) světě
+	- užitečná abstrakce – zjednoduší nám problém, takže se s ním snáz pracuje
+- modelové problémy
+	- robotický vysavač
+	- Loydova patnáctka
+	- N královen – dvě formulace stavů
+		- můžeme přidávat královny (inkrementální formulace)
+		- nebo s nimi můžeme pohybovat (máme úplné stavy)
+- reálné problémy
+	- route-finding (nejkratší cesta)
+	- touring (obchodní cestující, chci navštívit nějaká místa)
+	- product assembly (máme manipulátor a součástky, skládáme z nich nějaký výrobek; nebo se můžeme snažit vyrobit bílkovinu ze sekvence aminokyselin)
+- prohledávací algoritmy
+	- tree search
+		- pozor, stavový prostor nemusí být strom
+		- vzniká nám strom prohledávání, každý vrchol tohoto stromu v sobě má uloženo několik informací
+		- fringe/frontier – dosud neexpandované vrcholy
+	- co nás zajímá u algoritmů
+		- úplnost – algoritmus najde řešení, když existuje (někdy se rozlišuje částečná úplnost apod.)
+		- optimalita – algoritmus najde optimální řešení (to implikuje úplnost)
+		- časová složitost
+		- prostorová složitost
+	- časovou a prostorovou složitost analyzujeme vůči parametrům $b$ (branching factor = maximální počet potomků libovolného vrcholu), $d$ (hloubka nejmělčího řešení), $m$ (maximální délka cesty ve stavovém prostoru)
+	- kromě search cost (složitost prohledávání) může být zajímavá i total cost, kdy k času nalezení řešení přičteme čas provedení řešení (např. když je to route-finding algoritmus, tak sečteme dobu hledání cesty s dobou projetí cesty)
+	- BFS – expandujeme nejmělčí uzel
+		- máme-li konečné $b$, tak je to úplný algoritmus
+		- je optimální, když je cena cesty neklesající funkcí hloubky uzlu
+		- časová i prostorová složitost $O(b^{d+1})$
+			- obvykle pro nás bude kritičtější prostorová složitost
+	- uniform-cost (Djikstra)
+		- úprava BFS, která najde optimální řešení
+		- expandujeme vrchol s nejnižší cenou cesty
+		- zakážeme si akce s nulovou cenou (aby se nám to necyklilo)
+		- abychom měli úplnost, musíme cenu akcí odhadnout zespodu nějakým $\varepsilon$
+			- jinak bychom mohli mít nekonečnou cestu s konečným součtem (viz Achilles a želva)
+		- složitost závisí na ceně cesty
+	- DFS – expandujeme nejhlubší uzel
+		- když použijeme tree search, tak se můžeme zacyklit → není úplný
+		- čas $O(b^m)$
+		- prostor $O(bm)$
+			- generujeme všechny následníky najednou
+			- kdybychom uměli generovat následníky jednoho po druhém, tak by nám stačilo pamatovat si jenom tu nejhlubší cestu → $O(m)$
+				- tomu se říká backtracking
+	- DLS (depth-limited search)
+		- DFS s omezenou hloubkou – v hloubce $\ell$ zařízneme prohledávání (jako by tam nebyl následník)
+		- pro $\ell\lt d$ není úplný
+		- pro $\ell\gg d$ prohledá spoustu zbytečných vrcholů
+		- někdy umíme určit $\ell$ díky znalosti problému
+	- IDS (iterative deepening)
+		- paměť $O(bd)$
+		- čas $O(b^d)$
+			- na rozdíl od BFS nemusím expandovat poslední vrstvu (respektive nesmím – v dané iteraci)
+	- BiS (bidirectional search)
+		- uvažujeme jeden cílový stav
+			- když máme víc cílových stavů, tak můžeme přidat další cílový stav, a přidat přechody do něj
+		- doufáme, že se potkají uprostřed
+		- musíme kontrolovat, že se hranice potkaly
+		- problémy zpětného prohledávání
+			- někdy máme jenom abstraktní popis cíle (viz N královen)
+			- někdy je těžké najít zpětný přechod (inverzi k akci)
+	- graph search
+		- vylepšení stromového prohledávání, které zakazuje expanzi již navštívených stavů (pamatujeme si uzavřené stavy)
