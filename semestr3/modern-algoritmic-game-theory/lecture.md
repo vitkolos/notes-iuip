@@ -61,3 +61,8 @@
 	- convergence
 		- a game has the fictitious-play property if the fictitious play converges there
 	- three-player zero-sum game is somehow equivalent to a two-player general-sum game
+
+## Linear Programming
+
+- primal and dual linear programs
+- if I want to find the minimum in the vector computed as $Ax$, I can set $Ax\geq u$ and maximize $u$
