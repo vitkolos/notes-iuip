@@ -27,3 +27,9 @@
 	- *cut*
 		- when we have a fractional LP solution, we can introduce an additional constraint that cuts out the fractional solution and does not cut out any integer solution (so by repeating these cuts, we get to the integer solution according to Chvátal's proof)
 - lazy constraint generation: we add constraints that cut out the solutions we found but don't like for some reason
+- channeling
+	- we implement two models and then connect the variables (so called channeling)
+	- if there are some parts that are harder for one of the models, the other model can solve them more easily
+	- we don't need to implement the constraints in both models
+	- if we do, it's better for pruning but it's more work at every node
+- there are solving options in Picat

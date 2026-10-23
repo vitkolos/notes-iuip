@@ -145,3 +145,34 @@
 	- what are we learning in EA? the structure of the population
 	- representation matters
 	- can a perfect individual live in a bad population? yes, bad population is useful for exploration
+
+## Representation and Constraints
+
+- two approaches
+	1. encode everything as bits, keep the operators from SGA
+		- Holland's approach
+	2. keep the type, change the operators
+- unary representation
+	- we count the number of ones in the binary sequence
+	- there are many different genotypes coresponding to one fenotype
+	- non-uniform redundancy creates bias
+- integer operators (we consider numbers from a finite range)
+	- random reset (unbiased mutation) – replace the value by a random value of the range
+	- creep (biased mutation) – add a small random step
+	- crossover – we can perform a one-point crossover on vectors of integers
+	- *important question: is there an ordering between the values?*
+- mutation of real numbers
+	- uniform – generate a new random value from $[a,b]$
+	- Gaussian – add a value from $\mathcal N(0,\sigma^2)$
+	- non-uniform – simulated annealing
+- crossover of real vectors
+	- simple one-point (or even uniform) crossover behaves in a dicrete way
+	- an idea offspring may lie somewhere between the parents
+		- arithmetic crossover: $\alpha F+(1-\alpha)M$
+	- we may consider the entire box of the parents (also widened a bit) → blend (BLX-$\alpha$)
+	- we may sample around the discrete points → simulated binary (SBX)
+- combining more than two parents
+	- uniform crossover (may be even weighted according to fitness)
+	- diagonal crossover
+	- arithmetic crossover
+- mixed variables
