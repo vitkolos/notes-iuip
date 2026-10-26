@@ -10,7 +10,7 @@
 	- když tam bude něco blbě, tak můžeme poslat novou verzi
 - můžeme přijít i na jiné cvičení
 
-## OneMAX
+## Kombinatorická optimalizace, OneMAX
 
 - maximalizujeme počet jedniček v binárním jedinci
 - ale stejně tak bychom mohli hledat nějaký tajný vzor
@@ -44,3 +44,44 @@
 			- vlastně bychom k tomu nepotřebovali další výpočet fitness (ale nemusíme to takhle optimalizovat v naší implementaci)
 		- extrém: operátor kompletně řeší náš problém
 		- je to vždycky tradeoff mezi rychlostí operátorů a rychlostí konvergence
+
+## Spojitá optimalizace
+
+ - prostor řešení je spojitý (třeba $\mathbb R^n$)
+	 - mám fitness funkci $\mathbb R^n\to \mathbb R$
+- triviální operátory
+	- jednobodové křížení
+	- nezatížená mutace (vygeneruju náhodné číslo z intervalu)
+- aritmetické křížení
+	- $o_1=wp_1+(1-w)p_2$
+	- $o_2=(1-w)p_1+wp_2$
+	- když uvažujeme $w\in[0,1]$, tak to konverguje někam doprostřed (pokud nemutujeme)
+- BLX-$\alpha$
+	- $o_1=p_1+\alpha'(p_2-p_1)$
+	- $\alpha'\in[-\alpha,1{+}\alpha]$
+- SBX
+- zatížená mutace
+	- $x_i=x_i+\sigma\cdot\mathcal N(0,1)$
+	- $\sigma$ … step size (délka kroku)
+	- je žádoucí postupně zmenšovat délku kroku s dalšími generacemi
+- adaptivní step size
+	- kolik procent potomků je lepších než jejich rodiče
+	- chtěl bych tohle číslo udržovat stabilní
+	- když jde sigma k nule, tak jde pravděpodobnost zlepšení k 1/2
+	- když jde sigma k nekončenu, tak jde pravděpodobnost zlepšení k nule (když už jsem nasamploval hodně bodů)
+	- empiricky vychází, že je ta funkce monotónní
+	- takže pokud chceme zvětšit podíl lepších potomků, tak zmenšíme $\sigma$ (když ho chceme zmenšit, tak zvětšíme $\sigma$)
+	- 1/5-rule (pravidlo jedné pětiny) … snažíme se držet ten podíl $p=1/5$
+		- není za tom žádná složitá matematika, prostě to tak vyšlo
+	- nebo můžeme genetickým algoritmem vyvíjet i sigmu
+		- ale musíme pak mutovat i sigmu – třeba jako $\sigma\leftarrow\sigma\cdot e^{\sigma_\sigma\cdot\mathcal N(0,1)}$
+- algoritmus CMA (evoluční strategie)
+- separabilita, multimodálnost
+- chceme mít kovarianční matici, aby nám fungovaly kroky i pro horší tvary fitness landscape (když je potřeba v některých směrech dělat větší kroky než v jiných atd.)
+- adaptabilní operátory
+	- můžeme zkusit jenom pronásobit step_size 0.99
+		- ale lepší je třeba 1/5 rule (klidně hloupěji než v článku – třeba pomocí 0.9 a 1.1)
+	- chceme dosáhnout lineárního poklesu na logaritmické ose (ale není to nutné)
+	- docela dobře by fungovalo nastavovat sigmu podle objective – ale to je zakázáno, protože ve skutečném světě to obvykle neznáme
+	- co_functions.py, cont_optim.py
+	- algoritmus by se měl dostat někam k $10^{-12}$ nebo $10^{-14}$

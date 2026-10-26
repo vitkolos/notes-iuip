@@ -66,3 +66,77 @@ generate and test, local search
 	- and we remember the source of conflict
 - backmarking
 	- memorizes results of tests so that we don't need to do redundant work
+
+## Consistency Techniques
+
+- we can use constraints to prune the domains
+- for consistency techniques, we consider a graph representation of CSP
+	- nodes … variables
+	- edges … constraints
+- node consistency
+	- we directly use unary constraints to reduce the domains
+- arc consistency
+	- we assume binary CSPs only (every CSP can be transformed into a binary CSP)
+	- each binary constraint corresponds to two arcs (in both directions)
+	- CSP is arc consistent iff every arc is arc consistent
+	- to make $(V_i,V_j)$ arc consistent, we delete all the values $x$ from the domain $D_i$ that are inconsistent with all the values in $D_j$
+		- $O(d^2)$ for one constraint
+- AC-1
+	- to make a CSP arc consistent, we check all arcs
+	- we need to repeat the checks if some domains are pruned
+	- so we check all the arcs + we repeat this entire loop if at least one domain was reduced in the last run
+	- $e$ … number of constraints
+	- $O(ned^3)$
+		- there are $nd$ values that can be removed (worst case: one in each run)
+- AC-2
+	- we check only the affected constraints = the arcs pointing to the reduced variable
+		- we don't need to check the arc that is inverse to the one that caused the deletion
+	- it's a generalized version of the Waltz's labelling algorithm
+		- we are adding variables and maintaining arc consistency
+- AC-3
+	- it suffices to have just one queue if we can delete from it
+	- $O(ed^3)$
+		- each arc has to be checked at most $d$ times
+	- (we can stop if a domain is emptied)
+- AC-4
+	- remembering the support
+		- in AC-3, many pairs of values are tested for consistency in every arc revision
+	- we may store the support set of each variable
+	- counter = number of supports of each variable in each direction
+	- support sets tell us which counters should be decreased
+	- has the optimal worst-case time complexity $O(ed^2)$
+		- initialization … always $ed^2$
+		- main loop … $ed^2$
+			- $ed$ counters
+			- each decreased at most $d$ times
+	- on average, it's slower than AC-3
+	- also, it uses more memory
+- AC-5
+	- exploits semantic of the constraint
+	- special types of constraints
+		- functional – defined by a function (e.g. $x=y+1$)
+		- anti-functional … $x\neq y$
+		- monotonic … $x\lt y$
+- AC-6
+	- improves memory complexity and average complexity of AC-4
+	- keeps one support only, the next support is looked for when the current support is lost
+- AC-7
+	- exploits symmetry of constraints
+- AC-3.1
+	- optimal AC-3
+	- what's inefficient in AC-3?
+		- looking for supports starts from scratch every time
+	- we can remember the first support for each value
+	- if this support gets deleted, we can find the next one
+	- so the checking is not $d^2$ every time – it's $d^2$ in total
+- AC-8
+	- like AC-3 but it's using a queue of variables, not a queue of constraints
+- AC-2001
+	- works with difference sets – for each variable we know a set of values deleted since the last revision
+- directional arc consistency
+	- AC has a directional character but CSPs are not directional!
+	- arc revisions are repeated many times
+	- DAC … weaker than AC
+- DAC-1
+	- arc consistency is required in one direction only
+	- variables are ordered → no directed circle
