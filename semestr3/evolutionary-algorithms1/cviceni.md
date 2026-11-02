@@ -81,7 +81,28 @@
 - adaptabilní operátory
 	- můžeme zkusit jenom pronásobit step_size 0.99
 		- ale lepší je třeba 1/5 rule (klidně hloupěji než v článku – třeba pomocí 0.9 a 1.1)
+		- není dobré používat lineární snižování sigmy
 	- chceme dosáhnout lineárního poklesu na logaritmické ose (ale není to nutné)
 	- docela dobře by fungovalo nastavovat sigmu podle objective – ale to je zakázáno, protože ve skutečném světě to obvykle neznáme
 	- co_functions.py, cont_optim.py
 	- algoritmus by se měl dostat někam k $10^{-12}$ nebo $10^{-14}$
+- diferenciální evoluce
+	- tři kroky
+		- $o'=x_1+f\cdot(x_2-x_3)$
+		- $o=\mathrm{UniformXover}(o',x_4,cr)$
+		- do potomků přidám $x_4$ nebo $o$ podle toho, kdo má větší fitness
+	- $x_1,x_2,x_3$ … uniformně náhodně z populace
+	- $f$ … nějaký koeficient, typicky na začátku 0.8 (obvykle od 0.2 do 1 nebo do 2)
+	- po několika generacích nám populace v podstatě kopíruje tvar fitness krajiny
+	- rozdíl $x_2-x_3$ bude taky průměrně kopírovat tvar toho kopce
+	- $cr$ … crossover rate
+		- pro separabilní funkce chceme brát víc hodnot z $x_4$ (takže chceme větší crossover rate)
+	- implementace bude jednodušší, když to napíšu celé ručně (třeba podle pseudokódu z Wikipedie), než když se budu snažit lámat operátory
+		- v pseudokódu možná bude trochu jinak křížení – jedna pozice se bude vždycky brát z $x_4$ (ale je jedno, jak to implementujeme)
+	- názvy
+		- DE/rand/1/bin
+		- druhá pozice: rand, best, current, rand-to-best, …
+		- třetí pozice: jednička nebo dvojka (kolik těch rozdílů používáme – když je jich víc, tak chceme asi používat menší $f_1,f_2$ než v té původní verzi)
+		- čtvrtá pozice: bin, exp (ovlivňuje dvojbodové křížení)
+- nebát se zkoušet různé věci, i když ty věci nefungujou úplně dobře
+	- jenom je potřeba, aby to fungovalo aspoň trochu – aby ta funkce klesala
