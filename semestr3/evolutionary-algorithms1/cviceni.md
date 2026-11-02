@@ -98,10 +98,12 @@
 	- $cr$ … crossover rate
 		- pro separabilní funkce chceme brát víc hodnot z $x_4$ (takže chceme větší crossover rate)
 	- implementace bude jednodušší, když to napíšu celé ručně (třeba podle pseudokódu z Wikipedie), než když se budu snažit lámat operátory
-		- v pseudokódu možná bude trochu jinak křížení – jedna pozice se bude vždycky brát z $x_4$ (ale je jedno, jak to implementujeme)
+		- v pseudokódu možná bude trochu jinak křížení – jedna pozice se bude vždycky brát z $o'$ (ale je jedno, jak to implementujeme)
 	- názvy
 		- DE/rand/1/bin
-		- druhá pozice: rand, best, current, rand-to-best, …
+		- druhá pozice: rand, best, current, rand-to-best, current-to-best, …
+			- rand/best/current = jak se vybírá $x_1$ (když je to current, tak se vezme $x_4$)
+			- rand-to-best … jak se vybírá ten rozdíl (uvažujeme $x_1-x_b$, kde $x_b$ je nejlepší jedinec)
 		- třetí pozice: jednička nebo dvojka (kolik těch rozdílů používáme – když je jich víc, tak chceme asi používat menší $f_1,f_2$ než v té původní verzi)
 		- čtvrtá pozice: bin, exp (ovlivňuje dvojbodové křížení)
 - nebát se zkoušet různé věci, i když ty věci nefungujou úplně dobře
