@@ -140,3 +140,22 @@ generate and test, local search
 - DAC-1
 	- arc consistency is required in one direction only
 	- variables are ordered → no directed circle
+	- if variables are DAC in an order and in the reversed order, they are AC
+		- but in general, it's not sufficient to make them DAC only using these two passes
+	- for tree structured CSPs, we can apply DAC in the direction from leaves to root and from root to leaves and we get AC
+- is AC enough to solve CSPs?
+	- no, consider all_different for three variables and binary domains
+	- sometimes, we find something useful
+		- any domain is empty → no solution exists
+		- all domains are singleton → this is a solution
+	- in general, we at least reduce the search space
+- path consistency
+	- *pozor na definici*
+	- theorem: CSP is PC $\iff$ all paths of length 2 are PC
+	- PC is (strictly) stronger than AC
+	- to make the path consistent, we introduce new constraints that remove the inconsistent pairs of values
+- DPC
+	- PC is stronger than DPC
+	- DPC is not comparable with AC
+- restricted path consistency
+	- check path consisteny only for values with just one support
