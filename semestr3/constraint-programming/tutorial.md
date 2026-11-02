@@ -33,3 +33,9 @@
 	- we don't need to implement the constraints in both models
 	- if we do, it's better for pruning but it's more work at every node
 - there are solving options in Picat
+- element constraint
+	- `X #= L[I]` nelze (pro proměnnou I)
+	- musím použít `element(I, L, X)`
+- když chci speciální pořadí proměnných, tak je musím dát řešiči v seznamu, kde budou v daném pořadí
+- surjektivní funkce je to samé jako rozklad množiny
+	- někdy může být zajímavé se na ni dívat v tom druhém směru – v Picatu se to řeší pomocí charakteritických vektorů (maticová reprezentace relace)

@@ -80,3 +80,40 @@
 			- někdy je těžké najít zpětný přechod (inverzi k akci)
 	- graph search
 		- vylepšení stromového prohledávání, které zakazuje expanzi již navštívených stavů (pamatujeme si uzavřené stavy)
+- unknown actions = nevíme, co akce způsobí
+- lokální prohledávání
+	- obvykle funguje na faktorové reprezentaci (stav je vektor atributů)
+	- z neostrých lokálních optim se hůř utíká
+	- hill climbing
+		- pamatuje si jenom aktuální stav
+		- snadno se zasekne v lokálním optimu
+		- stochastický HC – s nějakou pravděpodobností může udělat krok dolů
+		- first-choice HC – jdu do prvního stavu z okolí, který je lepší než já (může fungovat dobře, když je množina okolních stavů hodně velká)
+		- random-restart HC – když se dostane do lokálního optima, tak restartuje (nebo si pamatujeme počet kroků a po dosažení určitého počtu restartujeme)
+		- simulované žíhání
+			- Metropolisova metrika
+	- local beam search
+		- není to $k$-krát spuštěný hill climbing
+		- máme $k$ stavů, v každém kroku vygenerujeme všechny jejich následníky, vybereme z nich $k$ nejlepších a provedeme další krok
+		- alternativa: stochastický beam search (nevybíráme vždy nutně nejlepší následníky)
+	- genetické algoritmy
+		- je to vlastně varianta stochastického beam searche
+	- nedeterministické akce
+		- musíme kontrolovat, do jakého stavu jsme se dostali
+		- použijeme AND-OR strom
+			- OR větvení (v podstatě původní větvení v prohledávacím stromu) – libovolná větev vede k cíli
+			- AND větvení (zajišťuje kontrolu aktuální stavu) – musíme zvolit tu větev, která odpovídá stavu, do nějž jsme se dostali
+- online prohledávání
+	- zatím jsme uvažovali offline prohledávání – spočítáme plán, pak ho vykonáme
+	- online prohledávání – vybereme akci a provedeme ji
+	- funguje to i pro dynamická prostředí nebo když neznáme výsledky akcí
+	- online prohledávání můžeme použít vždycky, ale pro některé problémy to bude dost drahé (např. realizovat A\* ve fyzickém světě místo použití GPS)
+	- máme některé předpoklady
+		- např. že si můžeme postavit mapu světa
+	- competitive ratio … poměr mezi cestou nalezenou pomocí online a offline algoritmu
+		- pozor, pokud stavový prostor obsahuje stavy, z nichž se nelze dostat (např. nevratné akce), tak se jim žádný algoritmus nevyhne (když prostředí není observable)
+		- argument protivníkem: protivník by nám mohl dát svět, kde akce, které si vybereme, povedou do slepé uličky
+		- podobný argument lze použít k důkazu toho, že nelze garantovat omezený kompetitivní poměr, pokud existují cesty s neomezenou délkou
+	- takže se kvalita online algoritmu obvykle uvádí vzhledem k velikosti stavového prostoru
+	- online DFS
+		- metoda Ariadniny niti: když přijdu do stavu, kde už jsem byl, tak půjdu cestou, kterou jsem ještě neviděl
