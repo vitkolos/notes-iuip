@@ -42,3 +42,7 @@
 - social science, network analysis, graph theory
 - “ego” network
 - syphilis outbreak
+
+---
+
+- homophily, social influence, affiliation
