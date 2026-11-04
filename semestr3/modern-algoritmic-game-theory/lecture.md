@@ -66,3 +66,7 @@
 
 - primal and dual linear programs
 - if I want to find the minimum in the vector computed as $Ax$, I can set $Ax\geq u$ and maximize $u$
+
+## Regret Minimization
+
+- if we take the history of actions and play the average strategy in each step, we might get a different reward!
