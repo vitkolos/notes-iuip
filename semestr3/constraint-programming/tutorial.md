@@ -43,5 +43,5 @@
 - pozor, time2 nezfailuje, když nemůže najít řešení
 - global constraint: cumulative
 - implicit constraints
-	- constraints that don't affect the final solution
+	- constraints that don't affect the final (optimal) solution
 	- but help to guide the solver
