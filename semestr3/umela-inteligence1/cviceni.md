@@ -1,0 +1,34 @@
+# Cvičení
+
+- pacman
+	- každá pozice v gridu je políčko, kde můžu stát
+		- můžu najít nejkratší cestu k dalšímu políčku, kde chci stát 
+		- chci přiřadit nějakou cenu cestám, asi cesta blíž duchovi bude dražší 
+	- taky bych mohl vzít celou plochu jako stav
+		- duchové se chovají deterministicky
+		- můžeme používat funkce, které mi pohnou s duchy
+	- nesmíme rozbít hru, als jinak si můžeme asi dělat, co chceme (kdyžtak se můžeme zeptat)
+	- taky je tam ucs
+- NavMesh
+	- rovinu si rozdělím na konvexní n-úhelníky, uvažuju jejich středy
+	- A\* spustím nad tímto grafem (sousední n-úhelníky jsou spojeny hranou)
+	- pak provedu string pulling, abych těsně obcházel překážky
+- ant colony optimization
+	- řešení stavím iterativně
+	- evoluční algoritmy $\supset$ genetické algoritmy
+	- large neighborhood search
+		- smažu část řešení, tím získám parciální řešení, doplním ho nějak → zkoumám, jak to dopadlo
+		- k tomu doplnění se někdy dá použít optimální algoritmus
+- problémy
+	- obchodní cestující
+	- multi-agent path finding
+	- barvení grafu (co nejméně barev)
+	- bin packing
+		- předmět s velikostí $[0,1]$
+		- přihrádky s obsahem 1
+		- chceme 2-aproximaci
+	- job shop scheduling
+		- $n$ úkolů
+		- $m$ strojů
+		- každý úkol je tvořený $k$ operacemi s precedencemi (nějak na sobě závisí) a časem na zpracování
+- chceme najít nějaké řešení a iterativně ho zlepšovat
