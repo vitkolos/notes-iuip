@@ -117,3 +117,6 @@
 	- takže se kvalita online algoritmu obvykle uvádí vzhledem k velikosti stavového prostoru
 	- online DFS
 		- metoda Ariadniny niti: když přijdu do stavu, kde už jsem byl, tak půjdu cestou, kterou jsem ještě neviděl
+	- lokální online prohledávání
+		- LRTA* je varianta hill climbu, z A* si bere jenom heuristiku
+- CSP

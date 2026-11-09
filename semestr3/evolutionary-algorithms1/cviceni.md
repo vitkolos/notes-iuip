@@ -108,3 +108,18 @@
 		- čtvrtá pozice: bin, exp (ovlivňuje dvojbodové křížení)
 - nebát se zkoušet různé věci, i když ty věci nefungujou úplně dobře
 	- jenom je potřeba, aby to fungovalo aspoň trochu – aby ta funkce klesala
+- lamarckismus
+	- dědí se vlastnosti
+	- chytrá mutace je vlastně lamarckistická
+- baldwinismus
+	- dědí se předpoklady pro vlastnosti
+	- vysvětluje vrozená chování (schopnost chodit, schovat se apod.)
+	- spustíme lokální prohledávání, jako fitness jedince použijeme nejlepší hodnotu, kterou jsme našli, ale pro evoluci zachováme původního jedince
+	- snáz se vyhneme lokálním optimům – lamarchismus nás tam přímo žene
+	- obvykle to nefunguje líp než lamarckismus
+- gradientní metoda
+	- chceme odčítat gradient
+	- baldwinismus poběží hrozně pomalu
+	- pozor, gradienty můžou být obrovské, případně to chceme nějak clipovat nebo použít pravidlo 1/5
+	- dělat víc malých kroků je lepší než dělat jeden velký krok, ale trvá to dýl
+	- měli bychom spočítat, kolikrát počítáme fitness při lokální optimalizaci, a aspoň to nějak napsat do komentáře
