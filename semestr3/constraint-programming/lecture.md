@@ -143,6 +143,7 @@ generate and test, local search
 	- if variables are DAC in an order and in the reversed order, they are AC
 		- but in general, it's not sufficient to make them DAC only using these two passes
 	- for tree structured CSPs, we can apply DAC in the direction from leaves to root and from root to leaves and we get AC
+		- then you never need to backtrack → you can solve the problem
 - is AC enough to solve CSPs?
 	- no, consider all_different for three variables and binary domains
 	- sometimes, we find something useful
@@ -159,3 +160,23 @@ generate and test, local search
 	- DPC is not comparable with AC
 - restricted path consistency
 	- check path consisteny only for values with just one support
+- k-consistency
+- strong k-consistency
+- backtrack-free search
+	- for trees, it's sufficient to have DAC
+- graph width
+	- nalezení minimální šířky pomocí odtrhávání zobecněných listů (vrcholů s nejmenším stupněm)
+	- problem: by making the graph PC, we introduce edges → graph width may increase
+- adaptive consistency
+- $(i,j)$-consistency
+- inverse consistency … $(1,j)$-consistency
+- neighborhood inverse consistency
+- singleton consistency
+	- it's a shallow search
+	- you assign one value to a variable and apply consistency technique → if the problem is not consistent, we remove the value
+- comparison of consistency techniques
+- non-binary constraints
+	- generalized consistency
+- we don't like the gaps in domains → they're expensive to represent
+	- so we only check the bounds of the intervals
+	- → bounds consistency
