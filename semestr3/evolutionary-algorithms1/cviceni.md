@@ -123,3 +123,29 @@
 	- pozor, gradienty můžou být obrovské, případně to chceme nějak clipovat nebo použít pravidlo 1/5
 	- dělat víc malých kroků je lepší než dělat jeden velký krok, ale trvá to dýl
 	- měli bychom spočítat, kolikrát počítáme fitness při lokální optimalizaci, a aspoň to nějak napsat do komentáře
+
+## Vícekriteriální optimalizace
+
+- benchmark bude zase spojitá optimalizace
+- křídlo letadla: vztlak a odpor vzduchu
+- co s tím
+	- pareto optimalita/dominance
+		- pareto optimální fronta
+	- lineární kombinace (vážený součet)
+		- funguje dobře, když je pareto optimální fronta konvexní – pak můžeme pro různé váhy postupně najít celou frontu
+	- fitness jako Čebyševův „klín“
+- algoritmus NSGA-II
+	- funguje dobře pro dvě nebo tři kritéria (pak už jsou jedinci mezi sebou typicky neporovnatelní, takže obvykle skoro všichni patří do první fronty)
+	- používá nedominované třídění
+	- postupně odkrajujeme fronty – tak je očíslujeme
+	- druhotné třídicí kritérium (SSC) – typicky se uvažuje crowding distance
+	- pak se dělá turnajová selekce (podle čísla fronty a podle SSC)
+- NSGA-III založený na paprscích
+- MOEA/D
+	- máme 100 algoritmů s různými váhami, které pouštíme zároveň
+- jak porovnat algoritmy
+	- inverse generational distance
+	- hyperobjem
+		- taky se jako SSC dá použít příspěvek k hyperobjemu
+- HypE algoritmus
+- můžeme copy-pastovat z DEAPu

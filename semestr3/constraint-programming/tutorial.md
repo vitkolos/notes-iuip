@@ -45,3 +45,5 @@
 - implicit constraints
 	- constraints that don't affect the final (optimal) solution
 	- but help to guide the solver
+- global constraint: regular
+- https://sofdem.github.io/gccat/

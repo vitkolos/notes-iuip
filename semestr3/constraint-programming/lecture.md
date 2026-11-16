@@ -180,3 +180,44 @@ generate and test, local search
 - we don't like the gaps in domains → they're expensive to represent
 	- so we only check the bounds of the intervals
 	- → bounds consistency
+- generalized arc consistency
+- global constraint … a constraint with a variable arity and a specific filtering procedure
+- all_different
+	- solving technique: *maximum matching*
+	- initialization
+		- construct a bipartite graph of values and variables
+		- find a maximum matching
+		- remove all edges that do not belong to any maximum matching
+	- incremental propagation
+		- remove deleted edges
+		- find a new maximum matching
+		- remove all edges that do not belong to any maximum matching
+- global cardinality
+	- a generalization of all_different
+	- “how many times should value $v_i$ be used”
+		- we can specify a range for each value individually
+	- solving technique: *network flows*
+- lex
+	- can be used for symmetry breaking
+	- models lexicographic ordering of two vectors
+	- alpha, beta
+- regular
+	- can be used for rostering
+	- finite-state automaton
+	- solving technique: layered directed graph
+- grammar
+	- CFG
+	- CYK algorithm
+	- the grammar needs to be in a Chomsky NF
+- slide
+	- can be used to model regular, lex, or stretch
+- stretch
+	- for each letter, there's a minimum and a maximum number of repetitions
+- edge_finding
+	- useful for scheduling
+	- $p$ … processing time
+	- $lct$ … latest completion time
+	- $est$ … earliest starting time
+	- filtering rules are based on comparison of a single scheduled item $A$ and a subset $\Omega$
+		- luckily, we don't need to consider all subsets, we can use task intervals
+		- $C$ belongs in a task interval $[X,Y]$ iff $est(X)\leq est(C)\land lct(C)\leq lct(Y)$
