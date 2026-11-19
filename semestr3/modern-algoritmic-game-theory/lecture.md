@@ -70,3 +70,10 @@
 ## Regret Minimization
 
 - if we take the history of actions and play the average strategy in each step, we might get a different reward!
+
+## Sequential Decision Making
+
+- there may be a “chance” player
+- Kuhn Poker
+- standard reinforcement learning assumes that the environment does not change (it's a Markov decision process)
+- if we have perfect information, we can convert normal form to extensive form and vice versa
