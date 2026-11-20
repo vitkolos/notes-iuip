@@ -176,3 +176,34 @@
 	- diagonal crossover
 	- arithmetic crossover
 - mixed variables
+
+---
+
+## Evolution Strategies
+
+- we don't need to know the formulae for CMA ES
+- how to do mutations for real-valued variables?
+- (1+1)-ES
+- there can be more than two parents
+- we are choosing parents uniformly → there's no selection pressure in parental selection
+	- instead, selection pressure is in the survival/environmental selection (who gets picked to be in the next generation)
+- plus vs. comma
+	- plus is better for combinatorial (“hard”) optimization
+	- comma leaves local optima more easily
+- we can test how many offspring are better then their parent
+- 1/5 rule
+- we can evolve sigma (step size)
+- if the geometry is not spherical, we need multiple sigmas (again, we can evolve them)
+	- that's still not sufficient if there's some rotation
+	- so we need one half of the covariance matrix ($\frac{n(n+1)}2$ parameters)
+	- that's too many variables to evolve (it's like a backpack of the individual)
+- recombination (how to make offspring from parents)
+	- discrete: each coordinate is copied from one parent, chosen at random
+	- intermediate: each coordinate is the average of the parents
+	- is averaging harmful?
+		- mutation shifts the coordinates → averaging can repair the bad shifts
+		- the average of the entire population is moving over time
+- let's just have one covariance matrix
+- genetic algorithm × evolution strategy
+- differential evolution
+- CMA ES
