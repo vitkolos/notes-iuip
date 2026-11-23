@@ -32,3 +32,35 @@
 		- $m$ strojů
 		- každý úkol je tvořený $k$ operacemi s precedencemi (nějak na sobě závisí) a časem na zpracování
 - chceme najít nějaké řešení a iterativně ho zlepšovat
+- minesweeper
+	- budeme muset implementovat forward checking pro specifický typ podmínek (součet binárních proměnných)
+		- zajistíme lokální konzistenci – vyškrtneme z domény proměnné takovou hodnotu, která nemá support v nějaké jiné proměnné (kontrolujeme pro každou podmínku)
+		- zároveň při řešení (pomocí backtrackingu) chceme znova volat forward check na podmínkách, které se změnily dosazením dané proměnné
+		- budeme dokazovat sporem, že tam mina není
+			- funkce infer (pro každou proměnnou zkusíme dokázat, že má nějakou hodnotu)
+		- funkci solve se nedá věřit, ale inferu a foward checku můžeme věřit (forward check je rychlý, takže ten můžeme zkusit před inferem, jestli nám něco neodhalí)
+		- proměnné nám označují, jestli je tam mina nebo ne
+	- agent
+		- můžeme si porovnat minulý stav hrací plochy s tím současným – chceme přidat podmínky za každou novou informaci
+		- když nevíme, tak si můžeme říct o nápovědu
+		- první kliknutí se stane za nás (hned dostaneme board a previous board)
+		- známe celkový počet min, můžeme ho použít, akorát nám to zkomplikuje život, když to použijeme moc brzo (případně to chceme použít v situaci, kdy už nevíme, jak táhnout)
+- redukce
+	- formalismy: SAT, ILP, CP, ASP
+	- SAT
+		- když si výraz přepíšu do DNF, tak se mi může prodloužit až exponenciálně
+		- proto se používá CNF, tak známe algoritmus, co formul prodlouží jenom polynomiálně
+		- dovolíme si and, or, negaci
+		- DPLL
+		- CDCL (conflict-driven clause learning)
+			- udržuju si implikační graf
+		- solvery
+			- glucose
+			- kissat – hezky napsaný v céčku
+			- cadical – rychlý, umí inkrementální řešení
+		- proč se nám nelíbí čistý výskyt
+			- museli bychom projít všechny klauzule – to je drahé (takže to nechceme dělat moc často, rozhodně ne po každém dosazení)
+			- místo toho se používají 2 sledované literály, dá se tak efektivně najít jednotková klauzule
+	- SMT
+		- nadstavba nad SATem
+		- něco složitějšího (grafy, čísla, …) reprezentuju jako SAT
