@@ -46,3 +46,28 @@
 ---
 
 - homophily, social influence, affiliation
+
+---
+
+## Positive and Negative Relationships
+
+- structural balance property
+- we assume that the graph is complete
+- weak structural balance property
+- structural balance in non-complete networks
+
+## Link Analysis
+
+- degree in weighted graphs
+- eigenvector centrality
+	- recursive formula
+	- $\lambda x=Ax$
+	- $A$ … adjacency matrix
+	- usually, we require that both $x$ and $\lambda$ are positive (?)
+- reciprocity
+- density
+- hubs and authorities
+	- HITS
+- PageRank
+- rank prestige
+- up to slide 50–52

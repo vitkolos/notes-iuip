@@ -149,3 +149,25 @@
 		- taky se jako SSC dá použít příspěvek k hyperobjemu
 - HypE algoritmus
 - můžeme copy-pastovat z DEAPu
+
+## ML evoluce
+
+- poznámka: když je fitness pomalá, můžeme natrénovat model, který ji bude predikovat
+- vytváříme if-then pravidla pro klasifikaci
+- jedinec je sada podmínek
+	- každá podmínka je konjunkce pravidel (každé pravidlo se týká jednoho atributu)
+		- pravidla můžou být $\leq,\geq,*$
+	- můžeme mít jednobodové křížení – akorát ty body se vybírají nezávisle
+	- nebo můžeme mít uniformní křížení, kde se vybírají z jednoho nebo z druhého + když dojdou, tak se berou nebo neberou
+- jak to zlepšit
+	- můžeme optimalizovat na malý počet pravidel – třeba pomocí vícekriteriální optimalizace
+	- chytré operátory
+		- můžeme zahazovat nebo generalizovat pravidla, která pro žádný vstup z trénovací množiny nic nedělají
+		- můžeme chytře nastavovat predikované třídy u jednotlivých pravidel
+	- změna kódování jedince nebo výpočet fitness
+		- můžeme přidat pravidlům váhy (záporné váhy můžou dávat smysl, protože můžeme zamítat třídy)
+	- nemusíme to zkoušet všechno, stačí dvě nebo tři vylepšení
+	- zdroják je v souboru rules.py
+		- data se neškálují, ale thresholdy jsou z intervalu $[0,1]$
+	- kdybychom to pouštěli na svoje data, tak musíme zajistit správný formát dat (čísla tříd atd.)
+	- 
