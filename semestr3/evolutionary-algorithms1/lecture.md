@@ -206,4 +206,20 @@
 - let's just have one covariance matrix
 - genetic algorithm × evolution strategy
 - differential evolution
-- CMA ES
+- CMA-ES
+	- idea: we have to know how to mutate
+	- the direction and length of the mutation are important
+	- we have just one covariance matrix and use the information from the population to update the covariance matrix
+	- we mutate the individuals according to the covariance matrix
+	- it does not scale very well
+	- we don't need to know the formulae, just the principles
+	- we'll look more into it in the next semester
+
+## Combinatorial Optimization
+
+- how to encode TSP
+- Holland's team likes schemata → they like the adjacency representation
+	- but it does not produce valid tours by crossover
+- ordinal (buffer) representation
+	- crossover produces valid tours
+	- but each parent considers an entirely different context

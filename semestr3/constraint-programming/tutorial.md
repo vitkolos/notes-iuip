@@ -47,3 +47,9 @@
 	- but help to guide the solver
 - global constraint: regular
 - https://sofdem.github.io/gccat/
+- implicit constraints
+	- they don't reduce the solution space but they guide the solver torwards the solutions
+- no overlap
+	- cumulative
+	- serialized
+	- diffn
