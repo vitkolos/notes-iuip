@@ -223,3 +223,26 @@
 - ordinal (buffer) representation
 	- crossover produces valid tours
 	- but each parent considers an entirely different context
+	- so the offspring does not actually inherit much
+- let's stick to the path representation
+	- redundancy – we can start in whichever city (and the tour can be reversed)
+	- we need to define crossover so that it works
+- random keys
+	- individual … real vector
+	- ranks form a permutation
+- mutations of path representation
+- 2-opt
+	- take 4 cities, change the 2 edges
+	- apply improving moves until none is left
+	- it corresponds to inversion
+- crossovers of permutations
+	- partially mapped crossover (PMX)
+	- order crossover (OX)
+	- cycle crossover (CX)
+		- we take the first item from the first parent
+		- we can't take the item at the first position from the second parent → we take it from the first parent too (it's at some other position, of course)
+	- edge recombination
+		- considering two parents, each city has 2–4 neighbours
+		- we start with one random city
+		- then we select its neighbour with the fewest neighbours left
+		- ER2: take common edges first
